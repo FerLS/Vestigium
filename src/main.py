@@ -31,5 +31,4 @@ while True:
     all_sprites.draw(screen)
     # Update screen
     pygame.display.update()
-    #pygame.display.flip()
     clock.tick(60)
