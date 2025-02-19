@@ -2,13 +2,13 @@ import pygame
 import os
 
 from utils.constants import MovementDirections, MovementType
-from utils.image import load_image
+from resource_manager import ResourceManager 
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        self.sheet = load_image("player.png", -1)
-        self.sheet = self.sheet.convert_alpha()
+        self.resource_manager = ResourceManager()
+        self.sheet = self.resource_manager.load_image("player.png", "assets\\images")
         self.rect = pygame.Rect((0, 0), (24, 24))
         self.image = self.sheet.subsurface(self.rect)
         self.movement = MovementType.IDLE
