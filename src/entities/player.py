@@ -12,8 +12,8 @@ class Player(pygame.sprite.Sprite):
         self.rect = pygame.Rect((0, 0), (24, 24))
         self.image = self.sheet.subsurface(self.rect)
         self.movement = MovementType.IDLE
-        self.position_x = x
-        self.position_y = y
+        self.rect.x = x
+        self.rect.y = y
         self.velocity = 5
 
     def move(self, direction : MovementDirections):
@@ -23,7 +23,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.x += self.velocity
     
     def draw(self, screen):
-        screen.blit(self.sheet, (self.position_x, self.position_y), self.rect)
+        screen.blit(self.sheet, (self.rect.x, self.rect.y), self.rect)
     
     def update(self, keys):
         if keys[pygame.K_LEFT]:
