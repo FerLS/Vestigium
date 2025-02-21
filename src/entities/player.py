@@ -1,8 +1,9 @@
 import pygame
 import os
 
-from utils.constants import MovementDirections, MovementType
-from resource_manager import ResourceManager 
+from utils.constants import SCALE_FACTOR, MovementDirections, MovementType
+from resource_manager import ResourceManager
+
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -11,20 +12,24 @@ class Player(pygame.sprite.Sprite):
         self.sheet = self.resource_manager.load_image("player.png", "assets\\images")
         self.rect = pygame.Rect((0, 0), (24, 24))
         self.image = self.sheet.subsurface(self.rect)
+        self.image = pygame.transform.scale(
+            self.image, (24 * SCALE_FACTOR, 24 * SCALE_FACTOR)
+        )
         self.movement = MovementType.IDLE
         self.rect.x = x
         self.rect.y = y
         self.velocity = 5
 
-    def move(self, direction : MovementDirections):
+    def move(self, direction: MovementDirections):
         if direction == MovementDirections.LEFT:
             self.rect.x -= self.velocity
         if direction == MovementDirections.RIGHT:
             self.rect.x += self.velocity
-    
+
     def draw(self, screen):
-        screen.blit(self.sheet, (self.rect.x, self.rect.y), self.rect)
-    
+
+        screen.blit(self.image, (self.rect.x, self.rect.y), self.rect)
+
     def update(self, keys):
         if keys[pygame.K_LEFT]:
             self.move(MovementDirections.LEFT)
