@@ -39,7 +39,6 @@ while True:
     # Update and draw sprites
     all_sprites.update(pressed_keys)
     all_sprites.draw(screen)
-    player.draw(screen)
     # Update screen
     pygame.display.update()
     clock.tick(60)

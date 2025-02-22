@@ -41,8 +41,6 @@ class Tilemap:
                     # Aire
                     pass
         
-        for tile in self.solid_tiles:
-            pygame.draw.rect(screen, (255, 0, 0), tile, 2)  
 
     @staticmethod
     def load_tileset(image_path, tile_size, columns=5, rows=5, spacing=16):
