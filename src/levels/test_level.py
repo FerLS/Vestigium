@@ -14,10 +14,10 @@ map_data = [
     [6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8],
     [6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8],
 ]
-gorund_tileset = Tilemap.load_tileset(
+ground_tileset = Tilemap.load_tileset(
     "assets/images/Ground_Tileset.png", TILE_SIZE, 5, 5, TILE_SIZE
 )
-tilemap = Tilemap(TILE_SIZE, map_data, gorund_tileset, SCALE_FACTOR)
+tilemap = Tilemap(TILE_SIZE, map_data, ground_tileset, SCALE_FACTOR)
 
 
 class TestLevel(Scene):

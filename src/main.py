@@ -13,11 +13,9 @@ from levels.test_level import TestLevel
 
 
 clock = pygame.time.Clock()
-player = Player(WIDTH / 2, HEIGHT / 2)
+player = Player(WIDTH//2, HEIGHT//2)
 all_sprites = pygame.sprite.Group()
 all_sprites.add(player)
-
-
 test_level = TestLevel(screen)
 
 
