@@ -13,6 +13,7 @@ class Tilemap:
         self.width = len(map_data[0]) * self.tile_size
         self.height = len(map_data) * self.tile_size
         self.mask = pygame.Mask((self.width, self.height))
+        self.solid_tiles = self.get_solid_tiles()
 
     def scale_tileset(self, tileset, scale_factor):
         scaled_tileset = {}
@@ -39,6 +40,9 @@ class Tilemap:
                 elif tile == -1:
                     # Aire
                     pass
+        
+        for tile in self.solid_tiles:
+            pygame.draw.rect(screen, (255, 0, 0), tile, 2)  
 
     @staticmethod
     def load_tileset(image_path, tile_size, columns=5, rows=5, spacing=16):
@@ -62,3 +66,18 @@ class Tilemap:
                 tileset[y * columns + x] = tile  # Guardar en el diccionario
 
         return tileset
+
+    def get_solid_tiles(self):
+        solid_tiles = []
+        for y, row in enumerate(self.map_data):
+            for x, tile in enumerate(row):
+                if tile != -1:  
+                    rect = pygame.Rect(
+                        x * self.tile_size,
+                        HEIGHT - (self.height - y * self.tile_size),
+                        self.tile_size,
+                        self.tile_size
+                    )
+                    solid_tiles.append(rect)
+        return solid_tiles
+
