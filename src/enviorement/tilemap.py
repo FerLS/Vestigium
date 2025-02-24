@@ -30,5 +30,6 @@ class Tilemap:
         """Devuelve una lista de todos los rectángulos sólidos en el mapa."""
         collision_rects = []
         for layer in self.layers:
-            collision_rects.extend(layer.solid_tiles)
+            if not layer.render_as_image:  # Solo consideramos capas que no son imágenes
+                collision_rects.extend(layer.solid_tiles)
         return collision_rects

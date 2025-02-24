@@ -4,7 +4,7 @@ from utils.constants import SCALE_FACTOR
 from pytmx.util_pygame import load_pygame
 
 
-tilemap = Tilemap("tiled/test_level.tmx")
+tilemap = Tilemap("tiled/levels/test_level.tmx")
 
 
 class TestLevel(Scene):

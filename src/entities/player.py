@@ -51,6 +51,7 @@ class Player(pygame.sprite.Sprite):
                 self.velocity_y = MAX_FALL_SPEED
 
     def check_collisions(self):
+        # Usamos el método correcto para obtener los rectángulos de colisión
         colliders = self.tilemap.get_collision_rects()
 
         self.on_ground = False
@@ -58,7 +59,7 @@ class Player(pygame.sprite.Sprite):
         self.on_wall_right = False
         self.on_ceil = False
 
-        # Y-axis collisions
+        # Colisiones en el eje Y
         self.rect.y += self.velocity_y
         for collider in colliders:
             if self.rect.colliderect(collider):
@@ -71,7 +72,7 @@ class Player(pygame.sprite.Sprite):
                     self.velocity_y = 0
                     self.on_ceil = True
 
-        # X-axis collisions
+        # Colisiones en el eje X
         self.rect.x += self.velocity_x
         for collider in colliders:
             if self.rect.colliderect(collider):

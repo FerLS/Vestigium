@@ -55,8 +55,10 @@ class Layer:
         """Obtiene los tiles sólidos si es un TileLayer y debe manejar colisiones."""
         solid_tiles = []
         if isinstance(self.tmx_layer, pytmx.TiledTileLayer):
-            for x, y, gid in self.tmx_layer:
-                if gid != 0:  # Suponiendo que 0 es espacio vacío
+            for x, y, id in self.tmx_layer:
+
+                if id != 0:  # Suponiendo que 0 es espacio vacío
+
                     rect = pygame.Rect(
                         x * self.tilemap.tile_size,
                         y * self.tilemap.tile_size,
@@ -64,6 +66,7 @@ class Layer:
                         self.tilemap.tile_size,
                     )
                     solid_tiles.append(rect)
+
         return solid_tiles
 
     def draw(self, screen):
