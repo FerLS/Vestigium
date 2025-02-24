@@ -5,7 +5,8 @@ from utils.constants import SCALE_FACTOR, MovementDirections, MovementType
 from resource_manager import ResourceManager
 
 INITIAL_FALL_SPEED = 5
-MAX_FALL_SPEED = 10 
+MAX_FALL_SPEED = 10
+
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, tilemap):
@@ -25,11 +26,11 @@ class Player(pygame.sprite.Sprite):
         self.on_ceil = False
 
         # Physics
-        self.gravity = 0.5  
+        self.gravity = 0.5
         self.velocity_x = 0
         self.velocity_y = 0
         self.movement = MovementType.IDLE
-        self.jump_power = -10  
+        self.jump_power = -10
 
     def move(self, direction: MovementDirections):
         if direction == MovementDirections.LEFT and not self.on_wall_left:
@@ -37,7 +38,7 @@ class Player(pygame.sprite.Sprite):
         elif direction == MovementDirections.RIGHT and not self.on_wall_right:
             self.velocity_x = 5
         else:
-            self.velocity_x = 0 
+            self.velocity_x = 0
 
     def jump(self):
         if self.on_ground:
@@ -50,7 +51,7 @@ class Player(pygame.sprite.Sprite):
                 self.velocity_y = MAX_FALL_SPEED
 
     def check_collisions(self):
-        colliders = self.tilemap.get_solid_tiles()
+        colliders = self.tilemap.get_collision_rects()
 
         self.on_ground = False
         self.on_wall_left = False
@@ -61,7 +62,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.y += self.velocity_y
         for collider in colliders:
             if self.rect.colliderect(collider):
-                if self.velocity_y > 0: 
+                if self.velocity_y > 0:
                     self.rect.bottom = collider.top
                     self.velocity_y = 0
                     self.on_ground = True

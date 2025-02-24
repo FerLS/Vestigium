@@ -1,8 +1,7 @@
 from enum import Enum
 
 WIDTH, HEIGHT = 800, 600
-SCALE_FACTOR = 2
-TILE_SIZE = 16
+SCALE_FACTOR = 1
 
 
 class MovementDirections(Enum):
