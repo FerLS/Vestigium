@@ -48,6 +48,9 @@ class Player(pygame.sprite.Sprite):
             self.velocity_y += self.gravity
             if self.velocity_y > MAX_FALL_SPEED:
                 self.velocity_y = MAX_FALL_SPEED
+    
+    def fix_scroll(self, scroll):
+        self.rect.x -= scroll
 
     def check_collisions(self):
         colliders = self.tilemap.get_solid_tiles()
@@ -91,9 +94,11 @@ class Player(pygame.sprite.Sprite):
 
         if keys[pygame.K_SPACE]:
             self.jump()
+        
+        
 
         self.apply_gravity()
         self.check_collisions()
 
     def draw(self, screen):
-        pygame.draw.rect(screen, (0, 255, 0), self.rect, 2)
+        screen.blit(self.image, self.rect)

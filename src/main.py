@@ -13,13 +13,13 @@ from levels.test_level import TestLevel
 
 
 clock = pygame.time.Clock()
-all_sprites = pygame.sprite.Group()
 test_level = TestLevel(screen)
-player = Player(WIDTH//2, HEIGHT//2, test_level.tile_map)
-all_sprites.add(player)
+
 
 
 while True:
+
+    screen.fill((0, 0, 0))
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
@@ -30,15 +30,10 @@ while True:
         pygame.quit()
         sys.exit()
 
-    # Fill color
-    screen.fill((133, 133, 133))
-
     # Update scene
-    test_level.update()
-    
-    # Update and draw sprites
-    all_sprites.update(pressed_keys)
-    all_sprites.draw(screen)
+    test_level.update(pressed_keys)
+
+    test_level.draw()
     # Update screen
     pygame.display.update()
     clock.tick(60)
