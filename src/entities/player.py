@@ -29,7 +29,7 @@ class Player(pygame.sprite.Sprite):
         self.velocity_x = 0
         self.velocity_y = 0
         self.movement = MovementType.IDLE
-        self.jump_power = -10  
+        self.jump_power = -15
 
     def move(self, direction: MovementDirections):
         if direction == MovementDirections.LEFT and not self.on_wall_left:
@@ -53,7 +53,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.x -= scroll
 
     def check_collisions(self):
-        colliders = self.tilemap.get_solid_tiles()
+        colliders = self.tilemap.solid_tiles
 
         self.on_ground = False
         self.on_wall_left = False

@@ -1,12 +1,14 @@
 import pygame
 import os
 import resource_manager
+from utils.constants import WIDTH, HEIGHT
 
 class BackgroundLayer:
     def __init__(self, resource_manager, image_name, assets_path, speed=1.0):
         self.resource_manager = resource_manager
         self.image = self.resource_manager.load_image(image_name, assets_path)
-        
+        self.image = pygame.transform.scale(self.image, (WIDTH, HEIGHT))
+
         self.rect = self.image.get_rect()
         self.speed = speed 
         self.offset = 0  

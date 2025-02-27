@@ -13,7 +13,9 @@ class Tilemap:
         self.width = len(map_data[0]) * self.tile_size
         self.height = len(map_data) * self.tile_size
         self.mask = pygame.Mask((self.width, self.height))
-        self.solid_tiles = self.get_solid_tiles()
+        self.solid_tiles = self.calculate_solid_tiles()
+
+        self.offset = 0  
 
     def scale_tileset(self, tileset, scale_factor):
         scaled_tileset = {}
@@ -25,33 +27,44 @@ class Tilemap:
             scaled_tile = pygame.transform.scale(tile, new_size)
             scaled_tileset[key] = scaled_tile
         return scaled_tileset
+    
+    def update(self, scroll_amount):
+        scroll_speed = 0.5
+        self.offset += scroll_amount * scroll_speed  # Solo actualizamos el offset
 
     def draw(self, screen):
+        self.solid_tiles = []  # Reiniciamos los tiles sólidos antes de calcularlos de nuevo
+
         for y, row in enumerate(self.map_data):
             for x, tile in enumerate(row):
                 if tile in self.tileset:
                     screen.blit(
                         self.tileset[tile],
                         (
-                            x * self.tile_size,
+                            x * self.tile_size - self.offset,  # Aplicamos el offset al dibujo
                             HEIGHT - (self.height - y * self.tile_size),
                         ),
                     )
-                elif tile == -1:
-                    # Aire
-                    pass
-        
+
+                    # Actualizar la posición del tile sólido en base al offset
+                    rect = pygame.Rect(
+                        x * self.tile_size - self.offset,  # Aplicar mismo desplazamiento
+                        HEIGHT - (self.height - y * self.tile_size),
+                        self.tile_size,
+                        self.tile_size
+                    )
+                    self.solid_tiles.append(rect)  # Agregar a la lista de colisiones
+
 
     @staticmethod
     def load_tileset(image_path, tile_size, columns=5, rows=5, spacing=16):
         image = pygame.image.load(
             image_path
-        ).convert_alpha()  # Cargar con transparencia
+        ).convert_alpha()  
         tileset = {}
 
         for y in range(rows):
             for x in range(columns):
-                # Extraer correctamente la parte exacta del tileset
                 tile = image.subsurface(
                     pygame.Rect(
                         x * (tile_size + spacing),
@@ -59,13 +72,13 @@ class Tilemap:
                         tile_size,
                         tile_size,
                     )
-                ).copy()  # Copia para evitar referencias erróneas
+                ).copy() 
 
-                tileset[y * columns + x] = tile  # Guardar en el diccionario
+                tileset[y * columns + x] = tile 
 
         return tileset
 
-    def get_solid_tiles(self):
+    def calculate_solid_tiles(self):
         solid_tiles = []
         for y, row in enumerate(self.map_data):
             for x, tile in enumerate(row):
