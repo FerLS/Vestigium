@@ -1,7 +1,13 @@
 import pygame
 import os
 
-from utils.constants import SCALE_FACTOR, MovementDirections, MovementType
+from utils.constants import (
+    CAMERA_LIMITS,
+    MOVE_SPEED,
+    SCALE_FACTOR,
+    MovementDirections,
+    MovementType,
+)
 from resource_manager import ResourceManager
 
 INITIAL_FALL_SPEED = 5
@@ -34,9 +40,13 @@ class Player(pygame.sprite.Sprite):
 
     def move(self, direction: MovementDirections):
         if direction == MovementDirections.LEFT and not self.on_wall_left:
-            self.velocity_x = -5
+            self.velocity_x = -MOVE_SPEED
+            if self.rect.left < CAMERA_LIMITS[0]:
+                self.velocity_x = 0
         elif direction == MovementDirections.RIGHT and not self.on_wall_right:
-            self.velocity_x = 5
+            self.velocity_x = MOVE_SPEED
+            if self.rect.right > CAMERA_LIMITS[1]:
+                self.velocity_x = 0
         else:
             self.velocity_x = 0
 
@@ -49,9 +59,6 @@ class Player(pygame.sprite.Sprite):
             self.velocity_y += self.gravity
             if self.velocity_y > MAX_FALL_SPEED:
                 self.velocity_y = MAX_FALL_SPEED
-
-    def fix_scroll(self, scroll):
-        self.rect.x -= scroll
 
     def check_collisions(self):
         # Usamos el método correcto para obtener los rectángulos de colisión

@@ -3,6 +3,7 @@ import os
 import resource_manager
 from utils.constants import WIDTH, HEIGHT
 
+
 class BackgroundLayer:
     def __init__(self, resource_manager, image_name, assets_path, speed=1.0):
         self.resource_manager = resource_manager
@@ -10,8 +11,8 @@ class BackgroundLayer:
         self.image = pygame.transform.scale(self.image, (WIDTH, HEIGHT))
 
         self.rect = self.image.get_rect()
-        self.speed = speed 
-        self.offset = 0  
+        self.speed = speed
+        self.offset = 0
 
     def update(self, scroll_amount):
         self.offset += scroll_amount * self.speed
@@ -28,13 +29,16 @@ class BackgroundLayer:
         elif self.offset < 0:
             screen.blit(self.image, (-self.offset - self.rect.width, 0))
 
-class Background():
+
+class Background:
     def __init__(self, resource_manager, assets_path):
         self.layers = []
         speed = 0.0
         for layer in os.listdir(assets_path):
             speed += 0.2
-            self.layers.append(BackgroundLayer(resource_manager, layer, assets_path, speed))
+            self.layers.append(
+                BackgroundLayer(resource_manager, layer, assets_path, speed)
+            )
 
     def update(self, scroll_amount):
         for layer in self.layers:

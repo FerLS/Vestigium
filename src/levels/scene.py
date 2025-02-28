@@ -9,9 +9,11 @@ class Scene(ABC):
         self.tile_map: Tilemap = tile_map
         self.screen = screen
 
-    def renderTileMap(self):
+    def draw(self):
         self.tile_map.draw(self.screen)
 
+        pass
+
     def update(self):
-        self.renderTileMap()
+        self.draw()
         pass

@@ -16,7 +16,6 @@ clock = pygame.time.Clock()
 test_level = TestLevel(screen)
 
 
-
 while True:
 
     screen.fill((0, 0, 0))
@@ -32,8 +31,6 @@ while True:
 
     # Update scene
     test_level.update(pressed_keys)
-
-    test_level.draw()
     # Update screen
     pygame.display.update()
     clock.tick(60)

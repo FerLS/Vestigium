@@ -1,25 +1,9 @@
 {
-    "activeFile": "",
     "expandedProjectPaths": [
     ],
-    "fileStates": {
-        "levels/Lantern 7 Small - Silver and Orange_019.tsx": {
-            "scaleInDock": 1
-        },
-        "levels/TX Tileset Ground.tsx": {
-            "scaleInDock": 1
-        },
-        "levels/TX Village Props.tsx": {
-            "scaleInDock": 1
-        },
-        "levels/lamp.tsx": {
-            "scaleInDock": 1
-        }
-    },
-    "last.externalTilesetPath": "C:/Users/Fer/Desktop/Uni/4º/2º Cuatri/CIIE/Vestgium/tiled/assets",
+    "file.lastUsedOpenFilter": "Todos los archivos (*)",
     "openFiles": [
     ],
-    "project": "test-level.tiled-project",
     "recentFiles": [
     ]
 }

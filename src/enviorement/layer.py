@@ -5,7 +5,9 @@ import pytmx
 class Layer:
     def __init__(self, tmx_layer, tilemap):
         self.tmx_layer = tmx_layer
-        self.tilemap = tilemap
+        from .tilemap import Tilemap
+
+        self.tilemap: Tilemap = tilemap
         self.render_as_image = self.check_if_render_as_image()
         self.solid_tiles = []
 
@@ -36,7 +38,7 @@ class Layer:
         """Renderiza toda la capa como una imagen y la guarda en memoria."""
         surface = pygame.Surface(
             (self.tilemap.width, self.tilemap.height), pygame.SRCALPHA
-        )
+        ).convert_alpha()  # Mejora el rendimiento
 
         if isinstance(self.tmx_layer, pytmx.TiledTileLayer):
             for x, y, gid in self.tmx_layer:
@@ -55,10 +57,8 @@ class Layer:
         """Obtiene los tiles sólidos si es un TileLayer y debe manejar colisiones."""
         solid_tiles = []
         if isinstance(self.tmx_layer, pytmx.TiledTileLayer):
-            for x, y, id in self.tmx_layer:
-
-                if id != 0:  # Suponiendo que 0 es espacio vacío
-
+            for x, y, gid in self.tmx_layer:
+                if gid != 0:  # Suponiendo que 0 es espacio vacío
                     rect = pygame.Rect(
                         x * self.tilemap.tile_size,
                         y * self.tilemap.tile_size,
@@ -69,16 +69,18 @@ class Layer:
 
         return solid_tiles
 
-    def draw(self, screen):
-        """Dibuja la capa en pantalla."""
+    def draw(self, screen, offset_x=0):
+        """Dibuja la capa aplicando el desplazamiento"""
         if self.render_as_image and self.image:
-            screen.blit(self.image, (0, 0))
+            screen.blit(self.image, (offset_x, 0))  # Aplica desplazamiento
         else:
+
             for tile, x, y in self.tiles:
                 screen.blit(
                     tile,
                     (
-                        x * self.tilemap.tile_size,
+                        x * self.tilemap.tile_size
+                        + offset_x,  # Aplica desplazamiento inverso
                         y * self.tilemap.tile_size,
                     ),
                 )
