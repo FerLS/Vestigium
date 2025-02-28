@@ -3,7 +3,7 @@ from enum import Enum
 WIDTH, HEIGHT = 800, 600
 SCALE_FACTOR = 1
 MOVE_SPEED = 5
-CAMERA_LIMITS = 240, 560
+CAMERA_LIMITS_X = 240, 560
 
 
 class MovementDirections(Enum):

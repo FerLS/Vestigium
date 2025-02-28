@@ -2,7 +2,7 @@ import pygame
 import os
 
 from utils.constants import (
-    CAMERA_LIMITS,
+    CAMERA_LIMITS_X,
     MOVE_SPEED,
     SCALE_FACTOR,
     MovementDirections,
@@ -41,11 +41,11 @@ class Player(pygame.sprite.Sprite):
     def move(self, direction: MovementDirections):
         if direction == MovementDirections.LEFT and not self.on_wall_left:
             self.velocity_x = -MOVE_SPEED
-            if self.rect.left < CAMERA_LIMITS[0]:
+            if self.rect.left < CAMERA_LIMITS_X[0]:
                 self.velocity_x = 0
         elif direction == MovementDirections.RIGHT and not self.on_wall_right:
             self.velocity_x = MOVE_SPEED
-            if self.rect.right > CAMERA_LIMITS[1]:
+            if self.rect.right > CAMERA_LIMITS_X[1]:
                 self.velocity_x = 0
         else:
             self.velocity_x = 0
