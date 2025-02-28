@@ -19,9 +19,11 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.resource_manager = ResourceManager()
         self.sheet = self.resource_manager.load_image("player.png", "assets\\images")
-        self.rect = pygame.Rect((0, 0), (24, 24))
-        self.image = self.sheet.subsurface(self.rect)
-        self.image = pygame.transform.scale(self.image, (24, 24))
+        self.rect = pygame.Rect((0, 0), (24 * SCALE_FACTOR, 24 * SCALE_FACTOR))
+        self.image = self.sheet.subsurface((0, 0, 24, 24))
+        self.image = pygame.transform.scale(
+            self.image, (24 * SCALE_FACTOR, 24 * SCALE_FACTOR)
+        )
 
         self.tilemap = tilemap
 
@@ -37,6 +39,9 @@ class Player(pygame.sprite.Sprite):
         self.velocity_y = 0
         self.movement = MovementType.IDLE
         self.jump_power = -15
+
+        # Animation
+        self.fliped = False
 
     def move(self, direction: MovementDirections):
         if direction == MovementDirections.LEFT and not self.on_wall_left:
@@ -93,7 +98,7 @@ class Player(pygame.sprite.Sprite):
                     self.rect.left = collider.right
                     self.on_wall_left = True
 
-    def update(self, keys):
+    def update(self, keys, screen):
         if keys[pygame.K_LEFT]:
             self.move(MovementDirections.LEFT)
         elif keys[pygame.K_RIGHT]:
@@ -106,6 +111,14 @@ class Player(pygame.sprite.Sprite):
 
         self.apply_gravity()
         self.check_collisions()
+        self.draw(screen, keys)
 
-    def draw(self, screen):
+    def draw(self, screen, keys_pressed):
         screen.blit(self.image, self.rect)
+
+        if keys_pressed[pygame.K_LEFT] and not self.fliped:
+            self.fliped = True
+            self.image = pygame.transform.flip(self.image, True, False)
+        elif keys_pressed[pygame.K_RIGHT] and self.fliped:
+            self.fliped = False
+            self.image = pygame.transform.flip(self.image, True, False)

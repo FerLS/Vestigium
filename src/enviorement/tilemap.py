@@ -1,5 +1,7 @@
 import pygame
 import pytmx
+
+from utils.constants import SCALE_FACTOR
 from .layer import Layer
 
 
@@ -31,13 +33,15 @@ class Tilemap:
             layer.draw(screen, self.offset)
 
     def get_collision_rects(self):
-        """Devuelve una lista de todos los rectángulos sólidos aplicando el desplazamiento"""
+        """Devuelve una lista de todos los rectángulos sólidos aplicando el desplazamiento y el factor de escala"""
         collision_rects = []
         for layer in self.layers:
             if not layer.render_as_image:
                 for rect in layer.solid_tiles:
                     moved_rect = pygame.Rect(
-                        rect.x + self.offset,  # Aplicamos desplazamiento inverso
+                        (
+                            rect.x + self.offset * SCALE_FACTOR
+                        ),  # Aplicamos desplazamiento inverso y factor de escala
                         rect.y,
                         rect.width,
                         rect.height,

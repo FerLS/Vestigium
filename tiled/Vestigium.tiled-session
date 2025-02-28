@@ -1,12 +1,37 @@
 {
-    "activeFile": "",
+    "activeFile": "levels/test_level.tmx",
     "expandedProjectPaths": [
+        "assets",
+        ".",
+        "levels"
     ],
     "fileStates": {
+        "assets/Lantern 7 Small - Silver and Orange_019.tsx": {
+            "scaleInDock": 1
+        },
+        "assets/TX Tileset Ground.tsx": {
+            "scaleInDock": 1
+        },
+        "assets/TX Village Props.tsx": {
+            "scaleInDock": 1
+        },
+        "assets/lamp.tsx": {
+            "scaleInDock": 1
+        },
+        "levels/test_level.tmx": {
+            "scale": 0.015625,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 19648,
+                "y": -2784
+            }
+        }
     },
     "openFiles": [
+        "levels/test_level.tmx"
     ],
     "project": "Vestigium.tiled-project",
     "recentFiles": [
+        "levels/test_level.tmx"
     ]
 }
