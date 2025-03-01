@@ -1,8 +1,8 @@
 {
     "activeFile": "levels/test_level.tmx",
     "expandedProjectPaths": [
-        "assets",
         ".",
+        "assets",
         "levels"
     ],
     "fileStates": {
@@ -19,11 +19,11 @@
             "scaleInDock": 1
         },
         "levels/test_level.tmx": {
-            "scale": 0.015625,
-            "selectedLayer": 0,
+            "scale": 1.5,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 19648,
-                "y": -2784
+                "x": 516,
+                "y": 476.99999999999994
             }
         }
     },

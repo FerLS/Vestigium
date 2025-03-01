@@ -16,8 +16,8 @@ class TestLevel(Scene):
     player = Player(WIDTH // 2, 100, tilemap)
     camera = Camera()
 
-    gravedigger_spawn = tilemap.entities.get("enemy_spawn")
-    gravedigger = Gravedigger(gravedigger_spawn.x, gravedigger_spawn.y, tilemap)
+    # gravedigger_spawn = tilemap.entities.get("enemy_spawn")
+    # gravedigger = Gravedigger(gravedigger_spawn.x, gravedigger_spawn.y, tilemap)
 
     def __init__(self, screen):
         super().__init__(self.tilemap, screen)
@@ -25,14 +25,19 @@ class TestLevel(Scene):
 
     def update(self, keys_pressed):
         super().update()
-        self.player.update(keys_pressed, self.screen, self.camera.scroll)
-        self.camera.update(self.player.rect, keys_pressed)
-        self.foreground.update(self.camera.scroll)  # Ahora se mueve correctamente
-        self.background.update(self.camera.scroll)
-        self.gravedigger.update(self.player, self.camera.scroll, self.screen)
+        self.player.update(
+            keys_pressed, self.screen, self.camera.scroll_x, self.camera.scroll_y
+        )
+        self.camera.update(self.player, keys_pressed)
+        self.foreground.update(
+            self.camera.scroll_x, self.camera.scroll_y
+        )  # Ahora se mueve correctamente
+        self.background.update(self.camera.scroll_x)
+
+    #   self.gravedigger.update(self.player, self.camera.scroll, self.screen)
 
     def draw(self):
         super().draw()
-        self.background.draw(self.screen)
+        # self.background.draw(self.screen)
         self.foreground.draw(self.screen)
-        self.gravedigger.light.draw(self.screen)
+        # self.gravedigger.light.draw(self.screen)
