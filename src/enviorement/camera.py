@@ -21,5 +21,8 @@ class Camera:
         elif player.rect.right > self.right_limit and keys[pygame.K_RIGHT]:
             self.scroll_x = MOVE_SPEED
 
-        if player.rect.top < self.top_limit or player.rect.bottom > self.bottom_limit:
+        if player.rect.top < self.top_limit:
             self.scroll_y = player.velocity_y
+
+        if player.rect.bottom > self.bottom_limit:
+            self.scroll_y = MAX_FALL_SPEED
