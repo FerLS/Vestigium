@@ -50,10 +50,12 @@ class Player(pygame.sprite.Sprite):
                 self.velocity_x = 0
         elif direction == MovementDirections.RIGHT and not self.on_wall_right:
             self.velocity_x = MOVE_SPEED
-            if self.rect.right > CAMERA_LIMITS_X[1]:
+            if self.rect.right >= CAMERA_LIMITS_X[1]:
                 self.velocity_x = 0
         else:
             self.velocity_x = 0
+
+        print(self.velocity_x)
 
     def jump(self):
         if self.on_ground:
