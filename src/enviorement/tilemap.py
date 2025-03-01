@@ -14,6 +14,7 @@ class Tilemap:
         self.mask = pygame.Mask((self.width, self.height))
 
         self.layers = self.load_layers()
+        self.entities = self.load_entities()  # Cargar entidades
         self.offset = 0  # Inicializamos desplazamiento
 
     def load_layers(self):
@@ -22,6 +23,13 @@ class Tilemap:
         for tmx_layer in self.tmx_data.layers:
             layers.append(Layer(tmx_layer, self))
         return layers
+
+    def load_entities(self):
+        """Carga los objetos de la capa de entidades."""
+        entities = {}
+        for obj in self.tmx_data.objects:
+            entities[obj.name] = obj
+        return entities
 
     def update(self, scroll_amount):
         """Actualiza el desplazamiento en dirección opuesta al jugador"""

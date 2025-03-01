@@ -24,6 +24,8 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(
             self.image, (24 * SCALE_FACTOR, 24 * SCALE_FACTOR)
         )
+        self.mask = pygame.mask.from_surface(self.image)
+        self.dead = False
 
         self.tilemap = tilemap
 
@@ -98,20 +100,28 @@ class Player(pygame.sprite.Sprite):
                     self.rect.left = collider.right
                     self.on_wall_left = True
 
+    def get_key(self):
+        print("You won")
+
+    def die(self):
+        self.dead = True
+        print("You died")
+
     def update(self, keys, screen):
-        if keys[pygame.K_LEFT]:
-            self.move(MovementDirections.LEFT)
-        elif keys[pygame.K_RIGHT]:
-            self.move(MovementDirections.RIGHT)
-        else:
-            self.velocity_x = 0
+        if not self.dead:
+            if keys[pygame.K_LEFT]:
+                self.move(MovementDirections.LEFT)
+            elif keys[pygame.K_RIGHT]:
+                self.move(MovementDirections.RIGHT)
+            else:
+                self.velocity_x = 0
 
-        if keys[pygame.K_SPACE]:
-            self.jump()
+            if keys[pygame.K_SPACE]:
+                self.jump()
 
-        self.apply_gravity()
-        self.check_collisions()
-        self.draw(screen, keys)
+            self.apply_gravity()
+            self.check_collisions()
+            self.draw(screen, keys)
 
     def draw(self, screen, keys_pressed):
         screen.blit(self.image, self.rect)
