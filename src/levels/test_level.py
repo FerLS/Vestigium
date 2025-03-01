@@ -38,6 +38,6 @@ class TestLevel(Scene):
 
     def draw(self):
         super().draw()
-        # self.background.draw(self.screen)
+        self.background.draw(self.screen)
         self.foreground.draw(self.screen)
         # self.gravedigger.light.draw(self.screen)
