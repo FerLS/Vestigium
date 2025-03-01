@@ -45,19 +45,15 @@ class Player(pygame.sprite.Sprite):
         # Animation
         self.fliped = False
 
-    def move(self, direction: MovementDirections):
+    def move(self, direction: MovementDirections, camera_scroll):
         if direction == MovementDirections.LEFT and not self.on_wall_left:
-            self.velocity_x = -MOVE_SPEED
-            if self.rect.left < CAMERA_LIMITS_X[0]:
-                self.velocity_x = 0
+            self.velocity_x = -MOVE_SPEED - camera_scroll
+
         elif direction == MovementDirections.RIGHT and not self.on_wall_right:
-            self.velocity_x = MOVE_SPEED
-            if self.rect.right >= CAMERA_LIMITS_X[1]:
-                self.velocity_x = 0
+            self.velocity_x = MOVE_SPEED - camera_scroll
+
         else:
             self.velocity_x = 0
-
-        print(self.velocity_x)
 
     def jump(self):
         if self.on_ground:
@@ -69,7 +65,7 @@ class Player(pygame.sprite.Sprite):
             if self.velocity_y > MAX_FALL_SPEED:
                 self.velocity_y = MAX_FALL_SPEED
 
-    def check_collisions(self):
+    def check_collisions(self, camera_scroll):
         # Usamos el método correcto para obtener los rectángulos de colisión
         colliders = self.tilemap.get_collision_rects()
 
@@ -95,10 +91,10 @@ class Player(pygame.sprite.Sprite):
         self.rect.x += self.velocity_x
         for collider in colliders:
             if self.rect.colliderect(collider):
-                if self.velocity_x > 0:
+                if self.velocity_x > 0 or camera_scroll > 0:
                     self.rect.right = collider.left
                     self.on_wall_right = True
-                elif self.velocity_x < 0:
+                elif self.velocity_x < 0 or camera_scroll < 0:
                     self.rect.left = collider.right
                     self.on_wall_left = True
 
@@ -109,12 +105,12 @@ class Player(pygame.sprite.Sprite):
         self.dead = True
         print("You died")
 
-    def update(self, keys, screen):
+    def update(self, keys, screen, camera_scroll):
         if not self.dead:
             if keys[pygame.K_LEFT]:
-                self.move(MovementDirections.LEFT)
+                self.move(MovementDirections.LEFT, camera_scroll)
             elif keys[pygame.K_RIGHT]:
-                self.move(MovementDirections.RIGHT)
+                self.move(MovementDirections.RIGHT, camera_scroll)
             else:
                 self.velocity_x = 0
 
@@ -122,7 +118,7 @@ class Player(pygame.sprite.Sprite):
                 self.jump()
 
             self.apply_gravity()
-            self.check_collisions()
+            self.check_collisions(camera_scroll)
             self.draw(screen, keys)
 
     def draw(self, screen, keys_pressed):

@@ -2,11 +2,14 @@ import pygame
 
 from utils.constants import MovementDirections
 
+
 class Light:
     def __init__(self, x, y, image_path):
         self.image = pygame.image.load(image_path).convert_alpha()
         self.rect = self.image.get_rect(topleft=(x, y))
-        self.mask = pygame.mask.from_threshold(self.image, (255, 255, 255, 255), (50, 50, 50, 255))
+        self.mask = pygame.mask.from_threshold(
+            self.image, (255, 255, 255, 255), (50, 50, 50, 255)
+        )
 
     def update_position(self, gravedigger):
         if gravedigger.movement == MovementDirections.LEFT:

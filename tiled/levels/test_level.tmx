@@ -79,7 +79,7 @@
 </data>
  </layer>
  <objectgroup id="6" name="Entities">
-  <object id="6" name="enemy_spawn" x="849" y="312.667">
+  <object id="6" name="enemy_spawn" x="272.167" y="277">
    <point/>
   </object>
   <object id="7" name="gravedigger_spawn" x="1452" y="236.5">

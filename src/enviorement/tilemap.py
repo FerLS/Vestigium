@@ -29,6 +29,10 @@ class Tilemap:
         entities = {}
         for obj in self.tmx_data.objects:
             entities[obj.name] = obj
+
+        for entity in entities:
+            entities[entity].x *= SCALE_FACTOR
+            entities[entity].y *= SCALE_FACTOR
         return entities
 
     def update(self, scroll_amount):
