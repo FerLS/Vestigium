@@ -126,7 +126,6 @@ class Player(pygame.sprite.Sprite):
 
             self.apply_gravity()
             self.check_collisions(camera_scroll_x, camera_scroll_y)
-            self.draw(screen, keys)
 
     def draw(self, screen, keys_pressed):
         screen.blit(self.image, self.rect)
