@@ -29,3 +29,6 @@ class ResourceManager(object):
             self.images[image_name] = image
 
         return self.images[image_name]
+    
+"""    def obtain_subimage(file, x, y, width, height):
+        image = """

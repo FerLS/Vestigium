@@ -11,16 +11,15 @@ from entities.gravedigger import Gravedigger
 
 
 class CemeteryPhase(Scene):
-    def __init__(self, director: Director, screen):
-        super().__init__(director, screen)
-        self.screen = screen
+    def __init__(self, director: Director):
+        super().__init__(director)
+        self.screen = director.screen
         self.foreground = Tilemap("tiled/levels/test_level.tmx")
         self.resources = ResourceManager()
         self.background = Background(self.resources, "assets\\images\\backgrounds\\parallax_forest")
         self.player = Player(WIDTH//2, 100, self.foreground)
         self.camera = Camera()
         self.pressed_keys = {}
-        self.screen = screen
         #gravedigger_spawn = tilemap.entities.get("enemy_spawn")
         #gravedigger = Gravedigger(gravedigger_spawn.x, gravedigger_spawn.y, tilemap)
 
