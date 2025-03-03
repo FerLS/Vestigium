@@ -49,22 +49,22 @@ class Player(pygame.sprite.Sprite):
 
     def move(self, direction: MovementDirections, camera_scroll_x):
         if direction == MovementDirections.LEFT and not self.on_wall_left:
-            self.velocity_x = -MOVE_SPEED - camera_scroll_x
+            self.velocity_x = (-MOVE_SPEED - camera_scroll_x) * SCALE_FACTOR
 
         elif direction == MovementDirections.RIGHT and not self.on_wall_right:
-            self.velocity_x = MOVE_SPEED - camera_scroll_x
+            self.velocity_x = (MOVE_SPEED - camera_scroll_x) * SCALE_FACTOR
 
         else:
             self.velocity_x = 0
 
     def jump(self):
         if self.on_ground:
-            self.velocity_y = self.jump_power
+            self.velocity_y = self.jump_power * SCALE_FACTOR
 
     def apply_gravity(self):
 
         if not self.on_ground:
-            self.velocity_y += self.gravity
+            self.velocity_y += self.gravity * SCALE_FACTOR
             if self.velocity_y >= MAX_FALL_SPEED:
                 self.velocity_y = MAX_FALL_SPEED
 
@@ -95,6 +95,7 @@ class Player(pygame.sprite.Sprite):
                     self.on_ceil = True
 
         # Colisiones en el eje X
+
         self.rect.x += self.velocity_x
         for collider in colliders:
             if self.rect.colliderect(collider):
