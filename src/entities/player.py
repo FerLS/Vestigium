@@ -101,9 +101,11 @@ class Player(pygame.sprite.Sprite):
                 if self.velocity_x > 0 or camera_scroll_x > 0:
                     self.rect.right = collider.left
                     self.on_wall_right = True
+                    self.velocity_x = 0
                 elif self.velocity_x < 0 or camera_scroll_x < 0:
                     self.rect.left = collider.right
                     self.on_wall_left = True
+                    self.velocity_x = 0
 
     def get_key(self):
         print("You won")

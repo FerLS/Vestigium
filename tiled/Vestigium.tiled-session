@@ -19,11 +19,11 @@
             "scaleInDock": 1
         },
         "levels/test_level.tmx": {
-            "scale": 1.5,
-            "selectedLayer": 2,
+            "scale": 2,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 516,
-                "y": 476.99999999999994
+                "x": 397.5,
+                "y": 278.25
             }
         }
     },
