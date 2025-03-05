@@ -14,15 +14,6 @@ class StartMenu(Menu):
     # Static menu (has no sprites that move)
     def update(self, **args):
         return
-    
-    def events(self, event_list):
-        for event in event_list:
-            if event.type == pygame.QUIT:
-                self.exit_game()
-        self.screen_list[-1].events(event_list)
-
-    def draw(self):
-        self.screen_list[-1].draw(self.director.screen)
                 
     def exit_game(self):
         self.director.finish_program()

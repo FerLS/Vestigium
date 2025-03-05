@@ -13,7 +13,7 @@ class Menu(Scene):
         for event in events:
             if event.type == pygame.QUIT:
                 self.director.finish_program()
-        self.pressed_keys = pygame.key.get_pressed()
+        self.screen_list[-1].events(events)
     
     def draw(self):
-        raise NotImplementedError("Subclasses must implement this method")
+        self.screen_list[-1].draw(self.director.screen)
