@@ -1,8 +1,7 @@
 import pygame
 from enviorement.tilemap import Tilemap
-from scene import Scene
-from utils.constants import SCALE_FACTOR, WIDTH, HEIGHT
-from director import Director
+from scenes.phase import Phase 
+from utils.constants import WIDTH
 from enviorement.background import Background
 from resource_manager import ResourceManager
 from entities.player import Player
@@ -10,8 +9,8 @@ from enviorement.camera import Camera
 from entities.gravedigger import Gravedigger
 
 
-class CemeteryPhase(Scene):
-    def __init__(self, director: Director):
+class CemeteryPhase(Phase):
+    def __init__(self, director):
         super().__init__(director)
         self.screen = director.screen
         self.foreground = Tilemap("tiled/levels/test_level.tmx")
@@ -25,6 +24,8 @@ class CemeteryPhase(Scene):
 
     def update(self):
         self.player.update(self.pressed_keys, self.screen, self.camera.scroll_x, self.camera.scroll_y)
+        if self.player.dead:
+            self.director.scene_manager.stack_scene("DyingMenu")
         self.camera.update(self.player, self.pressed_keys)
         self.foreground.update(self.camera.scroll_x, self.camera.scroll_y) 
         self.background.update(self.camera.scroll_x)
@@ -35,12 +36,4 @@ class CemeteryPhase(Scene):
         self.foreground.draw(self.screen)
         self.player.draw(self.screen, self.pressed_keys)
         # self.gravedigger.light.draw(self.screen)
-
-    def events(self, events: list):
-        for event in events:
-            if event.type == pygame.QUIT:
-                self.director.finish_program()
-        self.pressed_keys = pygame.key.get_pressed()
-
-
-   
+    

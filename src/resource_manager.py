@@ -8,6 +8,7 @@ class ResourceManager(object):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls.images = {}
+            cls.fonts = {}
 
         return cls._instance
 
@@ -30,5 +31,16 @@ class ResourceManager(object):
 
         return self.images[image_name]
     
-"""    def obtain_subimage(file, x, y, width, height):
-        image = """
+    def load_font(self, font_name, font_path, size):
+        
+        # Load font from disk if not already loaded
+        if font_name not in self.fonts:
+            fullname = os.path.join(font_path, font_name)
+            try:
+                font = pygame.font.Font(fullname, size)
+            except pygame.error as message:
+                print("Cannot load font:", font_name)
+                raise SystemExit(message)
+            self.fonts[font_name] = font
+
+        return self.fonts[font_name]

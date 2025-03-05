@@ -14,25 +14,3 @@ class GUIButton(GUIElement):
     def draw(self, screen):
         screen.blit(self.image, self.rect)
 
-
-class PlayButton(GUIButton):
-    def __init__(self, screen, position):
-        GUIButton.__init__(self, screen, "play_button.png", position)
-
-    def action(self):
-        self.screen.menu.play_game()
-
-class ConfigButton(GUIButton):
-    def __init__(self, screen, position):
-        GUIButton.__init__(self, screen, "play_button.png", position)
-
-    def action(self):
-        self.screen.menu.show_config_screen()
-    
-class ExitButton(GUIButton):
-    def __init__(self, screen, position):
-        GUIButton.__init__(self, screen, "play_button.png", position)
-
-    def action(self):
-        self.screen.menu.exit_game()
-

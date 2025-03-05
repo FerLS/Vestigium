@@ -1,18 +1,15 @@
 import pygame 
 
-from scene import Scene
+from scenes.menu import Menu
 from gui.gui_screens.start_screen import StartScreen
-from gui.gui_screens.config_screen import ConfigScreen
+from gui.gui_screens.options_screen import OptionsScreen
 
-from scenes.cemeteryPhase import CemeteryPhase
-
-class StartMenu(Scene):
+class StartMenu(Menu):
     def __init__(self, director):
-        Scene.__init__(self, director)
+        Menu.__init__(self, director)
         self.screen_list = []
-        self.current_screen = 0
         self.screen_list.append(StartScreen(self, "menu_background.jpg")) # Self parameter refers to menu
-        self.screen_list.append(ConfigScreen(self, "menu_background.jpg"))
+        
 
     # Static menu (has no sprites that move)
     def update(self, **args):
@@ -20,25 +17,21 @@ class StartMenu(Scene):
     
     def events(self, event_list):
         for event in event_list:
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    self.exit_game()
-                elif event.type == pygame.QUIT:
-                    self.exit_game()
-        self.screen_list[self.current_screen].events(event_list)
+            if event.type == pygame.QUIT:
+                self.exit_game()
+        self.screen_list[-1].events(event_list)
 
     def draw(self):
-        self.screen_list[self.current_screen].draw(self.director.screen)
+        self.screen_list[-1].draw(self.director.screen)
                 
     def exit_game(self):
         self.director.finish_program()
 
     def play_game(self):
-        phase = CemeteryPhase(self.director)
-        self.director.stack_scene(phase)
+        self.director.scene_manager.stack_scene("CemeteryPhase")
 
-    def show_start_screen(self):
-        self.current_screen = 0
+    def show_options_screen(self):
+        self.screen_list.append(OptionsScreen(self, "menu_background.jpg"))
 
-    def show_config_screen(self):
-        self.current_screen = 1
+    def return_previous_scene(self):
+        self.screen_list.pop()

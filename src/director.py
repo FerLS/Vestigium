@@ -1,5 +1,11 @@
 import pygame
+import scenes.pauseMenu
 from utils.constants import *
+from scenes.pauseMenu import PauseMenu
+from scenes.startMenu import StartMenu
+from scenes.dyingMenu import DyingMenu
+from scenes.cemeteryPhase import CemeteryPhase
+from scene_manager import SceneManager
 
 class Director(object):
     _instance = None
@@ -10,9 +16,20 @@ class Director(object):
             cls.leave_current_scene = False
             cls.clock = pygame.time.Clock()
             cls.screen = pygame.display.set_mode((WIDTH, HEIGHT))
-
+            cls.scene_manager = SceneManager(cls._instance)
+            cls.setup_scenes(cls)
 
         return cls._instance
+
+    def get_current_scene_name(self):
+        return self.scenes_stack[-1].__class__.__name__
+
+    def setup_scenes(self):
+        self.scene_manager.register_scene("StartMenu", StartMenu)
+        self.scene_manager.register_scene("PauseMenu", PauseMenu)
+        self.scene_manager.register_scene("DyingMenu", DyingMenu)
+        self.scene_manager.register_scene("CemeteryPhase", CemeteryPhase)
+
     
     def finish_current_scene(self):
         self.leave_current_scene = True

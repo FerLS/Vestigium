@@ -1,14 +1,14 @@
 import pygame
 
 from gui.guiScreen import GUIScreen
-from gui.gui_elements.guiButton import PlayButton, ConfigButton, ExitButton
+from gui.gui_elements.guiText import NewGameText, OptionsText, ExitText, ContinueText
+from utils.constants import WIDTH, HEIGHT
 
 class StartScreen(GUIScreen):
     def __init__(self, menu, image_name):
         GUIScreen.__init__(self, menu, image_name)
-        self.gui_elements.append(PlayButton(self, (200, 200)))
-        self.gui_elements.append(ConfigButton(self, (200, 300)))
-        self.gui_elements.append(ExitButton(self, (200, 400)))
-
+        self.gui_elements.append(NewGameText(self, (200, 200)))
+        self.gui_elements.append(OptionsText(self, (200, 300)))
+        self.gui_elements.append(ExitText(self, (200, 400)))
 
         
