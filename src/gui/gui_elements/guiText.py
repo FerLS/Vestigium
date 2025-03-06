@@ -36,14 +36,6 @@ class OptionsText(TextGUI):
     def action(self):
         self.screen.menu.show_options_screen()
 
-class ContinueText(TextGUI):
-    def __init__(self, screen, position):
-        font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets\\fonts", 24)
-        TextGUI.__init__(self, screen, font, (255, 255, 255), "Continue", position)
-       
-    def action(self):
-        pass
-
 class GoBackText(TextGUI):
     def __init__(self, screen, position):
         font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets\\fonts", 24)

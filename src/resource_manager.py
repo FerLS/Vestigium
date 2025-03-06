@@ -9,6 +9,7 @@ class ResourceManager(object):
             cls._instance = super().__new__(cls)
             cls.images = {}
             cls.fonts = {}
+            cls.sounds = {}            
 
         return cls._instance
 
@@ -44,3 +45,17 @@ class ResourceManager(object):
             self.fonts[font_name] = font
 
         return self.fonts[font_name]
+    
+    def load_sound(self, sound_name, sound_path, size):
+        
+        # Load font from disk if not already loaded
+        if sound_name not in self.sounds:
+            fullname = os.path.join(sound_path, sound_name)
+            try:
+                sound = pygame.mixer.Sound(fullname)
+            except pygame.error as message:
+                print("Cannot load sound:", sound_name)
+                raise SystemExit(message)
+            self.sounds[sound_name] = sound
+
+        return self.sounds[sound_name]

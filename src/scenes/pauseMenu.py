@@ -3,10 +3,13 @@ import pygame
 from scenes.menu import Menu
 from gui.gui_screens.pause_screen import PauseScreen
 from gui.gui_screens.options_screen import OptionsScreen
+from sound_manager import SoundManager
 
 class PauseMenu(Menu):
     def __init__(self, director):
         Menu.__init__(self, director)
+        self.sound_manager = SoundManager()
+        self.sound_manager.pause_music()
         self.screen_list = []
         self.screen_list.append(PauseScreen(self, "menu_background.jpg")) # Self parameter refers to menu
         
@@ -16,6 +19,7 @@ class PauseMenu(Menu):
         return
 
     def continue_game(self):
+        self.sound_manager.resume_music()
         self.director.finish_current_scene()
 
     def show_options_screen(self):
@@ -32,5 +36,3 @@ class PauseMenu(Menu):
     
     def return_previous_scene(self):
         self.screen_list.pop()
-
-    # def continue_from_nearest_checkpoint()
