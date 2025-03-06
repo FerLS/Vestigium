@@ -12,6 +12,7 @@ from utils.constants import (
     MovementType,
 )
 from resource_manager import ResourceManager
+from sound_manager import SoundManager
 
 INITIAL_FALL_SPEED = 5
 
@@ -20,6 +21,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, tilemap):
         pygame.sprite.Sprite.__init__(self)
         self.resource_manager = ResourceManager()
+        self.sound_manager = SoundManager()
         self.sheet = self.resource_manager.load_image("player.png", "assets\\images")
         self.rect = pygame.Rect((0, HEIGHT / 2), (24 * SCALE_FACTOR, 24 * SCALE_FACTOR))
         self.image = self.sheet.subsurface((0, 0, 24, 24))
@@ -46,6 +48,7 @@ class Player(pygame.sprite.Sprite):
 
         # Animation
         self.fliped = False
+        self.step_sound_number = 0
 
     def move(self, direction: MovementDirections, camera_scroll_x):
         if direction == MovementDirections.LEFT and not self.on_wall_left:
@@ -118,8 +121,17 @@ class Player(pygame.sprite.Sprite):
     def update(self, keys, screen, camera_scroll_x, camera_scroll_y):
         if not self.dead:
             if keys[pygame.K_LEFT]:
+                if self.on_ground:
+                    sound_name = "snow_step_" + str(self.step_sound_number) + ".ogg"
+                    self.sound_manager.play_sound(sound_name, "assets\\sounds")
+                    self.step_sound_number = (self.step_sound_number + 1) % 2
+
                 self.move(MovementDirections.LEFT, camera_scroll_x)
             elif keys[pygame.K_RIGHT]:
+                if self.on_ground:
+                    sound_name = "snow_step_" + str(self.step_sound_number) + ".ogg"
+                    self.sound_manager.play_sound(sound_name, "assets\\sounds")
+                    self.step_sound_number = (self.step_sound_number + 1) % 2
                 self.move(MovementDirections.RIGHT, camera_scroll_x)
             else:
                 self.velocity_x = 0

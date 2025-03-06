@@ -46,7 +46,7 @@ class ResourceManager(object):
 
         return self.fonts[font_name]
     
-    def load_sound(self, sound_name, sound_path, size):
+    def load_sound(self, sound_name, sound_path):
         
         # Load font from disk if not already loaded
         if sound_name not in self.sounds:
