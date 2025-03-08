@@ -1,5 +1,4 @@
 import pygame
-import scenes.pauseMenu
 from utils.constants import *
 from scenes.pauseMenu import PauseMenu
 from scenes.startMenu import StartMenu
