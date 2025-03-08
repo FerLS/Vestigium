@@ -18,7 +18,7 @@ class CemeteryPhase(Phase):
         self.resources = ResourceManager()
         self.sound_manager = SoundManager()
         self.background = Background(self.resources, "assets\\images\\backgrounds\\parallax_forest")
-        self.player = Player(WIDTH//2, 100, self.foreground)
+        self.player = Player(0, WIDTH//2, self.foreground)
         self.camera = Camera()
         self.pressed_keys = {}
         #gravedigger_spawn = tilemap.entities.get("enemy_spawn")
@@ -27,7 +27,7 @@ class CemeteryPhase(Phase):
         self.sound_manager.play_music("mystic_forest.mp3", "assets\\music", -1)
 
     def update(self):
-        self.player.update(self.pressed_keys, self.screen, self.camera.scroll_x, self.camera.scroll_y)
+        self.player.update(self.pressed_keys, self.camera.scroll_x, self.camera.scroll_y, self.director.clock.get_time() / 1000)
         if self.player.dead:
             self.director.scene_manager.stack_scene("DyingMenu")
         self.camera.update(self.player, self.pressed_keys)
@@ -38,6 +38,6 @@ class CemeteryPhase(Phase):
     def draw(self):
         self.background.draw(self.screen)
         self.foreground.draw(self.screen)
-        self.player.draw(self.screen, self.pressed_keys)
+        self.player.draw(self.screen)
         # self.gravedigger.light.draw(self.screen)
     
