@@ -63,6 +63,13 @@ class CircularLight(Light):
                 if obstacle.colliderect(point_rect):
                     return point
         return end
+    
+    def change_radius(self, new_radius):
+        self.distance = new_radius
+        self.dirty = True
+    
+    def get_radius(self):
+        return self.distance
 
 
 class ConeLight(Light):
