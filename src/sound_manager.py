@@ -1,4 +1,5 @@
 import os
+import random
 import pygame
 from resource_manager import ResourceManager
 
@@ -42,23 +43,23 @@ class SoundManager(object):
     def get_music_volume(self):
         return pygame.mixer.music.get_volume()
 
-
     def play_sound(self, sound_name, sound_path, volume=None, pan=0.5):
         sound = ResourceManager().load_sound(sound_name, sound_path)
         if sound:
+            """
             if "footstep" in sound_name.lower():
                 if not self.footstep_channel.get_busy(): 
                     self.footstep_channel.set_volume(self.sound_volume)
                     self.footstep_channel.play(sound)
-            else:
+            else:"""
                 # Para otros sonidos, buscar un canal libre
-                canal_libre = pygame.mixer.find_channel()
-                if canal_libre:
-                    final_volume = volume if volume is not None else self.sound_volume
-                    left = max(0.0, 1.0 - pan) * final_volume
-                    right = max(0.0, pan) * final_volume
-                    canal_libre.set_volume(left, right)
-                    canal_libre.play(sound)
+            canal_libre = pygame.mixer.find_channel()
+            if canal_libre:
+                final_volume = volume if volume is not None else self.sound_volume
+                left = max(0.0, 1.0 - pan) * final_volume
+                right = max(0.0, pan) * final_volume
+                canal_libre.set_volume(left, right)
+                canal_libre.play(sound)
 
     def stop_all_sounds(self):
         for channel in self.channels:

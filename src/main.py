@@ -5,7 +5,7 @@ import tkinter as tk
 from tkinter import messagebox
 
 if __name__ == "__main__":
-
+    """
     messagebox.showwarning(
         "Que guay!", "Acabas de instalar el nuevo Troyano 2.1, disfrutalo! :D"
     )
@@ -16,7 +16,7 @@ if __name__ == "__main__":
         "",
         "Es coña, pero vigila que pulleas, que no es plan de que te metan un troyano de verdad\n"
         "Besos, Fer",
-    )
+    )"""
 
     pygame.init()
     director = Director()

@@ -1,5 +1,6 @@
 import pygame 
 
+from sound_manager import SoundManager
 from scenes.menu import Menu
 from gui.gui_screens.start_screen import StartScreen
 from gui.gui_screens.options_screen import OptionsScreen
@@ -7,8 +8,10 @@ from gui.gui_screens.options_screen import OptionsScreen
 class StartMenu(Menu):
     def __init__(self, director):
         Menu.__init__(self, director)
+        self.sound_manager = SoundManager()
         self.screen_list = []
         self.screen_list.append(StartScreen(self, "menu_background.jpg")) # Self parameter refers to menu
+        self.sound_manager.play_music("start_menu.mp3", "assets\\music", -1)
         
 
     # Static menu (has no sprites that move)
