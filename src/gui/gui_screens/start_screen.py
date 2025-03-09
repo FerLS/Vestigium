@@ -7,7 +7,7 @@ from utils.constants import WIDTH, HEIGHT
 class StartScreen(GUIScreen):
     def __init__(self, menu, image_path):
         GUIScreen.__init__(self, menu, image_path)
-        self.gui_elements.append(NewGameText(self, (200, 200)))
-        self.gui_elements.append(OptionsText(self, (200, 300)))
-        self.gui_elements.append(ExitText(self, (200, 400)))        
+        self.gui_elements.append(NewGameText(self, (WIDTH//2 - 75, 350)))
+        self.gui_elements.append(OptionsText(self, (WIDTH//2 - 65, 400)))
+        self.gui_elements.append(ExitText(self, (WIDTH//2 - 50, 450)))        
         

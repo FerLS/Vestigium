@@ -15,7 +15,7 @@ class TextGUI(GUIElement):
 class NewGameText(TextGUI):
     def __init__(self, screen, position):
         font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets\\fonts", 24)
-        TextGUI.__init__(self, screen, font, (255, 255, 255), "New Game", position)
+        TextGUI.__init__(self, screen, font, (255, 209, 0), "New Game", position)
 
     def action(self):
        self.screen.menu.play_game()
@@ -23,7 +23,7 @@ class NewGameText(TextGUI):
 class ExitText(TextGUI):
     def __init__(self, screen, position):
         font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets\\fonts", 24)
-        TextGUI.__init__(self, screen, font, (255, 255, 255), "Exit", position)
+        TextGUI.__init__(self, screen, font, (255, 209, 0), "Exit", position)
     
     def action(self):
         self.screen.menu.exit_game()
@@ -31,7 +31,7 @@ class ExitText(TextGUI):
 class OptionsText(TextGUI):
     def __init__(self, screen, position):
         font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets\\fonts", 24)
-        TextGUI.__init__(self, screen, font, (255, 255, 255), "Options", position)
+        TextGUI.__init__(self, screen, font, (255, 209, 0), "Options", position)
 
     def action(self):
         self.screen.menu.show_options_screen()

@@ -12,6 +12,7 @@ from utils.constants import (
     MovementType,
 )
 from resource_manager import ResourceManager
+from sound_manager import SoundManager
 
 INITIAL_FALL_SPEED = 5
 
@@ -19,18 +20,21 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, tilemap):
         pygame.sprite.Sprite.__init__(self)
         self.resource_manager = ResourceManager()
+        self.sound_manager = SoundManager()
         self.sheet = self.resource_manager.load_image("player_spritesheet.png", "assets\\images")
 
         # Animations
         self.animations = {
             "idle": extract_frames(self.sheet, 0, 0, 32, 32, 2, SCALE_FACTOR) + extract_frames(self.sheet, 0, 32, 32, 32, 2, SCALE_FACTOR),
-            "walk": extract_frames(self.sheet, 0, 96, 32, 32, 8, SCALE_FACTOR),
+            "walk": extract_frames(self.sheet, 0, 64, 32, 32, 4, SCALE_FACTOR),
             "jump": extract_frames(self.sheet, 0, 160, 32, 32, 8, SCALE_FACTOR),
             "fall": extract_frames(self.sheet, 128, 160, 32, 32, 1, SCALE_FACTOR),
             "dead": extract_frames(self.sheet, 0, 192, 32, 32, 3, SCALE_FACTOR),
         }
 
         # Initial state
+        self.dead = False
+
         self.current_animation = self.animations["idle"]
         self.frame_index = 0
         self.image = self.current_animation[self.frame_index]
@@ -49,18 +53,28 @@ class Player(pygame.sprite.Sprite):
         self.on_ceil = False
 
         # Physics
-        self.dead = False
         self.gravity = 0.5
         self.velocity_x = 0
         self.velocity_y = 0
         self.movement = MovementType.IDLE
         self.jump_power = -10
+        
+        # Sounds
+        self.footsteps_sound = [sound for sound in os.listdir("assets\\sounds\\footsteps")]
+        self.step_index = 0
 
     def update_animation(self, dt):
         self.animation_timer += dt
         if self.animation_timer >= self.animation_speed:
             self.animation_timer = 0
             self.frame_index = (self.frame_index + 1) % len(self.current_animation)
+
+            if self.current_animation == self.animations["walk"] and (self.frame_index == 1 or self.frame_index == 3):
+                if self.velocity_x > 0:
+                    self.sound_manager.play_sound(self.footsteps_sound[self.step_index], "assets\\sounds\\footsteps", pan = 0.7)
+                    self.step_index = 1 - self.step_index
+                elif self.velocity_x < 0:
+                    self.sound_manager.play_sound(self.footsteps_sound[self.step_index], "assets\\sounds\\footsteps", pan = 0.3)
             
             new_frame = self.current_animation[self.frame_index]
             old_center = self.rect.center  
@@ -101,8 +115,6 @@ class Player(pygame.sprite.Sprite):
             self.velocity_y += self.gravity * SCALE_FACTOR
             if self.velocity_y >= MAX_FALL_SPEED:
                 self.velocity_y = MAX_FALL_SPEED
-        else: 
-            self.current_animation = self.animations["idle"]
 
         if self.rect.bottom > CAMERA_LIMITS_Y[1]:
             self.velocity_y = 0
@@ -163,9 +175,7 @@ class Player(pygame.sprite.Sprite):
 
             if keys[pygame.K_SPACE]:
                 self.jump()
-
-            if self.velocity_y < 0:
-                self.current_animation = self.animations["fall"]
+                
 
             self.check_collisions(camera_scroll_x, camera_scroll_y)
             self.apply_gravity()
