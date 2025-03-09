@@ -30,3 +30,6 @@ class Camera:
 
         self.scroll_x = smooth_lerp(self.scroll_x, target_scroll_x, 0.25)
         self.scroll_y = target_scroll_y
+
+        if keys[pygame.K_o]:
+            self.scroll_y = 0

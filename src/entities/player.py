@@ -21,7 +21,7 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.resource_manager = ResourceManager()
         self.sheet = self.resource_manager.load_image("player.png", "assets\\images")
-        self.rect = pygame.Rect((0, HEIGHT / 2), (24 * SCALE_FACTOR, 24 * SCALE_FACTOR))
+        self.rect = pygame.Rect((x, y), (24 * SCALE_FACTOR, 24 * SCALE_FACTOR))
         self.image = self.sheet.subsurface((0, 0, 24, 24))
         self.image = pygame.transform.scale(
             self.image, (24 * SCALE_FACTOR, 24 * SCALE_FACTOR)
