@@ -40,7 +40,6 @@ class Player(pygame.sprite.Sprite):
         self.animation_speed = 0.25
         self.animation_timer = 0
         self.mask = pygame.mask.from_surface(self.image)
-        self.light = ConeLight((self.rect.x, self.rect.y), (0, 1), 90, 400)
 
         # Collisions
         self.tilemap = tilemap
@@ -171,8 +170,6 @@ class Player(pygame.sprite.Sprite):
             self.check_collisions(camera_scroll_x, camera_scroll_y)
             self.apply_gravity()
             self.update_animation(dt)
-            self.light.update((self.rect.x, self.rect.y), self.tilemap.get_collision_rects())
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
-        self.light.draw(screen)
