@@ -8,12 +8,12 @@ class StartMenu(Menu):
     def __init__(self, director):
         Menu.__init__(self, director)
         self.screen_list = []
-        self.screen_list.append(StartScreen(self, "menu_background.jpg")) # Self parameter refers to menu
+        self.screen_list.append(StartScreen(self, "assets\\images\\backgrounds\\main_menu_background")) # Self parameter refers to menu
         
 
     # Static menu (has no sprites that move)
     def update(self, **args):
-        return
+        self.screen_list[-1].update(**args)
                 
     def exit_game(self):
         self.director.finish_program()
