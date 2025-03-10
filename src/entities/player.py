@@ -122,6 +122,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.x += self.velocity_x
         for collider in colliders:
             if self.rect.colliderect(collider):
+
                 if self.velocity_x > 0 or camera_scroll_x > 0:
                     self.rect.right = collider.left
                     self.on_wall_right = True
@@ -170,9 +171,8 @@ class Player(pygame.sprite.Sprite):
 
             if self.velocity_y < 0:
                 self.current_animation = self.animations["fall"]
-
-            self.check_collisions(camera_scroll_x, camera_scroll_y)
             self.apply_gravity(camera_scroll_y)
+            self.check_collisions(camera_scroll_x, camera_scroll_y)
             self.update_animation(dt)
 
     def draw(self, screen):
