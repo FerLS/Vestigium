@@ -5,13 +5,14 @@ from utils.constants import SCALE_FACTOR
 
 
 class Layer:
-    def __init__(self, tmx_layer: pytmx.pytmx.TiledTileLayer, tilemap):
+    def __init__(self, tmx_layer, tilemap):
         self.tmx_layer = tmx_layer
         from .tilemap import Tilemap
 
         self.tilemap: Tilemap = tilemap
         self.render_as_image = self.check_if_render_as_image()
         self.solid_tiles = []
+
         if self.render_as_image:
             self.image = self.render_layer_as_image()
         else:
