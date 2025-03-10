@@ -99,17 +99,15 @@ class Player(pygame.sprite.Sprite):
             self.current_animation = self.animations["jump"]
             self.velocity_y = self.jump_power * SCALE_FACTOR
 
-    def apply_gravity(self):
+    def apply_gravity(self, camera_scroll_y):
 
         if not self.on_ground:
             self.velocity_y += self.gravity * SCALE_FACTOR
             if self.velocity_y >= MAX_FALL_SPEED:
                 self.velocity_y = MAX_FALL_SPEED
+
         else:
             self.current_animation = self.animations["idle"]
-
-        if self.rect.bottom > CAMERA_LIMITS_Y[1]:
-            self.velocity_y = 0
 
     def check_collisions(self, camera_scroll_x, camera_scroll_y):
         colliders = self.tilemap.get_collision_rects()
@@ -118,20 +116,6 @@ class Player(pygame.sprite.Sprite):
         self.on_wall_left = False
         self.on_wall_right = False
         self.on_ceil = False
-
-        # Colisiones en el eje Y
-        if camera_scroll_y >= 0:
-            self.rect.y += self.velocity_y
-        for collider in colliders:
-            if self.rect.colliderect(collider):
-                if self.velocity_y > 0 or camera_scroll_y > 0:
-                    self.rect.bottom = collider.top
-                    self.velocity_y = 0
-                    self.on_ground = True
-                elif self.velocity_y < 0 or camera_scroll_y < 0:
-                    self.rect.top = collider.bottom
-                    self.velocity_y = 0
-                    self.on_ceil = True
 
         # Colisiones en el eje X
 
@@ -146,6 +130,22 @@ class Player(pygame.sprite.Sprite):
                     self.rect.left = collider.right
                     self.on_wall_left = True
                     self.velocity_x = 0
+
+                # Colisiones en el eje Y
+
+        if camera_scroll_y == 0:
+            self.rect.y += self.velocity_y
+
+        for collider in colliders:
+            if self.rect.colliderect(collider):
+                if self.velocity_y > 0:
+                    self.rect.bottom = collider.top
+                    self.velocity_y = 0
+                    self.on_ground = True
+                elif self.velocity_y < 0:
+                    self.rect.top = collider.bottom
+                    self.velocity_y = 0
+                    self.on_ceil = True
 
     def get_key(self):
         print("You won")
@@ -172,7 +172,7 @@ class Player(pygame.sprite.Sprite):
                 self.current_animation = self.animations["fall"]
 
             self.check_collisions(camera_scroll_x, camera_scroll_y)
-            self.apply_gravity()
+            self.apply_gravity(camera_scroll_y)
             self.update_animation(dt)
 
     def draw(self, screen):

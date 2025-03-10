@@ -22,14 +22,11 @@ class Camera:
         elif player.rect.right > self.right_limit and keys[pygame.K_RIGHT]:
             target_scroll_x = MOVE_SPEED
 
-        if player.rect.top < self.top_limit:
-            target_scroll_y = player.velocity_y
+        if player.rect.top < self.top_limit and player.velocity_y < 0:
+            target_scroll_y = player.velocity_y + MAX_FALL_SPEED / 2
 
         if player.rect.bottom > self.bottom_limit:
             target_scroll_y = MAX_FALL_SPEED
 
-        self.scroll_x = smooth_lerp(self.scroll_x, target_scroll_x, 0.25)
+        self.scroll_x = target_scroll_x
         self.scroll_y = target_scroll_y
-
-        if keys[pygame.K_o]:
-            self.scroll_y = 0
