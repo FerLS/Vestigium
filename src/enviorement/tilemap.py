@@ -15,8 +15,6 @@ class Tilemap:
 
         self.layers = self.load_layers()
         self.entities = self.load_entities()  # Cargar entidades
-        self.offset_x = 0  # Inicializamos desplazamiento
-        self.offset_y = 0
 
     def load_layers(self):
         """Carga todas las capas del archivo TMX."""
@@ -36,29 +34,18 @@ class Tilemap:
             entities[entity].y *= SCALE_FACTOR
         return entities
 
-    def update(self, scroll_x, scroll_y):
-        """Actualiza el desplazamiento en dirección opuesta al jugador"""
-        self.offset_x -= scroll_x  # Mueve en sentido contrario
-        self.offset_y -= scroll_y
-
-    def draw(self, screen):
-        """Dibuja todas las capas aplicando el desplazamiento"""
+    def draw(self, screen, offset=(0, 0)):
+        """Dibuja todas las capas aplicando el desplazamiento de cámara."""
         for layer in self.layers:
-            layer.draw(screen, self.offset_x, self.offset_y)
+            layer.draw(screen, offset)
 
     def get_collision_rects(self):
-        """Devuelve una lista de todos los rectángulos sólidos aplicando el desplazamiento y el factor de escala"""
+        """Devuelve rects del mundo real (sin offset visual)."""
         collision_rects = []
         for layer in self.layers:
             if not layer.render_as_image:
                 for rect in layer.solid_tiles:
-                    moved_rect = pygame.Rect(
-                        (
-                            rect.x + self.offset_x * SCALE_FACTOR
-                        ),  # Aplicamos desplazamiento inverso y factor de escala
-                        (rect.y + self.offset_y * SCALE_FACTOR),
-                        rect.width,
-                        rect.height,
-                    )
-                    collision_rects.append(moved_rect)
+                    collision_rects.append(pygame.Rect(
+                        rect.x, rect.y, rect.width, rect.height
+                    ))
         return collision_rects
