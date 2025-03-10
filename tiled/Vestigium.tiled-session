@@ -3,11 +3,11 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "levels/map2.tmx",
+    "activeFile": "levels/test_level.tmx",
     "expandedProjectPaths": [
+        "levels",
         "assets",
-        ".",
-        "levels"
+        "."
     ],
     "fileStates": {
         "assets/Lantern 7 Small - Silver and Orange_019.tsx": {
@@ -23,7 +23,7 @@
         "assets/TX Village Props.tsx": {
             "dynamicWrapping": true,
             "scaleInDock": 0.75,
-            "scaleInEditor": 3
+            "scaleInEditor": 0.75
         },
         "assets/lamp.tsx": {
             "scaleInDock": 1
@@ -37,37 +37,38 @@
             "scaleInEditor": 0.125
         },
         "levels/map2.tmx": {
-            "scale": 1,
+            "scale": 4,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 470.5,
-                "y": -6
+                "x": 563.875,
+                "y": 172.25
             }
         },
         "levels/test_level.tmx": {
-            "scale": 1,
+            "scale": 0.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 234.5,
-                "y": 598
+                "x": 321,
+                "y": 140
             }
         }
     },
+    "last.externalTilesetPath": "C:/Users/Fer/Desktop/Uni/4º/2º Cuatri/CIIE/Vestgium/tiled/assets",
     "last.imagePath": "C:/Users/Fer/Desktop/Uni/4º/2º Cuatri/CIIE/Vestgium/tiled/assets",
     "map.fixedSize": false,
     "map.lastUsedFormat": "tmx",
     "openFiles": [
         "assets/TX Tileset Ground.tsx",
-        "levels/TX Village Props.tsx",
-        "levels/map2.tmx"
+        "levels/map2.tmx",
+        "levels/test_level.tmx"
     ],
     "project": "Vestigium.tiled-project",
     "recentFiles": [
         "assets/TX Tileset Ground.tsx",
-        "levels/TX Village Props.tsx",
         "levels/map2.tmx",
         "levels/test_level.tmx",
         "assets/TX Village Props.tsx",
+        "levels/TX Village Props.tsx",
         "levels/TX Village Props2.tsx",
         "assets/Lantern 7 Small - Silver and Orange_019.tsx"
     ],
