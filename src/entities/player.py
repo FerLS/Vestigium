@@ -1,6 +1,7 @@
 import pygame
 from utils.images import extract_frames
 import os
+from light2 import CircularLight, ConeLight
 
 from utils.constants import (
     CAMERA_LIMITS_Y,
