@@ -1,3 +1,4 @@
+from time import sleep
 import pygame
 from enviorement.tilemap import Tilemap
 from scenes.phase import Phase 
@@ -29,28 +30,17 @@ class CemeteryPhase(Phase):
     def update(self):
         dt = self.director.clock.get_time() / 1000
 
-        # Actualización del jugador con input y tiempo
         self.player.update(self.pressed_keys, dt)
 
-        # Si murió, cambio de escena
         if self.player.dead:
             self.director.scene_manager.stack_scene("DyingMenu")
 
-        # Actualizar cámara (ahora solo con el rect del jugador)
         self.camera.update(self.player.rect)
 
-        # Foreground y background deberían actualizarse solo si tienen lógica propia (ej: animaciones)
-        #self.foreground.update()
-        self.background.update(0)
-
     def draw(self):
-        # Obtener offset de cámara para desplazar todo al dibujar
         offset = self.camera.get_offset()
 
-        print(offset)
-
-        # Dibujo con offset
-        self.background.draw(self.screen)
+        self.background.draw(self.screen, offset)
         self.foreground.draw(self.screen, offset)
         self.player.draw(self.screen, camera_offset=offset)
     

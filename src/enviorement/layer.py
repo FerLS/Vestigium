@@ -88,11 +88,9 @@ class Layer:
         offset_x, offset_y = offset
 
         if self.render_as_image and self.image:
-            # Dibujar la imagen entera de la capa con desplazamiento visual
             screen.blit(self.image, (-offset_x, -offset_y))
 
         else:
-            # Dibujar tile por tile con desplazamiento
             for tile, x, y in self.tiles:
                 screen.blit(
                     tile,

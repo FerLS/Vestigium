@@ -1,4 +1,5 @@
 # player.py
+from time import sleep
 import pygame
 from utils.images import extract_frames
 from utils.constants import (
@@ -34,8 +35,10 @@ class Player(pygame.sprite.Sprite):
         self.animation_timer = 0
 
         self.image = self.current_animation[self.frame_index]
-        self.rect = self.image.get_rect(topleft=(x, y))
-        self.mask = pygame.mask.from_surface(self.image)
+
+        # Rect hitbox más pequeño centrado dentro de la imagen
+        self.rect = pygame.Rect(0, 0, 16 * SCALE_FACTOR, 32 * SCALE_FACTOR)
+
 
         # Movement & Physics
         self.velocity_x = 0
@@ -75,6 +78,8 @@ class Player(pygame.sprite.Sprite):
     def apply_gravity(self):
         if not self.on_ground:
             self.velocity_y += self.gravity
+            if self.velocity_y > 0:
+                self.set_animation("fall")
             if self.velocity_y > MAX_FALL_SPEED:
                 self.velocity_y = MAX_FALL_SPEED
 
@@ -83,9 +88,11 @@ class Player(pygame.sprite.Sprite):
         if self.animation_timer >= self.animation_speed:
             self.animation_timer = 0
             self.frame_index = (self.frame_index + 1) % len(self.current_animation)
-            new_frame = self.current_animation[self.frame_index]
-            self.image = pygame.transform.flip(new_frame, True, False) if self.flipped else new_frame
-            self.mask = pygame.mask.from_surface(self.image)
+
+        new_frame = self.current_animation[self.frame_index]
+        self.image = pygame.transform.flip(new_frame, True, False) if self.flipped else new_frame
+        self.mask = pygame.mask.from_surface(self.image)
+
 
     def set_animation(self, name):
         if self.current_animation != self.animations[name]:
@@ -102,18 +109,20 @@ class Player(pygame.sprite.Sprite):
         for collider in colliders:
             if self.rect.colliderect(collider):
                 if self.velocity_y > 0:
-                    self.rect.bottom = collider.top
+                    self.rect.bottom = collider.top + 1
                     self.velocity_y = 0
                     self.on_ground = True
                     self.set_animation("idle")
                 elif self.velocity_y < 0:
                     self.rect.top = collider.bottom
                     self.velocity_y = 0
-
+                elif self.velocity_y == 0:
+                    self.on_ground = True
+                
         # Horizontal
         self.rect.x += self.velocity_x
         for collider in colliders:
-            if self.rect.colliderect(collider):
+            if self.rect.colliderect(collider) and self.rect.bottom != collider.top + 1:
                 if self.velocity_x > 0:
                     self.rect.right = collider.left
                 elif self.velocity_x < 0:
@@ -133,6 +142,7 @@ class Player(pygame.sprite.Sprite):
 
 
     def update(self, keys, dt):
+        
         if not self.dead:
             self.handle_input(keys)
             self.apply_gravity()
@@ -141,5 +151,18 @@ class Player(pygame.sprite.Sprite):
 
 
     def draw(self, screen, camera_offset=(0, 0)):
-        draw_pos = (self.rect.x - camera_offset[0], self.rect.y - camera_offset[1])
+        draw_pos = (self.rect.x - (8 * SCALE_FACTOR) - camera_offset[0], self.rect.y - camera_offset[1])
         screen.blit(self.image, draw_pos)
+
+                # Dibujo el hitbox
+        pygame.draw.rect(
+            screen,
+            (255, 0, 0),
+            pygame.Rect(
+                self.rect.x - camera_offset[0],
+                self.rect.y - camera_offset[1],
+                self.rect.width,
+                self.rect.height
+            ),
+            1
+        )
