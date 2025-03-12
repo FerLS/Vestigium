@@ -22,7 +22,8 @@ class Player(pygame.sprite.Sprite):
 
         # Animations
         self.animations = {
-            "idle": extract_frames(sheet, 0, 0, 32, 32, 2, SCALE_FACTOR),
+            "idle": extract_frames(sheet, 0, 0, 32, 32, 2, SCALE_FACTOR)
+            + extract_frames(sheet, 0, 32, 32, 32, 2, SCALE_FACTOR),
             "walk": extract_frames(sheet, 0, 96, 32, 32, 8, SCALE_FACTOR),
             "jump": extract_frames(sheet, 0, 160, 32, 32, 8, SCALE_FACTOR),
             "fall": extract_frames(sheet, 128, 160, 32, 32, 1, SCALE_FACTOR),
@@ -153,16 +154,3 @@ class Player(pygame.sprite.Sprite):
     def draw(self, screen, camera_offset=(0, 0)):
         draw_pos = (self.rect.x - (8 * SCALE_FACTOR) - camera_offset[0], self.rect.y - camera_offset[1])
         screen.blit(self.image, draw_pos)
-
-                # Dibujo el hitbox
-        pygame.draw.rect(
-            screen,
-            (255, 0, 0),
-            pygame.Rect(
-                self.rect.x - camera_offset[0],
-                self.rect.y - camera_offset[1],
-                self.rect.width,
-                self.rect.height
-            ),
-            1
-        )
