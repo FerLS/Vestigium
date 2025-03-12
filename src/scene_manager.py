@@ -14,4 +14,3 @@ class SceneManager:
         if name in self.scenes:
             scene_instance = self.scenes[name](self.director)
             self.director.stack_scene(scene_instance)
-
