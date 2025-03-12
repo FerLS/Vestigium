@@ -1,18 +1,25 @@
 import pygame
 import math
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
-class Light(ABC):
+class Light(pygame.sprite.Sprite):
     def __init__(self, position, distance):
+        super().__init__()
         self.position = pygame.Vector2(position)
         self.distance = distance
         self.mask = None
         self.dirty = True  # Solo recalcular si hay cambios
 
+        # Elementos requeridos por un Sprite
+        size = int(distance * 2)
+        self.image = pygame.Surface((size, size), pygame.SRCALPHA)  # Imagen transparente
+        self.rect = self.image.get_rect(center=self.position)  # Rect centrado en la posición
+
     def update(self, new_position=None, obstacles=None):
         if new_position and self.position != pygame.Vector2(new_position):
             self.position = pygame.Vector2(new_position)
             self.dirty = True
+            self.rect.center = self.position  # <-- sincronizar rect con posición
 
         if self.dirty:
             self._generate_mask(obstacles or [])
@@ -22,14 +29,15 @@ class Light(ABC):
     def _generate_mask(self, obstacles):
         pass
 
-    def draw(self, screen):
+    def draw(self, screen, offset=(0, 0)):
+        offset_x, offset_y = offset
         if self.mask:
             mask_surface = self.mask.to_surface(setcolor=(255, 255, 255, 100), unsetcolor=(0, 0, 0, 0))
-            screen.blit(mask_surface, (self.position.x - self.distance, self.position.y - self.distance))
+            screen.blit(mask_surface, (self.position.x - self.distance - offset_x, self.position.y - self.distance - offset_y))
 
 
 class CircularLight(Light):
-    def __init__(self, position, radius, segments=60, ray_step=2):
+    def __init__(self, position, radius, segments=170, ray_step=2):
         super().__init__(position, radius)
         self.segments = segments
         self.ray_step = ray_step

@@ -53,9 +53,10 @@ class Firefly(pygame.sprite.Sprite):
         self.light.update(new_position=self.rect.center)
         self.light.change_radius(self.current_radius + 20)  # actualizar radio de la luz
 
-    def draw(self, screen):
+    def draw(self, screen, offset=(0, 0)):
+        offset_x, offset_y = offset
         image = pygame.Surface((self.current_radius * 2, self.current_radius * 2), pygame.SRCALPHA)
         pygame.draw.circle(image, (255, 255, 100), (self.current_radius, self.current_radius), self.current_radius)
-        draw_pos = self.rect.centerx - self.current_radius, self.rect.centery - self.current_radius
+        draw_pos = self.rect.centerx - self.current_radius - offset_x, self.rect.centery - self.current_radius - offset_y
         screen.blit(image, draw_pos)
-        self.light.draw(screen)
+        self.light.draw(screen, offset)

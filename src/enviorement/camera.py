@@ -1,32 +1,28 @@
-import pygame
-
-from utils.constants import CAMERA_LIMITS_X, CAMERA_LIMITS_Y, MAX_FALL_SPEED, MOVE_SPEED
-from utils.juice import smooth_lerp  # Import smoothlerp
-
-
 class Camera:
-    def __init__(self):
-        self.left_limit = CAMERA_LIMITS_X[0]
-        self.right_limit = CAMERA_LIMITS_X[1]
-        self.bottom_limit = CAMERA_LIMITS_Y[1]
-        self.top_limit = CAMERA_LIMITS_Y[0]
+    def __init__(self, screen_width, screen_height):
         self.scroll_x = 0
         self.scroll_y = 0
 
-    def update(self, player, keys):
-        target_scroll_x = 0
-        target_scroll_y = 0
+        self.screen_width = screen_width
+        self.screen_height = screen_height
 
-        if player.rect.left < self.left_limit and keys[pygame.K_LEFT]:
-            target_scroll_x = -MOVE_SPEED
-        elif player.rect.right > self.right_limit and keys[pygame.K_RIGHT]:
-            target_scroll_x = MOVE_SPEED
+        self.margin_x = screen_width // 4
+        self.margin_y = screen_height // 4
 
-        if player.rect.top < self.top_limit:
-            target_scroll_y = player.velocity_y
+    def update(self, player_rect):
+        # Horizontal
+        if player_rect.left < self.scroll_x + self.margin_x:
+            self.scroll_x = player_rect.left - self.margin_x
 
-        if player.rect.bottom > self.bottom_limit:
-            target_scroll_y = MAX_FALL_SPEED
+        elif player_rect.right > self.scroll_x + self.screen_width - self.margin_x:
+            self.scroll_x = player_rect.right - (self.screen_width - self.margin_x)
 
-        self.scroll_x = smooth_lerp(self.scroll_x, target_scroll_x, 0.25)
-        self.scroll_y = target_scroll_y
+        # Vertical
+        if player_rect.top < self.scroll_y + self.margin_y:
+            self.scroll_y = player_rect.top - self.margin_y
+
+        elif player_rect.bottom > self.scroll_y + self.screen_height - self.margin_y:
+            self.scroll_y = player_rect.bottom - (self.screen_height - self.margin_y)
+
+    def get_offset(self):
+        return int(self.scroll_x), int(self.scroll_y)

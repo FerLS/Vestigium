@@ -12,38 +12,30 @@ class BackgroundLayer:
 
         self.rect = self.image.get_rect()
         self.speed = speed
-        self.offset = 0
 
-    def update(self, scroll_amount):
-        self.offset += scroll_amount * self.speed
+    def draw(self, screen, camera_offset):
+        offset_x = int(camera_offset[0] * self.speed)
+        image_width = self.rect.width
 
-        if self.offset >= self.rect.width:
-            self.offset -= self.rect.width
-        elif self.offset <= -self.rect.width:
-            self.offset += self.rect.width
+        start_x = - (offset_x % image_width)
 
-    def draw(self, screen):
-        screen.blit(self.image, (-self.offset, 0))
-        if self.offset > 0:
-            screen.blit(self.image, (-self.offset + self.rect.width, 0))
-        elif self.offset < 0:
-            screen.blit(self.image, (-self.offset - self.rect.width, 0))
+        x = start_x
+        while x < screen.get_width():
+            screen.blit(self.image, (x, 0))
+            x += image_width
+
 
 
 class Background:
     def __init__(self, resource_manager, assets_path):
         self.layers = []
         speed = 0.0
-        for layer in os.listdir(assets_path):
+        for layer in sorted(os.listdir(assets_path)):  
             speed += 0.2
             self.layers.append(
                 BackgroundLayer(resource_manager, layer, assets_path, speed)
             )
 
-    def update(self, scroll_amount):
+    def draw(self, screen, camera_offset):
         for layer in self.layers:
-            layer.update(scroll_amount)
-
-    def draw(self, screen):
-        for layer in self.layers:
-            layer.draw(screen)
+            layer.draw(screen, camera_offset)

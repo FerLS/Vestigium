@@ -84,20 +84,19 @@ class Layer:
 
         return solid_tiles
 
-    def draw(self, screen, offset_x=0, offset_y=0):
-        """Dibuja la capa aplicando el desplazamiento"""
+    def draw(self, screen, offset=(0, 0)):
+        offset_x, offset_y = offset
+
         if self.render_as_image and self.image:
-            screen.blit(
-                self.image, (offset_x * SCALE_FACTOR, offset_y * SCALE_FACTOR)
-            )  # Aplica desplazamiento escalado
+            screen.blit(self.image, (-offset_x, -offset_y))
+
         else:
             for tile, x, y in self.tiles:
                 screen.blit(
                     tile,
                     (
-                        x * self.tilemap.tile_size * SCALE_FACTOR
-                        + offset_x * SCALE_FACTOR,
-                        y * self.tilemap.tile_size * SCALE_FACTOR
-                        + offset_y * SCALE_FACTOR,
+                        x * self.tilemap.tile_size * SCALE_FACTOR - offset_x,
+                        y * self.tilemap.tile_size * SCALE_FACTOR - offset_y,
                     ),
                 )
+
