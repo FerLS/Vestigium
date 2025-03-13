@@ -160,10 +160,3 @@ class Player(pygame.sprite.Sprite):
     def draw(self, screen, camera_offset=(0, 0)):
         draw_pos = (self.rect.x - (8 * SCALE_FACTOR) - camera_offset[0], self.rect.y - camera_offset[1])
         screen.blit(self.image, draw_pos)
-        debug_rect = pygame.Rect(
-            self.rect.x,
-            self.rect.y,
-            self.rect.width,
-            self.rect.height
-        )
-        pygame.draw.rect(screen, (255, 0, 0), debug_rect, 1)

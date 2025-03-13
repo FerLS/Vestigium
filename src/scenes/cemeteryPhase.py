@@ -38,18 +38,16 @@ class CemeteryPhase(Phase):
         self.sound_manager.play_music("mystic_forest.mp3", "assets\\music", -1)
 
     def update(self):
-        print("Player rect:", self.player.rect)
-        print("Mushroom rect:", self.mushroom.rect)
-        
         dt = self.director.clock.get_time() / 1000
 
         self.player.update(self.pressed_keys, dt)
         self.firefly.update()
         self.mushroom.update()
 
-        if pygame.sprite.spritecollideany(self.player, self.mushrooms_group):
+        mushroom_colliders = pygame.sprite.spritecollide(self.player, self.mushrooms_group, False)
+        if mushroom_colliders != []:
             print("Colliding with mushroom")
-            self.mushroom.glow = True
+            mushroom_colliders[0].glow = True
 
         if pygame.sprite.spritecollideany(self.player, self.lights_group):
             self.player.is_dying = True
@@ -66,6 +64,6 @@ class CemeteryPhase(Phase):
         self.foreground.draw(self.screen, offset)
         self.player.draw(self.screen, camera_offset=offset)
         self.firefly.draw(self.screen, offset)
-        self.mushroom.draw(self.screen)
+        self.mushroom.draw(self.screen, offset)
 
     

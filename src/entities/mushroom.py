@@ -9,9 +9,10 @@ class Mushroom(pygame.sprite.Sprite):
         super().__init__()
         self.resource_manager = ResourceManager()
         sheet = self.resource_manager.load_image("mushrooms.png", "assets/images")
-        self.animations = extract_frames(sheet, 48, 24, 24, 24, 2, SCALE_FACTOR)
+        self.animations = extract_frames(sheet, 48, 24, 24, 24, 2, SCALE_FACTOR * 2)
         self.image = self.animations[0]
-        self.rect = self.image.get_rect(topleft=(x , y))
+        self.rect = pygame.Rect(x, y, 24 * SCALE_FACTOR, 24 * SCALE_FACTOR)
+        #self.rect = self.image.get_rect(topleft=(x , y))
         self.pos = (x, y)
         #self.mask = pygame.mask.from_surface(self.image)
         
@@ -22,6 +23,7 @@ class Mushroom(pygame.sprite.Sprite):
         self.light_direction = 1
     
     def manage_light(self):
+        print(self.frame_counter)
         if self.glow:
             if self.frame_counter == 0:  
                 if self.light_radius == 30:
@@ -35,16 +37,13 @@ class Mushroom(pygame.sprite.Sprite):
                     self.light.change_radius(self.light_radius)
 
     def update(self):
+        print(self.glow)
         self.manage_light()
         self.frame_counter = (self.frame_counter + 1) % 5
+        self.light.update(self.rect.center)
 
-    def draw(self, screen):
-        screen.blit(self.image, self.rect)
-        debug_rect = pygame.Rect(
-            self.rect.x,
-            self.rect.y,
-            self.rect.width,
-            self.rect.height
-        )
-        pygame.draw.rect(screen, (255, 0, 0), debug_rect, 1)
+    def draw(self, screen, offset=(0, 0)):
+        offset_x, offset_y = offset
+        screen.blit(self.image, (self.rect.x - offset_x, self.rect.y - offset_y))
+        self.light.draw(screen, offset)
 
