@@ -10,6 +10,7 @@ from entities.player import Player
 from enviorement.camera import Camera
 from entities.gravedigger import Gravedigger
 from entities.firefly import Firefly
+from entities.mushroom import Mushroom
 
 
 class CemeteryPhase(Phase):
@@ -30,16 +31,25 @@ class CemeteryPhase(Phase):
         self.player = Player(0, WIDTH//2, self.foreground)
 
         self.firefly = Firefly(600, 600, area_rect)
-        self.lights_group = pygame.sprite.Group(self.firefly.light)
+        self.mushroom = Mushroom(600, 750)
+        self.lights_group = pygame.sprite.Group(self.firefly.light, self.mushroom.light)
+        self.mushrooms_group = pygame.sprite.Group(self.mushroom)
 
         self.sound_manager.play_music("mystic_forest.mp3", "assets\\music", -1)
 
     def update(self):
+        print("Player rect:", self.player.rect)
+        print("Mushroom rect:", self.mushroom.rect)
         
         dt = self.director.clock.get_time() / 1000
 
         self.player.update(self.pressed_keys, dt)
         self.firefly.update()
+        self.mushroom.update()
+
+        if pygame.sprite.spritecollideany(self.player, self.mushrooms_group):
+            print("Colliding with mushroom")
+            self.mushroom.glow = True
 
         if pygame.sprite.spritecollideany(self.player, self.lights_group):
             self.player.is_dying = True
@@ -56,5 +66,6 @@ class CemeteryPhase(Phase):
         self.foreground.draw(self.screen, offset)
         self.player.draw(self.screen, camera_offset=offset)
         self.firefly.draw(self.screen, offset)
+        self.mushroom.draw(self.screen)
 
     
