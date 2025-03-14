@@ -13,7 +13,7 @@ from resource_manager import ResourceManager
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, tilemap):
+    def __init__(self, x, y, tilemap, obstacles):
         super().__init__()
 
         # Load resources
@@ -37,7 +37,6 @@ class Player(pygame.sprite.Sprite):
 
         self.image = self.current_animation[self.frame_index]
 
-        # Rect hitbox más pequeño centrado dentro de la imagen
         self.rect = pygame.Rect(0, 0, 16 * SCALE_FACTOR, 32 * SCALE_FACTOR)
 
 
@@ -50,6 +49,7 @@ class Player(pygame.sprite.Sprite):
         self.on_ground = False
 
         self.tilemap = tilemap
+        self.obstacles = obstacles
         self.is_dying = False
         self.dead = False
 
@@ -107,6 +107,8 @@ class Player(pygame.sprite.Sprite):
     def check_collisions(self):
         self.on_ground = False
         colliders = self.tilemap.get_collision_rects()
+        self.bouncy_obstacles = self.obstacles
+        colliders += self.obstacles
 
         # Vertical
         self.rect.y += self.velocity_y
@@ -114,24 +116,43 @@ class Player(pygame.sprite.Sprite):
             if self.rect.colliderect(collider):
                 if self.velocity_y > 0:
                     self.rect.bottom = collider.top + 1
-                    self.velocity_y = 0
-                    self.on_ground = True
-                    self.set_animation("idle")
+
+                    if collider in self.bouncy_obstacles:
+                        self.velocity_y = self.jump_power * 1.25
+                        self.set_animation("jump") 
+                    else:
+                        self.velocity_y = 0
+                        self.on_ground = True
+                        self.set_animation("idle")
+
                 elif self.velocity_y < 0:
                     self.rect.top = collider.bottom
                     self.velocity_y = 0
                 elif self.velocity_y == 0:
                     self.on_ground = True
-                
+
         # Horizontal
         self.rect.x += self.velocity_x
         for collider in colliders:
             if self.rect.colliderect(collider) and self.rect.bottom != collider.top + 1:
-                if self.velocity_x > 0:
-                    self.rect.right = collider.left
-                elif self.velocity_x < 0:
-                    self.rect.left = collider.right
-                self.velocity_x = 0
+                if collider in self.bouncy_obstacles:
+                    print(self.velocity_x)
+                    print("Bouncy")
+                    if self.velocity_x > 0:
+                        self.rect.right = collider.left
+                        self.velocity_x = -MOVE_SPEED * SCALE_FACTOR * 0.8
+                        #TODO: Move left
+
+                    elif self.velocity_x < 0:
+                        self.rect.left = collider.right
+                        self.velocity_x = MOVE_SPEED * SCALE_FACTOR * 0.8  
+                        #TODO: Move right
+                else:
+                    if self.velocity_x > 0:
+                        self.rect.right = collider.left
+                    elif self.velocity_x < 0:
+                        self.rect.left = collider.right
+                    self.velocity_x = 0
 
     def handle_input(self, keys):
         if keys[pygame.K_LEFT]:

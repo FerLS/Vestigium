@@ -28,12 +28,15 @@ class CemeteryPhase(Phase):
         #gravedigger_spawn = tilemap.entities.get("enemy_spawn")
         #gravedigger = Gravedigger(gravedigger_spawn.x, gravedigger_spawn.y, tilemap)
 
-        self.player = Player(0, WIDTH//2, self.foreground)
+        
 
         self.firefly = Firefly(600, 600, area_rect)
-        self.mushroom = Mushroom(600, 750)
+        self.mushroom = Mushroom(100, 800)
         self.lights_group = pygame.sprite.Group(self.firefly.light, self.mushroom.light)
         self.mushrooms_group = pygame.sprite.Group(self.mushroom)
+
+        obstacles = [mushroom.platform_rect for mushroom in self.mushrooms_group]
+        self.player = Player(0, WIDTH//2, self.foreground, obstacles)
 
         self.sound_manager.play_music("mystic_forest.mp3", "assets\\music", -1)
 
@@ -43,11 +46,10 @@ class CemeteryPhase(Phase):
         self.player.update(self.pressed_keys, dt)
         self.firefly.update()
         self.mushroom.update()
-
-        mushroom_colliders = pygame.sprite.spritecollide(self.player, self.mushrooms_group, False)
-        if mushroom_colliders != []:
-            print("Colliding with mushroom")
-            mushroom_colliders[0].glow = True
+        
+        for mushroom in self.mushrooms_group:
+            if self.player.rect.colliderect(mushroom.platform_rect.inflate(4, 4)):
+                mushroom.glow = True
 
         if pygame.sprite.spritecollideany(self.player, self.lights_group):
             self.player.is_dying = True
@@ -62,8 +64,9 @@ class CemeteryPhase(Phase):
 
         self.background.draw(self.screen, offset)
         self.foreground.draw(self.screen, offset)
+        self.mushroom.draw(self.screen, offset)
         self.player.draw(self.screen, camera_offset=offset)
         self.firefly.draw(self.screen, offset)
-        self.mushroom.draw(self.screen, offset)
+        
 
     
