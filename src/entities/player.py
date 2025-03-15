@@ -185,7 +185,6 @@ class Player(pygame.sprite.Sprite):
 
 
     def update(self, keys, dt):
-        print(self.previous_jump)
         if not self.is_dying and not self.dead:
             self.handle_input(keys)
             self.apply_gravity()
