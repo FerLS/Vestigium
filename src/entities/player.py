@@ -135,19 +135,6 @@ class Player(pygame.sprite.Sprite):
         self.rect.x += self.velocity_x
         for collider in colliders:
             if self.rect.colliderect(collider) and self.rect.bottom != collider.top + 1:
-                if collider in self.bouncy_obstacles:
-                    print(self.velocity_x)
-                    print("Bouncy")
-                    if self.velocity_x > 0:
-                        self.rect.right = collider.left
-                        self.velocity_x = -MOVE_SPEED * SCALE_FACTOR * 0.8
-                        #TODO: Move left
-
-                    elif self.velocity_x < 0:
-                        self.rect.left = collider.right
-                        self.velocity_x = MOVE_SPEED * SCALE_FACTOR * 0.8  
-                        #TODO: Move right
-                else:
                     if self.velocity_x > 0:
                         self.rect.right = collider.left
                     elif self.velocity_x < 0:

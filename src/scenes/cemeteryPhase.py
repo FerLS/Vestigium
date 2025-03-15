@@ -48,8 +48,9 @@ class CemeteryPhase(Phase):
         self.mushroom.update()
         
         for mushroom in self.mushrooms_group:
-            if self.player.rect.colliderect(mushroom.platform_rect.inflate(4, 4)):
+            if self.player.rect.colliderect(mushroom.platform_rect):
                 mushroom.glow = True
+                mushroom.bounce = True
 
         if pygame.sprite.spritecollideany(self.player, self.lights_group):
             self.player.is_dying = True
