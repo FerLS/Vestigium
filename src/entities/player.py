@@ -45,7 +45,9 @@ class Player(pygame.sprite.Sprite):
         self.velocity_x = 0
         self.velocity_y = 0
         self.jump_power = -10 * SCALE_FACTOR
+        self.lateral_jump_power = 10 * SCALE_FACTOR
         self.gravity = 0.5 * SCALE_FACTOR
+        self.lateral_gravity = 0.25 * SCALE_FACTOR
         self.flipped = False
         self.on_ground = False
 
@@ -58,6 +60,7 @@ class Player(pygame.sprite.Sprite):
         self.bouncing = False
         self.bounce_direction = 1
         self.from_ground = False
+        
 
     # Movement API
     def move_left(self):
@@ -80,24 +83,25 @@ class Player(pygame.sprite.Sprite):
             self.set_animation("idle")
 
     def jump(self):
+        print
         if self.on_ground:
             self.velocity_y = self.jump_power
             self.on_ground = False
             self.from_ground = True
             self.set_animation("jump")
-        elif self.on_wall_left and self.from_ground:
+        elif self.on_wall_left and self.from_ground and not self.on_ground:
             self.bouncing = True
             self.from_ground = False
-            self.velocity_x = self.jump_power
+            self.velocity_x = self.lateral_jump_power
             self.velocity_y = self.jump_power
-            self.direction = 1
+            self.bounce_direction = 1
             self.set_animation('jump')
-        elif self.on_wall_right and self.from_ground:
+        elif self.on_wall_right and self.from_ground and not self.on_ground:
             self.bouncing = True
             self.from_ground = False
-            self.velocity_x = self.jump_power
+            self.velocity_x = - self.lateral_jump_power
             self.velocity_y = self.jump_power
-            self.direction = -1
+            self.bounce_direction = -1
             self.set_animation('jump')
 
     def apply_gravity(self):
@@ -109,11 +113,12 @@ class Player(pygame.sprite.Sprite):
                 self.velocity_y = MAX_FALL_SPEED
     
     def apply_lateral_gravity(self):
-        if self.bouncing:
-            self.velocity_x += self.lateral_gravity * (-1) * self.direction
-            if self.velocity_x <= 0:
-                self.velocity_x = 0
-                self.bouncing = False    
+        if not self.on_ground and self.bouncing:
+            aux_velocity_x = self.velocity_x
+            self.velocity_x += self.lateral_gravity * (-1) * self.bounce_direction
+            if self.velocity_x * aux_velocity_x < 0:
+                self.velocity_x = 0 
+                self.bouncing = False  
 
     def update_animation(self, dt):
         self.animation_timer += dt
@@ -190,6 +195,7 @@ class Player(pygame.sprite.Sprite):
         if not self.is_dying and not self.dead:
             self.handle_input(keys)
             self.apply_gravity()
+            self.apply_lateral_gravity()
             self.check_collisions()
             self.update_animation(dt)
         elif self.is_dying:
