@@ -1,6 +1,6 @@
 # player.py
-from time import sleep
 import pygame
+from enum import Enum
 from utils.images import extract_frames
 from utils.constants import (
     MAX_FALL_SPEED,
@@ -9,6 +9,11 @@ from utils.constants import (
     MovementType,
     CAMERA_LIMITS_Y,
 )
+class PreviousJump(Enum):
+    NONE = 1
+    LEFT_JUMPING = 2
+    RIGHT_JUMPING = 3
+
 from resource_manager import ResourceManager
 
 
@@ -47,6 +52,9 @@ class Player(pygame.sprite.Sprite):
         self.gravity = 0.5 * SCALE_FACTOR
         self.flipped = False
         self.on_ground = False
+        self.on_wall_left = False
+        self.on_wall_right = False
+        self.previous_jump = PreviousJump.NONE
 
         self.tilemap = tilemap
         self.obstacles = obstacles
@@ -55,12 +63,16 @@ class Player(pygame.sprite.Sprite):
 
     # Movement API
     def move_left(self):
+        if self.previous_jump == PreviousJump.RIGHT_JUMPING:
+            self.previous_jump = PreviousJump.NONE
         self.velocity_x = -MOVE_SPEED * SCALE_FACTOR
         self.flipped = True
         if self.on_ground:
             self.set_animation("walk")
 
     def move_right(self):
+        if self.previous_jump == PreviousJump.LEFT_JUMPING:
+            self.previous_jump = PreviousJump.NONE
         self.velocity_x = MOVE_SPEED * SCALE_FACTOR
         self.flipped = False
         if self.on_ground:
@@ -77,6 +89,18 @@ class Player(pygame.sprite.Sprite):
             self.on_ground = False
             self.set_animation("jump")
 
+        elif self.on_wall_right and self.previous_jump != PreviousJump.RIGHT_JUMPING:
+            self.previous_jump = PreviousJump.RIGHT_JUMPING
+            self.velocity_y = self.jump_power
+            self.on_wall_right = False
+            self.set_animation("jump")
+        
+        elif self.on_wall_left and self.previous_jump != PreviousJump.LEFT_JUMPING:
+            self.previous_jump = PreviousJump.LEFT_JUMPING
+            self.velocity_y = self.jump_power
+            self.on_wall_left = False
+            self.set_animation("jump")
+
     def apply_gravity(self):
         if not self.on_ground:
             self.velocity_y += self.gravity
@@ -84,6 +108,8 @@ class Player(pygame.sprite.Sprite):
                 self.set_animation("fall")
             if self.velocity_y > MAX_FALL_SPEED:
                 self.velocity_y = MAX_FALL_SPEED
+        else:
+            self.previous_jump = PreviousJump.NONE
 
     def update_animation(self, dt):
         self.animation_timer += dt
@@ -106,6 +132,8 @@ class Player(pygame.sprite.Sprite):
 
     def check_collisions(self):
         self.on_ground = False
+        self.on_wall_left = False
+        self.on_wall_right = False
         colliders = self.tilemap.get_collision_rects()
         self.bouncy_obstacles = self.obstacles
         colliders += self.obstacles
@@ -136,12 +164,16 @@ class Player(pygame.sprite.Sprite):
         for collider in colliders:
             if self.rect.colliderect(collider) and self.rect.bottom != collider.top + 1:
                     if self.velocity_x > 0:
+                        self.on_wall_right = True
                         self.rect.right = collider.left
                     elif self.velocity_x < 0:
+                        self.on_wall_left = True
                         self.rect.left = collider.right
                     self.velocity_x = 0
 
     def handle_input(self, keys):
+        if keys[pygame.K_SPACE]:
+            self.jump()
         if keys[pygame.K_LEFT]:
             self.move_left()
         elif keys[pygame.K_RIGHT]:
@@ -149,12 +181,11 @@ class Player(pygame.sprite.Sprite):
         else:
             self.stop()
             
-        if keys[pygame.K_SPACE]:
-            self.jump()
+
 
 
     def update(self, keys, dt):
-        
+        print(self.previous_jump)
         if not self.is_dying and not self.dead:
             self.handle_input(keys)
             self.apply_gravity()
