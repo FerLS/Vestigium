@@ -11,6 +11,7 @@ from utils.constants import (
 )
 
 from resource_manager import ResourceManager
+from sound_manager import SoundManager
 
 
 class Player(pygame.sprite.Sprite):
@@ -19,6 +20,7 @@ class Player(pygame.sprite.Sprite):
 
         # Load resources
         self.resource_manager = ResourceManager()
+        self.sound_manager = SoundManager()
         sheet = self.resource_manager.load_image("player_spritesheet.png", "assets\\images")
 
         # Animations
@@ -196,14 +198,14 @@ class Player(pygame.sprite.Sprite):
             self.stop()
 
     def update(self, keys, dt):
-        print(self.on_ground)
-        if not self.is_dying and not self.dead:
+        
+        if not self.is_dying:
             self.handle_input(keys)
             self.check_collisions()
             self.apply_gravity()
             self.apply_lateral_gravity()
             self.update_animation(dt)
-        elif self.is_dying:
+        else:
             self.set_animation("dead")
             self.update_animation(dt)
 

@@ -11,19 +11,17 @@ class PauseMenu(Menu):
         self.sound_manager = SoundManager()
         self.sound_manager.pause_music()
         self.screen_list = []
-        self.screen_list.append(PauseScreen(self, "menu_background.jpg")) # Self parameter refers to menu
-        
+        self.screen_list.append(PauseScreen(self, "assets\\images\\backgrounds\\pause_menu_background")) # Self parameter refers to menu
 
-    # Static menu (has no sprites that move)
     def update(self, **args):
-        return
+        self.screen_list[-1].update(**args)
 
     def continue_game(self):
         self.sound_manager.resume_music()
         self.director.finish_current_scene()
 
     def show_options_screen(self):
-        self.screen_list.append(OptionsScreen(self, "menu_background.jpg"))
+        self.screen_list.append(OptionsScreen(self, "assets\\images\\backgrounds\\options_menu_background"))
 
     def go_to_main_menu(self):
         self.director.scene_manager.change_scene("StartMenu")

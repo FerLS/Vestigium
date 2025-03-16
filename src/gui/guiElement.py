@@ -6,6 +6,10 @@ class GUIElement(ABC):
         self.screen = screen
         self.rect = rect # To know if click was pressed
         self.clicked = False
+        self.hovered = False
+
+    def update_hover(self, mouse_pos):
+        self.hovered = self.position_in_element(mouse_pos)
 
     # Locate the element in the screen  
     def set_position(self, position): 
@@ -31,7 +35,7 @@ class GUIElement(ABC):
             if self.position_in_element(event.pos):
                 if self.clicked:
                     self.action()
-        
+ 
     def draw(self):
         raise NotImplementedError('Draw method must be implemented in subclass')
     
