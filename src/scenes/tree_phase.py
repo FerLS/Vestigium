@@ -19,7 +19,7 @@ class TreePhase(Phase):
         self.resources = ResourceManager()
         self.sound_manager = SoundManager()
         self.sound_manager.play_music("mystic_forest.mp3", "assets\\music", -1)
-        self.background = Background(self.resources, "assets\\images\\backgrounds\\parallax_forest")
+        self.background = Background(self.resources, "assets\\images\\backgrounds\\tree_phase_parallax", enable_vertical_scroll=True)
         self.camera = Camera(WIDTH, HEIGHT)
         self.pressed_keys = {}
 
