@@ -4,9 +4,20 @@ from resource_manager import ResourceManager
 
 class TextGUI(GUIElement):
     def __init__(self, screen, font, color, text, position):
+        self.font = font
+        self.base_color = color
+        self.hover_color = (255, 255, 255)  # <- Cambia esto si quieres otro color al pasar el mouse
+        self.text = text
         self.image = font.render(text, True, color)
         GUIElement.__init__(self, screen, self.image.get_rect())
         self.set_position(position)
+
+    def update_hover(self, mouse_pos):
+        super().update_hover(mouse_pos)
+        if self.hovered:
+            self.image = self.font.render(self.text, True, self.hover_color)
+        else:
+            self.image = self.font.render(self.text, True, self.base_color)
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
@@ -39,7 +50,7 @@ class OptionsText(TextGUI):
 class GoBackText(TextGUI):
     def __init__(self, screen, position):
         font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets\\fonts", 20)
-        TextGUI.__init__(self, screen, font, (255, 255, 255), "Go Back", position)
+        TextGUI.__init__(self, screen, font, (255, 209, 0), "Go Back", position)
 
     def action(self):
         self.screen.menu.return_previous_scene()
@@ -47,7 +58,7 @@ class GoBackText(TextGUI):
 class MusicVolumeText(TextGUI):
     def __init__(self, screen, position):
         font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets\\fonts", 20)
-        TextGUI.__init__(self, screen, font, (255, 255, 255), "Music", position)
+        TextGUI.__init__(self, screen, font, (255, 209, 0), "Music", position)
 
     def action(self):
         pass
@@ -55,7 +66,7 @@ class MusicVolumeText(TextGUI):
 class SoundEffectsVolumeText(TextGUI):
     def __init__(self, screen, position):
         font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets\\fonts", 20)
-        TextGUI.__init__(self, screen, font, (255, 255, 255), "Sound Effects", position)
+        TextGUI.__init__(self, screen, font, (255, 209, 0), "Sound Effects", position)
 
     def action(self):
         pass
@@ -81,9 +92,12 @@ class GoToMainMenuText(TextGUI):
 class YouDiedText(TextGUI):
     def __init__(self, screen, position):
         font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets\\fonts", 20)
-        TextGUI.__init__(self, screen, font, (255, 255, 255), "YOU DIED", position)
+        TextGUI.__init__(self, screen, font, (255, 209, 0), "YOU DIED", position)
 
     def action(self):
+        pass
+
+    def update_hover(self, mouse_pos):
         pass
 
 class RestartLevel(TextGUI):

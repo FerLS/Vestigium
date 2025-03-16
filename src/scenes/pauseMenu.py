@@ -21,7 +21,7 @@ class PauseMenu(Menu):
         self.director.finish_current_scene()
 
     def show_options_screen(self):
-        self.screen_list.append(OptionsScreen(self, "assets\\images\\backgrounds\\pause_menu_background"))
+        self.screen_list.append(OptionsScreen(self, "assets\\images\\backgrounds\\options_menu_background"))
 
     def go_to_main_menu(self):
         self.director.scene_manager.change_scene("StartMenu")

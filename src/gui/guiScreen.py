@@ -41,6 +41,10 @@ class GUIScreen(ABC):
             self.image_index = (self.image_index + 1) % len(self.images)
         self.image = self.images[self.image_index]
 
+        mouse_pos = pygame.mouse.get_pos()
+        for element in self.gui_elements:
+            element.update_hover(mouse_pos)
+
     def draw(self, screen):
         screen.blit(self.image, (0, 0))
         for element in self.gui_elements:

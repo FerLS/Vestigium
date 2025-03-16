@@ -23,7 +23,7 @@ class StartMenu(Menu):
         self.director.scene_manager.stack_scene("CemeteryPhase")
 
     def show_options_screen(self):
-        self.screen_list.append(OptionsScreen(self, "assets\\images\\backgrounds\\pause_menu_background"))
+        self.screen_list.append(OptionsScreen(self, "assets\\images\\backgrounds\\options_menu_background"))
 
     def return_previous_scene(self):
         self.screen_list.pop()
