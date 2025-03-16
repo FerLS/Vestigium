@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="300" tilewidth="32" tileheight="32" infinite="0" nextlayerid="2" nextobjectid="1">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="300" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="6">
  <tileset firstgid="1" source="../../../../../../../Downloads/tiles.tsx"/>
  <layer id="1" name="Capa de patrones 1" width="30" height="300">
   <data encoding="csv">
@@ -294,8 +294,8 @@
 0,0,0,0,0,0,0,0,0,0,229,0,0,0,0,0,0,0,0,229,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,229,0,0,0,0,0,0,0,0,229,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,229,0,0,0,0,0,0,0,0,229,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,229,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,229,0,0,0,0,0,0,0,0,0,0,
 61,61,61,61,61,61,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
 104,104,104,104,104,104,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,
 104,104,104,104,104,104,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,
@@ -305,4 +305,14 @@
 104,104,104,104,104,104,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18
 </data>
  </layer>
+ <objectgroup id="3" name="mushrooms" class="mushroom">
+  <object id="5" name="m1" type="Mushroom" x="531.223" y="9329.33">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="2" name="player">
+  <object id="2" name="player_spawn" x="48" y="9342">
+   <point/>
+  </object>
+ </objectgroup>
 </map>

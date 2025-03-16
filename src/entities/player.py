@@ -40,7 +40,7 @@ class Player(pygame.sprite.Sprite):
 
         self.image = self.current_animation[self.frame_index]
 
-        self.rect = pygame.Rect(0, 0, 16 * SCALE_FACTOR, 32 * SCALE_FACTOR)
+        self.rect = pygame.Rect(x, y, 16 * SCALE_FACTOR, 32 * SCALE_FACTOR)
 
 
         # Movement & Physics
