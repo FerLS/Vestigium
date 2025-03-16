@@ -9,7 +9,7 @@ class Mushroom(pygame.sprite.Sprite):
         super().__init__()
         self.resource_manager = ResourceManager()
         sheet = self.resource_manager.load_image("mushrooms.png", "assets/images")
-        self.animations = extract_frames(sheet, 0, 24, 24, 24, 7, SCALE_FACTOR * 2)
+        self.animations = extract_frames(sheet, 0, 24, 24, 24, 12, SCALE_FACTOR * 2)
         self.image = self.animations[0]
         self.rect = self.image.get_rect(topleft=(x, y))
 
@@ -33,7 +33,7 @@ class Mushroom(pygame.sprite.Sprite):
 
     def manage_light(self):
         if self.glow:
-            if self.frame_counter % 2 == 0:  # opcional: ralentizar también la luz
+            if self.frame_counter % 2 == 0: 
                 self.light_radius += 1 * self.light_direction
                 self.light.change_radius(self.light_radius)
                 if self.light_radius == 40:
@@ -67,7 +67,7 @@ class Mushroom(pygame.sprite.Sprite):
         offset_x, offset_y = offset
         
         screen.blit(self.image, (self.rect.x - offset_x, self.rect.y - offset_y))
-        self.light.draw(screen, offset)
+        #self.light.draw(screen, offset) # Manage light with animation
         
         """debug_platform_rect = self.platform_rect.move(-offset_x, -offset_y)
         pygame.draw.rect(screen, (0, 255, 0), debug_platform_rect, 1)"""
