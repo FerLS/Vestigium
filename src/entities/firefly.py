@@ -8,7 +8,7 @@ class Firefly(pygame.sprite.Sprite):
         self.RADIUS = 5
         self.radius_variation = 2
         self.blink_interval = 15
-        self.current_radius = self.RADIUS  # nuevo atributo para mantener el estado actual
+        self.current_radius = self.RADIUS
 
         self.light = CircularLight((x, y), self.RADIUS + 20)
         self.rect = pygame.Rect(x, y, self.RADIUS * 2, self.RADIUS * 2)
@@ -51,7 +51,7 @@ class Firefly(pygame.sprite.Sprite):
         self.current_radius = self.RADIUS + self.radius_variation if self.blink_up else self.RADIUS
 
         self.light.update(new_position=self.rect.center)
-        self.light.change_radius(self.current_radius + 20)  # actualizar radio de la luz
+        self.light.change_radius(self.current_radius + 20)
 
     def draw(self, screen, offset=(0, 0)):
         offset_x, offset_y = offset
