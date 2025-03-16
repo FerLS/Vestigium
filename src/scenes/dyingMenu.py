@@ -7,12 +7,10 @@ class DyingMenu(Menu):
     def __init__(self, director):
         Menu.__init__(self, director)
         self.screen_list = []
-        self.screen_list.append(DyingScreen(self, "menu_background.jpg")) # Self parameter refers to menu
+        self.screen_list.append(DyingScreen(self, "assets\\images\\backgrounds\\pause_menu_background"))
         
-
-    # Static menu (has no sprites that move)
     def update(self, **args):
-        return
+        self.screen_list[-1].update(**args)
     
     def restart_level(self):
         self.director.finish_current_scene()
