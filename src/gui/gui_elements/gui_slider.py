@@ -35,8 +35,14 @@ class Slider(GUIElement):
             self.value = self._position_to_value(self.knob_x)
 
     def draw(self, screen):
-        pygame.draw.rect(screen, (255, 255, 255), self.rect)
-        pygame.draw.circle(screen, (255, 0, 0), (int(self.knob_x), self.rect.y + self.knob_radius//2), self.knob_radius)  
+        pygame.draw.rect(screen, (180, 180, 180), self.rect, border_radius=self.rect.height // 2)
+
+        fill_width = int((self.value - self.min_value) / (self.max_value - self.min_value) * self.rect.width)
+        fill_rect = pygame.Rect(self.rect.x, self.rect.y, fill_width, self.rect.height)
+        pygame.draw.rect(screen, (255, 209, 0), fill_rect, border_radius=self.rect.height // 2)
+
+        pygame.draw.rect(screen, (48, 55, 66), self.rect, width=2, border_radius=self.rect.height // 2)
+
 
 class MusicVolumeSlider(Slider):
     def __init__(self, screen, x, y, width, height, min_value=0, max_value=1, initial_value=0.5):

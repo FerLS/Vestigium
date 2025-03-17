@@ -1,18 +1,26 @@
 import pygame
 import math
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
-class Light(ABC):
+class Light(pygame.sprite.Sprite):
     def __init__(self, position, distance):
+        super().__init__()
         self.position = pygame.Vector2(position)
         self.distance = distance
         self.mask = None
         self.dirty = True  # Solo recalcular si hay cambios
 
+        # Elementos requeridos por un Sprite
+        size = int(distance * 2)
+        self.image = pygame.Surface((size, size), pygame.SRCALPHA)  # Imagen transparente
+        self.rect = self.image.get_rect(center=self.position)  # Rect centrado en la posición
+        self.rect.center = self.position
+
     def update(self, new_position=None, obstacles=None):
         if new_position and self.position != pygame.Vector2(new_position):
             self.position = pygame.Vector2(new_position)
             self.dirty = True
+            self.rect.center = self.position  # <-- sincronizar rect con posición
 
         if self.dirty:
             self._generate_mask(obstacles or [])
@@ -22,14 +30,17 @@ class Light(ABC):
     def _generate_mask(self, obstacles):
         pass
 
-    def draw(self, screen):
+    def draw(self, screen, offset=(0, 0)):
+        offset_x, offset_y = offset
         if self.mask:
             mask_surface = self.mask.to_surface(setcolor=(255, 255, 255, 100), unsetcolor=(0, 0, 0, 0))
-            screen.blit(mask_surface, (self.position.x - self.distance, self.position.y - self.distance))
+            screen.blit(mask_surface, (self.position.x - self.distance - offset_x, self.position.y - self.distance - offset_y))
+        """debug_platform_rect = self.rect.move(-offset_x, -offset_y)
+        pygame.draw.rect(screen, (0, 255, 0), debug_platform_rect, 1)"""
 
 
 class CircularLight(Light):
-    def __init__(self, position, radius, segments=60, ray_step=2):
+    def __init__(self, position, radius, segments=170, ray_step=2):
         super().__init__(position, radius)
         self.segments = segments
         self.ray_step = ray_step
@@ -63,6 +74,16 @@ class CircularLight(Light):
                 if obstacle.colliderect(point_rect):
                     return point
         return end
+    
+    def change_radius(self, new_radius):
+        self.distance = new_radius
+        self.rect.size = (new_radius * 2, new_radius * 2)
+        #TODO: Check if this is necessary or it can be done updating light before change_radius
+        self.rect.center = self.position
+        self.dirty = True
+    
+    def get_radius(self):
+        return self.distance
 
 
 class ConeLight(Light):

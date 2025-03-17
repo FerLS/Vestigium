@@ -22,6 +22,7 @@
         },
         "assets/TX Village Props.tsx": {
             "dynamicWrapping": false,
+            "dynamicWrapping": false,
             "scaleInDock": 0.75,
             "scaleInEditor": 0.75
         },
