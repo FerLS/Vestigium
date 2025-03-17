@@ -7,7 +7,7 @@ class Camera:
         self.screen_height = screen_height
 
         self.margin_x = screen_width // 4
-        self.margin_y = screen_height // 4
+        self.margin_y = screen_height // 2.2
 
     def update(self, player_rect):
         # Horizontal

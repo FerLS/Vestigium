@@ -52,16 +52,18 @@ class Player(pygame.sprite.Sprite):
         self.lateral_gravity = 0.1 * SCALE_FACTOR
         self.flipped = False
         self.on_ground = False
-
-        self.tilemap = tilemap
-        self.obstacles = obstacles
-        self.is_dying = False
-        self.dead = False
         self.on_wall_left = False
         self.on_wall_right = False
         self.bouncing = False
         self.bounce_direction = 1
         self.from_ground = False
+        self.can_glide = False
+
+        self.tilemap = tilemap
+        self.obstacles = obstacles
+        self.is_dying = False
+        self.dead = False
+
         
 
     # Movement API
@@ -155,6 +157,7 @@ class Player(pygame.sprite.Sprite):
                     self.rect.bottom = collider.top + 1
                     if collider in self.bouncy_obstacles:
                         self.velocity_y = self.jump_power * 1.25
+                        self.from_ground = True
                         self.set_animation("jump") 
                     else:
                         self.velocity_y = 0
