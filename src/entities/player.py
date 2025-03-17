@@ -58,11 +58,8 @@ class Player(pygame.sprite.Sprite):
         self.obstacles = obstacles
         self.is_dying = False
         self.dead = False
-        self.on_wall_left = False
-        self.on_wall_right = False
-        self.bouncing = False
-        self.bounce_direction = 1
-        self.from_ground = False
+
+        self.wall_cooldown = 0
 
     # Movement API
     def move_left(self):
@@ -72,12 +69,16 @@ class Player(pygame.sprite.Sprite):
             if self.on_ground:
                 self.set_animation("walk")
 
+        self.wall_cooldown = 0.2
+
     def move_right(self):
         if not self.bouncing:
             self.velocity_x = MOVE_SPEED * SCALE_FACTOR
             self.flipped = False
             if self.on_ground:
                 self.set_animation("walk")
+
+        self.wall_cooldown = 0.2
 
     def stop(self):
         if not self.bouncing:
@@ -142,8 +143,6 @@ class Player(pygame.sprite.Sprite):
 
     def check_collisions(self):
         self.on_ground = False
-        self.on_wall_left = False
-        self.on_wall_right = False
         colliders = self.tilemap.get_collision_rects()
         self.bouncy_obstacles = self.obstacles
         colliders += self.obstacles
@@ -156,6 +155,7 @@ class Player(pygame.sprite.Sprite):
                     self.rect.bottom = collider.top + 1
                     if collider in self.bouncy_obstacles:
                         self.velocity_y = self.jump_power * 1.25
+                        self.from_ground = True
                         self.set_animation("jump")
                     else:
                         self.velocity_y = 0
@@ -209,6 +209,12 @@ class Player(pygame.sprite.Sprite):
         else:
             self.set_animation("dead")
             self.update_animation(dt)
+
+        if self.wall_cooldown > 0:
+            self.wall_cooldown -= 1 / 60
+        else:
+            self.on_wall_left = False
+            self.on_wall_right = False
 
     def draw(self, screen, camera_offset=(0, 0)):
         draw_pos = (

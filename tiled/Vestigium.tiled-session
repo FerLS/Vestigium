@@ -10,6 +10,9 @@
         "."
     ],
     "fileStates": {
+        "C:/Users/Fer/Desktop/Downloads/tiles.tsx": {
+            "scaleInDock": 1
+        },
         "assets/Lantern 7 Small - Silver and Orange_019.tsx": {
             "dynamicWrapping": false,
             "scaleInDock": 1,
@@ -22,11 +25,13 @@
         },
         "assets/TX Village Props.tsx": {
             "dynamicWrapping": false,
-            "dynamicWrapping": false,
             "scaleInDock": 0.75,
             "scaleInEditor": 0.75
         },
         "assets/lamp.tsx": {
+            "scaleInDock": 1
+        },
+        "assets/tiles.tsx": {
             "scaleInDock": 1
         },
         "levels/TX Village Props.tsx": {
@@ -38,19 +43,27 @@
             "scaleInEditor": 0.125
         },
         "levels/map2.tmx": {
-            "scale": 2,
-            "selectedLayer": 1,
+            "scale": 1,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 692.25,
-                "y": 182.75
+                "x": 309,
+                "y": 269.5
             }
         },
         "levels/test_level.tmx": {
-            "scale": 2,
+            "scale": 0.03125,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 965.75,
-                "y": 52.25
+                "x": 50976,
+                "y": 14464
+            }
+        },
+        "levels/tree.tmx": {
+            "scale": 0.015625,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 5824,
+                "y": 10400
             }
         }
     },
