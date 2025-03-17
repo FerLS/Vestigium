@@ -53,6 +53,7 @@ class Player(pygame.sprite.Sprite):
         self.lateral_gravity = 0.1 * SCALE_FACTOR
         self.flipped = False
         self.on_ground = False
+        self.can_glide = False
 
         self.tilemap = tilemap
         self.obstacles = obstacles

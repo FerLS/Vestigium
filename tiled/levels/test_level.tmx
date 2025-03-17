@@ -4,7 +4,7 @@
  <tileset firstgid="257" source="../assets/TX Village Props.tsx"/>
  <tileset firstgid="1281" source="../assets/Lantern 7 Small - Silver and Orange_019.tsx"/>
  <tileset firstgid="1282" source="../assets/lamp.tsx"/>
- <tileset firstgid="1283" source="../../../../../../../Downloads/tiles.tsx"/>
+ <tileset firstgid="1283" source="../assets/tiles.tsx"/>
  <layer id="1" name="Terreno" width="63" height="37">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

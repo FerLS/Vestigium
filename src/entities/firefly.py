@@ -10,7 +10,7 @@ class Firefly(pygame.sprite.Sprite):
         self.blink_interval = 15
         self.current_radius = self.RADIUS
 
-        self.light = CircularLight((x, y), self.RADIUS + 20)
+        self.light = CircularLight((x, y), self.RADIUS + 20, use_obstacles=False)
         self.rect = pygame.Rect(x, y, self.RADIUS * 2, self.RADIUS * 2)
         self.velocity = pygame.math.Vector2(random.uniform(-1, 1), random.uniform(-1, 1))
         self.max_speed = 1.5

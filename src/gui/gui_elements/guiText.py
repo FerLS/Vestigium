@@ -107,3 +107,12 @@ class RestartLevel(TextGUI):
 
     def action(self):
         self.screen.menu.restart_level()
+
+# Tutorial text
+class GlideInstructionText(TextGUI):
+    def __init__(self, screen, position):
+        font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
+        TextGUI.__init__(self, screen, font, (255, 255, 255), "while falling, press SPACE to glide", position)
+
+    def action(self):
+        pass

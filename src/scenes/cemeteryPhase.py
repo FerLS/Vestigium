@@ -10,7 +10,6 @@ from entities.player import Player
 from enviorement.camera import Camera
 from entities.gravedigger import Gravedigger
 from entities.firefly import Firefly
-from entities.ant import Ant
 from entities.mushroom import Mushroom
 
 
@@ -32,11 +31,8 @@ class CemeteryPhase(Phase):
         # gravedigger = Gravedigger(gravedigger_spawn.x, gravedigger_spawn.y, tilemap)
 
         self.firefly = Firefly(600, 600, area_rect)
-        self.ant = Ant(500, 500, area_rect)
         self.mushroom = Mushroom(100, 800)
-        self.lights_group = pygame.sprite.Group(
-            self.firefly.light, self.ant.light, self.mushroom.light
-        )
+        self.lights_group = pygame.sprite.Group(self.firefly.light, self.mushroom.light)
         self.mushrooms_group = pygame.sprite.Group(self.mushroom)
 
         obstacles = [mushroom.platform_rect for mushroom in self.mushrooms_group]
@@ -51,7 +47,6 @@ class CemeteryPhase(Phase):
 
         self.player.update(self.pressed_keys, dt)
         self.firefly.update()
-        self.ant.update()
         self.mushroom.update()
 
         for mushroom in self.mushrooms_group:
@@ -75,4 +70,3 @@ class CemeteryPhase(Phase):
         self.mushroom.draw(self.screen, offset)
         self.player.draw(self.screen, camera_offset=offset)
         self.firefly.draw(self.screen, offset)
-        self.ant.draw(self.screen, offset)

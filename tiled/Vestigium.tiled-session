@@ -65,6 +65,14 @@
                 "x": 5824,
                 "y": 10400
             }
+        },
+        "levels/tree.tmx": {
+            "scale": 0.015625,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 5824,
+                "y": 10400
+            }
         }
     },
     "last.externalTilesetPath": "C:/Users/Fer/Desktop/Uni/4º/2º Cuatri/CIIE/Vestgium/tiled/assets",
