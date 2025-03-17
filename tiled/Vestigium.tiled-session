@@ -10,6 +10,9 @@
         "."
     ],
     "fileStates": {
+        "C:/Users/Fer/Desktop/Downloads/tiles.tsx": {
+            "scaleInDock": 1
+        },
         "assets/Lantern 7 Small - Silver and Orange_019.tsx": {
             "dynamicWrapping": false,
             "scaleInDock": 1,
@@ -50,6 +53,14 @@
             "viewCenter": {
                 "x": 32928,
                 "y": 7888
+            }
+        },
+        "levels/tree.tmx": {
+            "scale": 0.015625,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 5824,
+                "y": 10400
             }
         }
     },
