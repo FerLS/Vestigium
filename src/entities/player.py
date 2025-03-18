@@ -58,6 +58,7 @@ class Player(pygame.sprite.Sprite):
         self.bounce_direction = 1
         self.from_ground = False
         self.can_glide = False
+        self.position_corrected = False
 
         self.tilemap = tilemap
         self.obstacles = obstacles
@@ -108,6 +109,12 @@ class Player(pygame.sprite.Sprite):
             self.velocity_y = self.jump_power * 0.75
             self.bounce_direction = -1
             self.set_animation('jump')
+    
+    def glide(self):
+        if self.can_glide and not self.on_ground and self.velocity_y > 0:
+            self.from_ground = False
+            self.velocity_y = MAX_FALL_SPEED // 2
+            self.set_animation("fall")
 
     def apply_gravity(self):
         if not self.on_ground:
@@ -179,20 +186,22 @@ class Player(pygame.sprite.Sprite):
                     if self.velocity_x > 0:
                         if self.bouncing:
                             self.velocity_y = 0
-                        self.rect.right = collider.left
+                        self.rect.right = collider.left - 1
                         self.bouncing = False
                         self.on_wall_right = True
                     elif self.velocity_x < 0:
                         if self.bouncing:
                             self.velocity_y = 0
-                        self.rect.left = collider.right
+                        self.rect.left = collider.right + 1
                         self.bouncing = False
                         self.on_wall_left = True
                     self.velocity_x = 0
 
+
     def handle_input(self, keys):
         if keys[pygame.K_SPACE]:
             self.jump()
+            self.glide()
         if keys[pygame.K_LEFT]:
             self.move_left()
         elif keys[pygame.K_RIGHT]:

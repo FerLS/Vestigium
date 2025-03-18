@@ -48,6 +48,7 @@ class CircularLight(Light):
 
     def _generate_mask(self, obstacles):
         size = int(self.distance * 2)
+        print(size, size)
         surface = pygame.Surface((size, size), pygame.SRCALPHA)
         surface.fill((0, 0, 0, 0))
         center = pygame.Vector2(self.distance, self.distance)

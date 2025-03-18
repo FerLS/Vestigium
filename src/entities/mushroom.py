@@ -67,7 +67,7 @@ class Mushroom(pygame.sprite.Sprite):
         offset_x, offset_y = offset
         
         screen.blit(self.image, (self.rect.x - offset_x, self.rect.y - offset_y))
-        #self.light.draw(screen, offset) # Manage light with animation
+        self.light.draw(screen, offset) # Manage light with animation
         
         """debug_platform_rect = self.platform_rect.move(-offset_x, -offset_y)
         pygame.draw.rect(screen, (0, 255, 0), debug_platform_rect, 1)"""

@@ -8,7 +8,7 @@ from entities.mushroom import Mushroom
 from entities.ant import Ant
 from entities.firefly import Firefly
 from light2 import ConeLight
-from trigger import Trigger, show_glide_message
+from trigger import Trigger, glide, change_camera_y_margin
 from resource_manager import ResourceManager
 from scenes.phase import Phase
 from sound_manager import SoundManager
@@ -70,10 +70,14 @@ class TreePhase(Phase):
 
         # Triggers
         self.triggers = []
-        self.trigger_texts = []
-        glide_trigger_rect = pygame.Rect(577 * SCALE_FACTOR, 6921 * SCALE_FACTOR, 60 * SCALE_FACTOR, 52 * SCALE_FACTOR)  # Ajustá coordenadas reales según tu mapa
-        glide_trigger = Trigger(glide_trigger_rect, lambda: show_glide_message(self.screen, self.player))
-        self.triggers.append(glide_trigger)
+
+        glide_trigger_rect = pygame.Rect(577 * SCALE_FACTOR, 6921 * SCALE_FACTOR, 60 * SCALE_FACTOR, 52 * SCALE_FACTOR) 
+        glide_trigger = Trigger(glide_trigger_rect, lambda: glide(self.screen, self.player))
+
+        camera_margin_trigger_rect = pygame.Rect(651 * SCALE_FACTOR, 6787 * SCALE_FACTOR, 293 * SCALE_FACTOR, 219 * SCALE_FACTOR)
+        camera_margin_trigger = Trigger(camera_margin_trigger_rect, lambda: change_camera_y_margin(self.camera, self.camera.screen_height // 2.2))
+
+        self.triggers += [glide_trigger, camera_margin_trigger]
 
 
     def update(self):
@@ -82,7 +86,7 @@ class TreePhase(Phase):
         self.player.update(self.pressed_keys, dt)
 
         # Lights
-        #self.lights_group.update(obstacles=self.foreground.get_collision_rects() + self.bouncy_obstacles)
+        # self.lights_group.update(obstacles=self.foreground.get_collision_rects() + self.bouncy_obstacles)
 
         # Mushrooms
         self.mushrooms_group.update()
@@ -107,15 +111,15 @@ class TreePhase(Phase):
 
         # Triggers
         for trigger in self.triggers:
-            self.trigger_texts = trigger.check(self.player.rect)
+            trigger.check(self.player.rect)
 
     def draw(self):
         offset = self.camera.get_offset()
 
         self.background.draw(self.screen, offset)
         self.foreground.draw(self.screen, offset)
-        """for light in self.lights_group:
-            light.draw(self.screen, offset)"""
+        for light in self.lights_group:
+            light.draw(self.screen, offset)
         for mushroom in self.mushrooms_group:
             mushroom.draw(self.screen, offset)
         for ant in self.ants_group:
@@ -123,5 +127,5 @@ class TreePhase(Phase):
         for firefly in self.fireflies_group:
             firefly.draw(self.screen, offset)
         self.player.draw(self.screen, camera_offset=offset)
-        f"""or text in self.trigger_texts:
-            text.draw(self.screen)"""
+        for trigger in self.triggers:
+            trigger.draw(self.screen)
