@@ -7,7 +7,7 @@ from entities.player import Player
 from entities.mushroom import Mushroom
 from entities.ant import Ant
 from entities.firefly import Firefly
-from light2 import ConeLight
+from light2 import ConeLight, CircularLight
 from trigger import Trigger, glide, change_camera_y_margin
 from resource_manager import ResourceManager
 from scenes.phase import Phase
@@ -27,15 +27,18 @@ class TreePhase(Phase):
         self.camera = Camera(WIDTH, HEIGHT)
         self.pressed_keys = {}
 
+
         self.lights_group = pygame.sprite.Group()
 
-
         # Lights
-        """left_lights = self.foreground.load_layer_entities("left_lights")
+        left_lights = self.foreground.load_layer_entities("left_lights")
         for left_light in left_lights.values():
             left_ambient_light = ConeLight((left_light.x, left_light.y), 10, 20, 500)
-            self.lights_group.add(left_ambient_light)"""
+            self.lights_group.add(left_ambient_light)
 
+        
+        self.lights_group.add(ConeLight((575*SCALE_FACTOR, 6842*SCALE_FACTOR), (0, 1), 20, 10))
+        self.lights_group.add(CircularLight((575*SCALE_FACTOR, 6842*SCALE_FACTOR), 40))
 
         # Mushrooms
         self.bouncy_obstacles = []
@@ -86,7 +89,7 @@ class TreePhase(Phase):
         self.player.update(self.pressed_keys, dt)
 
         # Lights
-        # self.lights_group.update(obstacles=self.foreground.get_collision_rects() + self.bouncy_obstacles)
+        self.lights_group.update(obstacles=self.foreground.get_collision_rects() + self.bouncy_obstacles)
 
         # Mushrooms
         self.mushrooms_group.update()
@@ -102,8 +105,14 @@ class TreePhase(Phase):
         self.fireflies_group.update()
 
         # Player dying logic
-        if pygame.sprite.spritecollideany(self.player, self.lights_group):
-            self.player.is_dying = True
+        # Player dying logic
+        for light in self.lights_group:
+            if self.player.rect.colliderect(light.rect):  
+                print("paso1")
+                if light.mask and self.player.mask.overlap(light.mask, (self.player.rect.x - light.rect.x, self.player.rect.y - light.rect.y)):
+                    print("paso2")
+                    self.player.is_dying = True
+
         if self.player.dead:
             self.director.scene_manager.stack_scene("DyingMenu")
 
