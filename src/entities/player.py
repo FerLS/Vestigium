@@ -47,7 +47,10 @@ class Player(pygame.sprite.Sprite):
         # Movement & Physics
         self.velocity_x = 0
         self.velocity_y = 0
-        self.jump_power = -10 * SCALE_FACTOR
+        self.running = False
+        self.run_mult = 1.6
+        self.jump_power = -9 * SCALE_FACTOR
+        self.jumped = False
         self.lateral_jump_power = 5 * SCALE_FACTOR
         self.gravity = 0.5 * SCALE_FACTOR
         self.lateral_gravity = 0.1 * SCALE_FACTOR
@@ -56,6 +59,11 @@ class Player(pygame.sprite.Sprite):
         self.can_glide = False
         self.position_corrected = False
         self.bouncing = False
+
+        # Juicy stuff
+
+        self.coyote_time = 0.3
+        self._coyote_timer = 0
 
         self.tilemap = tilemap
         self.obstacles = obstacles
@@ -67,7 +75,9 @@ class Player(pygame.sprite.Sprite):
     # Movement API
     def move_left(self):
         if not self.bouncing:
-            self.velocity_x = -MOVE_SPEED * SCALE_FACTOR
+            self.velocity_x = (
+                -MOVE_SPEED * SCALE_FACTOR * (self.run_mult if self.running else 1)
+            )
             self.flipped = True
             if self.on_ground:
                 self.set_animation("walk")
@@ -76,7 +86,9 @@ class Player(pygame.sprite.Sprite):
 
     def move_right(self):
         if not self.bouncing:
-            self.velocity_x = MOVE_SPEED * SCALE_FACTOR
+            self.velocity_x = (
+                MOVE_SPEED * SCALE_FACTOR * (self.run_mult if self.running else 1)
+            )
             self.flipped = False
             if self.on_ground:
                 self.set_animation("walk")
@@ -90,7 +102,8 @@ class Player(pygame.sprite.Sprite):
                 self.set_animation("idle")
 
     def jump(self):
-        if self.on_ground:
+
+        if self._coyote_timer > 0 and not self.jumped:
             self.velocity_y = self.jump_power
             self.from_ground = True
             self.set_animation("jump")
@@ -110,6 +123,8 @@ class Player(pygame.sprite.Sprite):
             self.velocity_y = self.jump_power * 0.75
             self.bounce_direction = -1
             self.set_animation("jump")
+
+        self.jumped = True
 
     def glide(self):
         if self.can_glide and not self.on_ground and self.velocity_y > 0:
@@ -134,7 +149,9 @@ class Player(pygame.sprite.Sprite):
         self.animation_timer += dt
         if self.animation_timer >= self.animation_speed:
             self.animation_timer = 0
-            self.frame_index = (self.frame_index + 1) % len(self.current_animation)
+            self.frame_index = (self.frame_index + (2 if self.running else 1)) % len(
+                self.current_animation
+            )
             if self.is_dying and self.frame_index == 5:
                 self.dead = True
 
@@ -170,6 +187,7 @@ class Player(pygame.sprite.Sprite):
                         self.velocity_y = 0
                         self.bouncing = False
                         self.on_ground = True
+                        self._coyote_timer = self.coyote_time
                         self.set_animation("idle")
 
                 elif self.velocity_y < 0:
@@ -198,6 +216,13 @@ class Player(pygame.sprite.Sprite):
                 self.velocity_x = 0
 
     def handle_input(self, keys):
+
+        if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
+            self.running = True
+
+        else:
+            self.running = False
+
         if keys[pygame.K_SPACE]:
             self.jump()
             self.glide()
@@ -225,6 +250,12 @@ class Player(pygame.sprite.Sprite):
         else:
             self.on_wall_left = False
             self.on_wall_right = False
+
+        if self._coyote_timer > 0 and not self.on_ground:
+            self._coyote_timer -= dt
+
+        if self.on_ground:
+            self.jumped = False
 
     def draw(self, screen, camera_offset=(0, 0)):
         draw_pos = (
