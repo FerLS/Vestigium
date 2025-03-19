@@ -8,7 +8,7 @@ class Anglerfish(pygame.sprite.Sprite):
         super().__init__()
 
         self.resource_manager = ResourceManager()
-        sheet = self.resource_manager.load_image("fish_spritesheet.png", "assets\\images")
+        sheet = self.resource_manager.load_image("anglerfish_spritesheet.png", "assets\\images")
         self.animations = extract_frames(sheet, 0, 0, 32, 32, 4, SCALE_FACTOR * 3)
 
         self.frame_index = 0

@@ -31,7 +31,7 @@ class Player(pygame.sprite.Sprite):
             "jump": extract_frames(sheet, 0, 160, 32, 32, 8, SCALE_FACTOR),
             "fall": extract_frames(sheet, 128, 160, 32, 32, 1, SCALE_FACTOR),
             "dead": extract_frames(sheet, 0, 192, 32, 32, 6, SCALE_FACTOR),
-            "swim": extract_frames(sheet, 128, 160, 32, 32, 1, SCALE_FACTOR),
+            "swim": extract_frames(sheet, 0, 160, 32, 32, 8, SCALE_FACTOR, lying=-10.0),
         }
 
         self.current_animation = self.animations["idle"]
