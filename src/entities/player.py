@@ -14,13 +14,14 @@ from resource_manager import ResourceManager
 from sound_manager import SoundManager
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, tilemap, obstacles):
+    def __init__(self, x, y, tilemap, obstacles, camera):
         super().__init__()
 
         # Load resources
         self.resource_manager = ResourceManager()
         self.sound_manager = SoundManager()
         sheet = self.resource_manager.load_image("player_spritesheet.png", "assets\\images")
+        self.camera = camera
 
         # Animations
         self.animations = {
@@ -201,6 +202,20 @@ class Player(pygame.sprite.Sprite):
                     self.bouncing = False
                     self.on_wall_left = True
                 self.velocity_x = 0
+        
+        self.check_camera_bounds() # Check if the player is out of the camera bounds
+
+    def check_camera_bounds(self):
+        """Check if the player is out of the camera bounds at lake phase"""
+        if self.is_swimming:
+            left_bound, right_bound = self.camera.get_horizontal_bounds()
+
+            if self.rect.right > right_bound:
+                self.rect.right = right_bound
+            elif self.rect.left < left_bound:
+                self.rect.left = left_bound
+            self.velocity_x = 0
+
 
     def handle_swim_input(self, keys):
         if keys[pygame.K_UP]:
