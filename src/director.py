@@ -4,11 +4,14 @@ from scenes.pauseMenu import PauseMenu
 from scenes.startMenu import StartMenu
 from scenes.dyingMenu import DyingMenu
 from scenes.cemeteryPhase import CemeteryPhase
+from scenes.cemeteryBossPhase import CemeteryBossPhase
 from scenes.tree_phase import TreePhase
 from scene_manager import SceneManager
 
+
 class Director(object):
     _instance = None
+
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
@@ -29,8 +32,9 @@ class Director(object):
         self.scene_manager.register_scene("PauseMenu", PauseMenu)
         self.scene_manager.register_scene("DyingMenu", DyingMenu)
         self.scene_manager.register_scene("CemeteryPhase", CemeteryPhase)
+        self.scene_manager.register_scene("CemeteryBossPhase", CemeteryBossPhase)
         self.scene_manager.register_scene("TreePhase", TreePhase)
-    
+
     def finish_current_scene(self):
         self.leave_current_scene = True
         if self.scenes_stack:
@@ -39,11 +43,11 @@ class Director(object):
     def finish_program(self):
         self.leave_current_scene = True
         self.scenes_stack = []
-    
+
     def change_scene(self, scene):
         self.finish_current_scene()
         self.scenes_stack.append(scene)
-    
+
     def stack_scene(self, scene):
         self.leave_current_scene = True
         self.scenes_stack.append(scene)
@@ -58,7 +62,7 @@ class Director(object):
             scene.update()
             scene.draw()
             pygame.display.update()
-    
+
     def run(self):
         while self.scenes_stack:
             self.loop(self.scenes_stack[-1])

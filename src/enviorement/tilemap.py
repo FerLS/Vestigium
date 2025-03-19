@@ -15,7 +15,6 @@ class Tilemap:
 
         self.layers = self.load_layers()
 
-
     def load_layers(self):
         """Carga todas las capas del archivo TMX."""
         layers = {}
@@ -35,7 +34,7 @@ class Tilemap:
             entities[entity].x *= SCALE_FACTOR
             entities[entity].y *= SCALE_FACTOR
         return entities
-    
+
     def load_entity(self, entity):
         """Carga un objeto de una capa."""
         for obj in self.tmx_data.objects:
@@ -49,13 +48,16 @@ class Tilemap:
         for _, v in self.layers.items():
             v.draw(screen, offset)
 
-    def get_collision_rects(self):
-        """Devuelve rects del mundo real (sin offset visual)."""
-        collision_rects = []
-        for k, v in self.layers.items():
-            if not v.render_as_image:
-                for rect in v.solid_tiles:
-                    collision_rects.append(pygame.Rect(
-                        rect.x, rect.y, rect.width, rect.height
-                    ))
-        return collision_rects
+    def get_solid_rects(self):
+        """Obtiene rectángulos de colisión sólidos (todas las direcciones)."""
+        solid_rects = []
+        for layer in self.layers.values():
+            solid_rects.extend(layer.solid_tiles)
+        return solid_rects
+
+    def get_platform_rects(self):
+        """Obtiene rectángulos de plataformas (solo colisión desde arriba)."""
+        platform_rects = []
+        for layer in self.layers.values():
+            platform_rects.extend(layer.platform_tiles)
+        return platform_rects

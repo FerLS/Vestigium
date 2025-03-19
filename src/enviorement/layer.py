@@ -11,13 +11,22 @@ class Layer:
 
         self.tilemap: Tilemap = tilemap
         self.render_as_image = self.check_if_render_as_image()
+        self.is_platform_layer = tmx_layer.properties.get(
+            "platform_layer", False
+        )  # Nueva propiedad
         self.solid_tiles = []
+        self.platform_tiles = []  # Nuevo listado para plataformas
 
         if self.render_as_image:
             self.image = self.render_layer_as_image()
         else:
             self.tiles = self.load_tiles()
-            self.solid_tiles = self.get_solid_tiles()
+            # Carga tiles según el tipo de capa
+            if self.is_platform_layer:
+                print("Plataforma")
+                self.platform_tiles = self.get_solid_tiles()
+            else:
+                self.solid_tiles = self.get_solid_tiles()
 
     def check_if_render_as_image(self):
         """Verifica si la capa tiene una propiedad para renderizarse como imagen."""
@@ -99,4 +108,3 @@ class Layer:
                         y * self.tilemap.tile_size * SCALE_FACTOR - offset_y,
                     ),
                 )
-

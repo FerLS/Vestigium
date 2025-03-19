@@ -15,7 +15,7 @@ from sound_manager import SoundManager
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, tilemap, obstacles):
+    def __init__(self, x, y, tilemap, obstacles=[]):
         super().__init__()
 
         # Load resources
@@ -168,10 +168,13 @@ class Player(pygame.sprite.Sprite):
             self.animation_timer = 0
 
     def check_collisions(self):
+
         self.on_ground = False
-        colliders = self.tilemap.get_collision_rects()
+        colliders = self.tilemap.get_solid_rects() + self.obstacles
+        platform_colliders = self.tilemap.get_platform_rects()
         self.bouncy_obstacles = self.obstacles
-        colliders += self.obstacles
+
+        old_rect = self.rect.copy()
 
         # Vertical
         self.rect.y += self.velocity_y
@@ -196,6 +199,15 @@ class Player(pygame.sprite.Sprite):
                 elif self.velocity_y == 0:
                     self.bouncing = False
                     self.on_ground = True
+
+        for collider in platform_colliders:
+            if self.rect.colliderect(collider):
+                if self.velocity_y > 0 and old_rect.bottom <= collider.top:
+                    self.rect.bottom = int(collider.top)
+                    self.velocity_y = 0
+                    self.on_ground = True
+                    self._coyote_timer = self.coyote_time
+                    self.set_animation("idle")
 
         # Horizontal
         self.rect.x += self.velocity_x
