@@ -6,6 +6,7 @@ from scenes.dyingMenu import DyingMenu
 from scenes.cemeteryPhase import CemeteryPhase
 from scenes.tree_phase import TreePhase
 from scene_manager import SceneManager
+from scenes.minigamePhase import MinigamePhase
 
 class Director(object):
     _instance = None
@@ -30,6 +31,7 @@ class Director(object):
         self.scene_manager.register_scene("DyingMenu", DyingMenu)
         self.scene_manager.register_scene("CemeteryPhase", CemeteryPhase)
         self.scene_manager.register_scene("TreePhase", TreePhase)
+        self.scene_manager.register_scene("MinigamePhase", MinigamePhase)
     
     def finish_current_scene(self):
         self.leave_current_scene = True
