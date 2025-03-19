@@ -15,7 +15,7 @@ class LakePhase(Phase):
     def __init__(self, director):
         super().__init__(director)
         self.screen = director.screen
-        self.foreground = Tilemap("tiled/levels/test_level.tmx")
+        self.foreground = Tilemap("tiled/levels/lake.tmx")
         self.resources = ResourceManager()
         self.sound_manager = SoundManager()
         self.background = Background(self.resources, "assets\\images\\backgrounds\\lake_phase_background", enable_vertical_scroll=True)
@@ -24,7 +24,9 @@ class LakePhase(Phase):
         self.pressed_keys = {}
         area_rect = pygame.Rect(500, 500, 300, 200)
 
-        self.player = Player(100, 0, self.foreground, [])
+        player_spawn = self.foreground.load_entity("player_spawn")
+        self.player = Player(player_spawn.x, player_spawn.y, self.foreground, [])
+        self.player.is_swimming = True
 
         self.anglerfish = Anglerfish(0, 0, 1, 3, 3000)
 

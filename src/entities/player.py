@@ -13,7 +13,6 @@ from utils.constants import (
 from resource_manager import ResourceManager
 from sound_manager import SoundManager
 
-
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, tilemap, obstacles):
         super().__init__()
@@ -31,6 +30,7 @@ class Player(pygame.sprite.Sprite):
             "jump": extract_frames(sheet, 0, 160, 32, 32, 8, SCALE_FACTOR),
             "fall": extract_frames(sheet, 128, 160, 32, 32, 1, SCALE_FACTOR),
             "dead": extract_frames(sheet, 0, 192, 32, 32, 6, SCALE_FACTOR),
+            "swim": extract_frames(sheet, 128, 160, 32, 32, 1, SCALE_FACTOR),
         }
 
         self.current_animation = self.animations["idle"]
@@ -42,7 +42,6 @@ class Player(pygame.sprite.Sprite):
 
         self.rect = pygame.Rect(x, y, 16 * SCALE_FACTOR, 32 * SCALE_FACTOR)
 
-
         # Movement & Physics
         self.velocity_x = 0
         self.velocity_y = 0
@@ -50,6 +49,8 @@ class Player(pygame.sprite.Sprite):
         self.lateral_jump_power = 5 * SCALE_FACTOR
         self.gravity = 0.5 * SCALE_FACTOR
         self.lateral_gravity = 0.1 * SCALE_FACTOR
+        self.swim_gravity = 0.2 * SCALE_FACTOR
+        self.swim_ascend_speed = -3 * SCALE_FACTOR
         self.flipped = False
         self.on_ground = False
         self.on_wall_left = False
@@ -65,30 +66,31 @@ class Player(pygame.sprite.Sprite):
         self.is_dying = False
         self.dead = False
 
-        
+        self.is_swimming = False
 
-    # Movement API
     def move_left(self):
         if not self.bouncing:
             self.velocity_x = -MOVE_SPEED * SCALE_FACTOR
             self.flipped = True
-            if self.on_ground:
+            if self.on_ground and not self.is_swimming:
                 self.set_animation("walk")
 
     def move_right(self):
-        if not self.bouncing: 
+        if not self.bouncing:
             self.velocity_x = MOVE_SPEED * SCALE_FACTOR
             self.flipped = False
-            if self.on_ground:
+            if self.on_ground and not self.is_swimming:
                 self.set_animation("walk")
 
     def stop(self):
         if not self.bouncing:
             self.velocity_x = 0
-            if self.on_ground:
+            if self.on_ground and not self.is_swimming:
                 self.set_animation("idle")
 
     def jump(self):
+        if self.is_swimming:
+            return
         if self.on_ground:
             self.velocity_y = self.jump_power
             self.from_ground = True
@@ -97,7 +99,7 @@ class Player(pygame.sprite.Sprite):
             self.flipped = False
             self.bouncing = True
             self.from_ground = False
-            self.velocity_x = self.lateral_jump_power 
+            self.velocity_x = self.lateral_jump_power
             self.velocity_y = self.jump_power * 0.75
             self.bounce_direction = 1
             self.set_animation('jump')
@@ -109,24 +111,30 @@ class Player(pygame.sprite.Sprite):
             self.velocity_y = self.jump_power * 0.75
             self.bounce_direction = -1
             self.set_animation('jump')
-    
+
     def glide(self):
-        if self.can_glide and not self.on_ground and self.velocity_y > 0:
+        if self.can_glide and not self.is_swimming and not self.on_ground and self.velocity_y > 0:
             self.from_ground = False
             self.velocity_y = MAX_FALL_SPEED // 2
             self.set_animation("fall")
 
     def apply_gravity(self):
-        if not self.on_ground:
-            self.velocity_y += self.gravity
-            if self.velocity_y > 0:
-                self.bouncing = False
-                self.set_animation("fall")
-            if self.velocity_y > MAX_FALL_SPEED:
-                self.velocity_y = MAX_FALL_SPEED
-    
+        if self.is_swimming:
+            max_swim_fall_speed = MAX_FALL_SPEED // 4
+            if self.velocity_y > max_swim_fall_speed:
+                self.velocity_y = max_swim_fall_speed
+        else:
+            if not self.on_ground:
+                self.velocity_y += self.gravity
+                if self.velocity_y > 0:
+                    self.bouncing = False
+                    self.set_animation("fall")
+                if self.velocity_y > MAX_FALL_SPEED:
+                    self.velocity_y = MAX_FALL_SPEED
+
+
     def apply_lateral_gravity(self):
-        if not self.on_ground and self.bouncing:
+        if not self.on_ground and self.bouncing and not self.is_swimming:
             self.velocity_x += self.lateral_gravity * (-1) * self.bounce_direction
 
     def update_animation(self, dt):
@@ -140,7 +148,6 @@ class Player(pygame.sprite.Sprite):
         new_frame = self.current_animation[self.frame_index]
         self.image = pygame.transform.flip(new_frame, True, False) if self.flipped else new_frame
         self.mask = pygame.mask.from_surface(self.image)
-
 
     def set_animation(self, name):
         if self.current_animation != self.animations[name]:
@@ -156,7 +163,6 @@ class Player(pygame.sprite.Sprite):
         self.bouncy_obstacles = self.obstacles
         colliders += self.obstacles
 
-        # Vertical
         self.rect.y += self.velocity_y
         for collider in colliders:
             if self.rect.colliderect(collider):
@@ -165,13 +171,13 @@ class Player(pygame.sprite.Sprite):
                     if collider in self.bouncy_obstacles:
                         self.velocity_y = self.jump_power * 1.25
                         self.from_ground = True
-                        self.set_animation("jump") 
+                        self.set_animation("jump")
                     else:
                         self.velocity_y = 0
                         self.bouncing = False
                         self.on_ground = True
-                        self.set_animation("idle")
-
+                        if not self.is_swimming:
+                            self.set_animation("idle")
                 elif self.velocity_y < 0:
                     self.rect.top = collider.bottom
                     self.velocity_y = 0
@@ -179,29 +185,43 @@ class Player(pygame.sprite.Sprite):
                     self.bouncing = False
                     self.on_ground = True
 
-        # Horizontal
         self.rect.x += self.velocity_x
         for collider in colliders:
             if self.rect.colliderect(collider) and self.rect.bottom != collider.top + 1:
-                    if self.velocity_x > 0:
-                        if self.bouncing:
-                            self.velocity_y = 0
-                        self.rect.right = collider.left - 1
-                        self.bouncing = False
-                        self.on_wall_right = True
-                    elif self.velocity_x < 0:
-                        if self.bouncing:
-                            self.velocity_y = 0
-                        self.rect.left = collider.right + 1
-                        self.bouncing = False
-                        self.on_wall_left = True
-                    self.velocity_x = 0
+                if self.velocity_x > 0:
+                    if self.bouncing:
+                        self.velocity_y = 0
+                    self.rect.right = collider.left - 1
+                    self.bouncing = False
+                    self.on_wall_right = True
+                elif self.velocity_x < 0:
+                    if self.bouncing:
+                        self.velocity_y = 0
+                    self.rect.left = collider.right + 1
+                    self.bouncing = False
+                    self.on_wall_left = True
+                self.velocity_x = 0
 
+    def handle_swim_input(self, keys):
+        if keys[pygame.K_UP]:
+            self.velocity_y = self.swim_ascend_speed
+            self.set_animation("swim")
+        elif keys[pygame.K_DOWN]:
+            self.velocity_y += self.swim_gravity * 10
+            self.set_animation("swim")
+        else:
+            # Descenso pasivo (flotación)
+            self.velocity_y += self.swim_gravity
+            self.set_animation("swim")
 
     def handle_input(self, keys):
-        if keys[pygame.K_SPACE]:
-            self.jump()
-            self.glide()
+        if self.is_swimming:
+            self.handle_swim_input(keys)
+        else:
+            if keys[pygame.K_SPACE]:
+                self.jump()
+                self.glide()
+
         if keys[pygame.K_LEFT]:
             self.move_left()
         elif keys[pygame.K_RIGHT]:
@@ -209,8 +229,8 @@ class Player(pygame.sprite.Sprite):
         else:
             self.stop()
 
+
     def update(self, keys, dt):
-        
         if not self.is_dying:
             self.handle_input(keys)
             self.check_collisions()
@@ -220,7 +240,6 @@ class Player(pygame.sprite.Sprite):
         else:
             self.set_animation("dead")
             self.update_animation(dt)
-
 
     def draw(self, screen, camera_offset=(0, 0)):
         draw_pos = (self.rect.x - (8 * SCALE_FACTOR) - camera_offset[0], self.rect.y - camera_offset[1])
