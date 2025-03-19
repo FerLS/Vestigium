@@ -218,16 +218,13 @@ class Player(pygame.sprite.Sprite):
 
 
     def handle_swim_input(self, keys):
+        self.set_animation("swim")
         if keys[pygame.K_UP]:
             self.velocity_y = self.swim_ascend_speed
-            self.set_animation("swim")
         elif keys[pygame.K_DOWN]:
             self.velocity_y += self.swim_gravity * 10
-            self.set_animation("swim")
         else:
-            # Descenso pasivo (flotación)
             self.velocity_y += self.swim_gravity
-            self.set_animation("swim")
 
     def handle_input(self, keys):
         if self.is_swimming:

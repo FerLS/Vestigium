@@ -1,7 +1,8 @@
 import pygame
 from enviorement.tilemap import Tilemap
 from scenes.phase import Phase 
-from utils.constants import WIDTH, HEIGHT
+from trigger import Trigger, swim
+from utils.constants import SCALE_FACTOR, WIDTH, HEIGHT
 from enviorement.background import Background
 from resource_manager import ResourceManager
 from sound_manager import SoundManager
@@ -32,9 +33,15 @@ class LakePhase(Phase):
         self.player = Player(player_spawn.x, player_spawn.y, self.foreground, [], self.camera)
         self.player.is_swimming = True
 
-        self.lights_group = pygame.sprite.Group()
+        # Triggers
+        self.triggers = []
 
-        self.sound_manager.play_music("mystic_forest.mp3", "assets\\music", -1)
+        swim_trigger_rect = pygame.Rect(328 * SCALE_FACTOR, 937 * SCALE_FACTOR, 313 * SCALE_FACTOR, 198 * SCALE_FACTOR) 
+        swim_trigger = Trigger(swim_trigger_rect, lambda: swim(self.screen, self.player))
+
+        self.triggers += [swim_trigger]
+
+        self.sound_manager.play_music("lake.wav", "assets\\music", -1)
 
     def update(self):
         dt = self.director.clock.get_time() / 1000
@@ -42,12 +49,18 @@ class LakePhase(Phase):
         self.player.update(self.pressed_keys, dt)
         self.anglerfish.update(dt, player_position=(self.player.rect.x, self.player.rect.y))
 
-        if pygame.sprite.spritecollideany(self.player, self.lights_group):
-            self.player.is_dying = True
+        """if pygame.sprite.spritecollideany(self.player, self.lights_group):
+            self.player.is_dying = True"""
 
         if self.player.dead:
             self.director.scene_manager.stack_scene("DyingMenu")
 
+        # Triggers
+        for trigger in self.triggers:
+            trigger.check(self.player.rect)
+            trigger.update(dt)
+
+        # Camera
         self.camera.update(self.anglerfish.rect)
         self.camera.update_x_margin(40, WIDTH * 0.75)
         self.camera.margin_y = HEIGHT // 5
@@ -59,6 +72,8 @@ class LakePhase(Phase):
         self.foreground.draw(self.screen, offset)
         self.player.draw(self.screen, camera_offset=offset)
         self.anglerfish.draw(self.screen, camera_offset=offset)
+        for trigger in self.triggers:
+            trigger.draw(self.screen)
         
 
     
