@@ -1,7 +1,7 @@
 from time import sleep
 import pygame
 from enviorement.tilemap import Tilemap
-from scenes.phase import Phase 
+from scenes.phase import Phase
 from utils.constants import WIDTH, HEIGHT
 from enviorement.background import Background
 from resource_manager import ResourceManager
@@ -20,15 +20,15 @@ class CemeteryPhase(Phase):
         self.foreground = Tilemap("tiled/levels/test_level.tmx")
         self.resources = ResourceManager()
         self.sound_manager = SoundManager()
-        self.background = Background(self.resources, "assets\\images\\backgrounds\\parallax_forest")
+        self.background = Background(
+            self.resources, "assets\\images\\backgrounds\\parallax_forest"
+        )
 
         self.camera = Camera(WIDTH, HEIGHT)
         self.pressed_keys = {}
         area_rect = pygame.Rect(500, 500, 300, 200)
-        #gravedigger_spawn = tilemap.entities.get("enemy_spawn")
-        #gravedigger = Gravedigger(gravedigger_spawn.x, gravedigger_spawn.y, tilemap)
-
-        
+        # gravedigger_spawn = tilemap.entities.get("enemy_spawn")
+        # gravedigger = Gravedigger(gravedigger_spawn.x, gravedigger_spawn.y, tilemap)
 
         self.firefly = Firefly(600, 600, area_rect)
         self.mushroom = Mushroom(100, 800)
@@ -36,9 +36,11 @@ class CemeteryPhase(Phase):
         self.mushrooms_group = pygame.sprite.Group(self.mushroom)
 
         obstacles = [mushroom.platform_rect for mushroom in self.mushrooms_group]
-        self.player = Player(0, WIDTH//2, self.foreground, obstacles)
+        self.player = Player(0, WIDTH // 2, self.foreground, obstacles)
 
         self.sound_manager.play_music("mystic_forest.mp3", "assets\\music", -1)
+
+    index = 0
 
     def update(self):
         dt = self.director.clock.get_time() / 1000
@@ -46,7 +48,7 @@ class CemeteryPhase(Phase):
         self.player.update(self.pressed_keys, dt)
         self.firefly.update()
         self.mushroom.update()
-        
+
         for mushroom in self.mushrooms_group:
             if self.player.rect.colliderect(mushroom.platform_rect):
                 mushroom.glow = True
@@ -68,6 +70,3 @@ class CemeteryPhase(Phase):
         self.mushroom.draw(self.screen, offset)
         self.player.draw(self.screen, camera_offset=offset)
         self.firefly.draw(self.screen, offset)
-        
-
-    

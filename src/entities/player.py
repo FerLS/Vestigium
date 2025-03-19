@@ -21,7 +21,9 @@ class Player(pygame.sprite.Sprite):
         # Load resources
         self.resource_manager = ResourceManager()
         self.sound_manager = SoundManager()
-        sheet = self.resource_manager.load_image("player_spritesheet.png", "assets\\images")
+        sheet = self.resource_manager.load_image(
+            "player_spritesheet.png", "assets\\images"
+        )
 
         # Animations
         self.animations = {
@@ -42,7 +44,6 @@ class Player(pygame.sprite.Sprite):
 
         self.rect = pygame.Rect(x, y, 16 * SCALE_FACTOR, 32 * SCALE_FACTOR)
 
-
         # Movement & Physics
         self.velocity_x = 0
         self.velocity_y = 0
@@ -52,11 +53,6 @@ class Player(pygame.sprite.Sprite):
         self.lateral_gravity = 0.1 * SCALE_FACTOR
         self.flipped = False
         self.on_ground = False
-        self.on_wall_left = False
-        self.on_wall_right = False
-        self.bouncing = False
-        self.bounce_direction = 1
-        self.from_ground = False
         self.can_glide = False
         self.position_corrected = False
 
@@ -65,7 +61,7 @@ class Player(pygame.sprite.Sprite):
         self.is_dying = False
         self.dead = False
 
-        
+        self.wall_cooldown = 0
 
     # Movement API
     def move_left(self):
@@ -75,12 +71,16 @@ class Player(pygame.sprite.Sprite):
             if self.on_ground:
                 self.set_animation("walk")
 
+        self.wall_cooldown = 0.2
+
     def move_right(self):
-        if not self.bouncing: 
+        if not self.bouncing:
             self.velocity_x = MOVE_SPEED * SCALE_FACTOR
             self.flipped = False
             if self.on_ground:
                 self.set_animation("walk")
+
+        self.wall_cooldown = 0.2
 
     def stop(self):
         if not self.bouncing:
@@ -97,19 +97,19 @@ class Player(pygame.sprite.Sprite):
             self.flipped = False
             self.bouncing = True
             self.from_ground = False
-            self.velocity_x = self.lateral_jump_power 
+            self.velocity_x = self.lateral_jump_power
             self.velocity_y = self.jump_power * 0.75
             self.bounce_direction = 1
-            self.set_animation('jump')
+            self.set_animation("jump")
         elif self.on_wall_right and self.from_ground:
             self.flipped = True
             self.bouncing = True
             self.from_ground = False
-            self.velocity_x = - self.lateral_jump_power
+            self.velocity_x = -self.lateral_jump_power
             self.velocity_y = self.jump_power * 0.75
             self.bounce_direction = -1
-            self.set_animation('jump')
-    
+            self.set_animation("jump")
+
     def glide(self):
         if self.can_glide and not self.on_ground and self.velocity_y > 0:
             self.from_ground = False
@@ -124,7 +124,7 @@ class Player(pygame.sprite.Sprite):
                 self.set_animation("fall")
             if self.velocity_y > MAX_FALL_SPEED:
                 self.velocity_y = MAX_FALL_SPEED
-    
+
     def apply_lateral_gravity(self):
         if not self.on_ground and self.bouncing:
             self.velocity_x += self.lateral_gravity * (-1) * self.bounce_direction
@@ -138,9 +138,10 @@ class Player(pygame.sprite.Sprite):
                 self.dead = True
 
         new_frame = self.current_animation[self.frame_index]
-        self.image = pygame.transform.flip(new_frame, True, False) if self.flipped else new_frame
+        self.image = (
+            pygame.transform.flip(new_frame, True, False) if self.flipped else new_frame
+        )
         self.mask = pygame.mask.from_surface(self.image)
-
 
     def set_animation(self, name):
         if self.current_animation != self.animations[name]:
@@ -150,8 +151,6 @@ class Player(pygame.sprite.Sprite):
 
     def check_collisions(self):
         self.on_ground = False
-        self.on_wall_left = False
-        self.on_wall_right = False
         colliders = self.tilemap.get_collision_rects()
         self.bouncy_obstacles = self.obstacles
         colliders += self.obstacles
@@ -165,7 +164,7 @@ class Player(pygame.sprite.Sprite):
                     if collider in self.bouncy_obstacles:
                         self.velocity_y = self.jump_power * 1.25
                         self.from_ground = True
-                        self.set_animation("jump") 
+                        self.set_animation("jump")
                     else:
                         self.velocity_y = 0
                         self.bouncing = False
@@ -183,20 +182,19 @@ class Player(pygame.sprite.Sprite):
         self.rect.x += self.velocity_x
         for collider in colliders:
             if self.rect.colliderect(collider) and self.rect.bottom != collider.top + 1:
-                    if self.velocity_x > 0:
-                        if self.bouncing:
-                            self.velocity_y = 0
-                        self.rect.right = collider.left - 1
-                        self.bouncing = False
-                        self.on_wall_right = True
-                    elif self.velocity_x < 0:
-                        if self.bouncing:
-                            self.velocity_y = 0
-                        self.rect.left = collider.right + 1
-                        self.bouncing = False
-                        self.on_wall_left = True
-                    self.velocity_x = 0
-
+                if self.velocity_x > 0:
+                    if self.bouncing:
+                        self.velocity_y = 0
+                    self.rect.right = collider.left - 1
+                    self.bouncing = False
+                    self.on_wall_right = True
+                elif self.velocity_x < 0:
+                    if self.bouncing:
+                        self.velocity_y = 0
+                    self.rect.left = collider.right + 1
+                    self.bouncing = False
+                    self.on_wall_left = True
+                self.velocity_x = 0
 
     def handle_input(self, keys):
         if keys[pygame.K_SPACE]:
@@ -210,7 +208,7 @@ class Player(pygame.sprite.Sprite):
             self.stop()
 
     def update(self, keys, dt):
-        
+
         if not self.is_dying:
             self.handle_input(keys)
             self.check_collisions()
@@ -221,7 +219,15 @@ class Player(pygame.sprite.Sprite):
             self.set_animation("dead")
             self.update_animation(dt)
 
+        if self.wall_cooldown > 0:
+            self.wall_cooldown -= 1 / 60
+        else:
+            self.on_wall_left = False
+            self.on_wall_right = False
 
     def draw(self, screen, camera_offset=(0, 0)):
-        draw_pos = (self.rect.x - (8 * SCALE_FACTOR) - camera_offset[0], self.rect.y - camera_offset[1])
+        draw_pos = (
+            self.rect.x - (8 * SCALE_FACTOR) - camera_offset[0],
+            self.rect.y - camera_offset[1],
+        )
         screen.blit(self.image, draw_pos)
