@@ -8,6 +8,7 @@ from resource_manager import ResourceManager
 from sound_manager import SoundManager
 from entities.player import Player
 from entities.anglerfish import Anglerfish
+from entities.jellyfish import Jellyfish
 from enviorement.camera import Camera
 from entities.anglerfish import Anglerfish
 
@@ -24,9 +25,26 @@ class LakePhase(Phase):
         self.camera = Camera(WIDTH, HEIGHT)
         self.pressed_keys = {}
 
+        self.lights_group = pygame.sprite.Group()
+
         # Fish 
         anglerfish_spawn = self.foreground.load_entity("fish_spawn")
         self.anglerfish = Anglerfish(anglerfish_spawn.x, anglerfish_spawn.y, 1, 3, 3000)
+
+        # Jellyfish
+        top_jellyfishes = self.foreground.load_layer_entities("top_jellyfish")
+        bot_jellyfishes = self.foreground.load_layer_entities("bot_jellyfish")
+        self.jellyfishes_group = pygame.sprite.Group()
+
+        for jellyfish in top_jellyfishes.values():
+            jellyfish = Jellyfish(jellyfish.x, jellyfish.y, initial_direction=-1)
+            self.jellyfishes_group.add(jellyfish)
+            self.lights_group.add(jellyfish.light)
+
+        for jellyfish in bot_jellyfishes.values():
+            jellyfish = Jellyfish(jellyfish.x, jellyfish.y, initial_direction=1)
+            self.jellyfishes_group.add(jellyfish)
+            self.lights_group.add(jellyfish.light)
 
         # PLayer
         player_spawn = self.foreground.load_entity("player_spawn")
@@ -47,10 +65,14 @@ class LakePhase(Phase):
         dt = self.director.clock.get_time() / 1000
 
         self.player.update(self.pressed_keys, dt)
+
         self.anglerfish.update(dt, player_position=(self.player.rect.x, self.player.rect.y))
 
-        """if pygame.sprite.spritecollideany(self.player, self.lights_group):
-            self.player.is_dying = True"""
+        for jellyfish in self.jellyfishes_group:
+            jellyfish.update(dt)
+
+        if pygame.sprite.spritecollideany(self.player, self.lights_group):
+            self.player.is_dying = True
 
         if self.player.dead:
             self.director.scene_manager.stack_scene("DyingMenu")
@@ -69,9 +91,12 @@ class LakePhase(Phase):
         offset = self.camera.get_offset()
 
         self.background.draw(self.screen, offset)
+        for jellyfish in self.jellyfishes_group:
+            jellyfish.draw(self.screen, offset)
         self.foreground.draw(self.screen, offset)
         self.player.draw(self.screen, camera_offset=offset)
         self.anglerfish.draw(self.screen, camera_offset=offset)
+
         for trigger in self.triggers:
             trigger.draw(self.screen)
         

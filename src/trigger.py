@@ -1,4 +1,5 @@
 from gui.gui_elements.guiText import GlideInstructionText, SwimInstructionText
+from utils.constants import WIDTH, HEIGHT
 
 
 class Trigger:
@@ -40,6 +41,6 @@ def change_camera_y_margin(camera, new_margin):
     return None
 
 def swim(screen, player):
-    text = SwimInstructionText(screen, (100, 100))
+    text = SwimInstructionText(screen, (WIDTH // 4, WIDTH // 1.4))
     player.is_swimming = True
     return text
