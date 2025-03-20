@@ -9,7 +9,7 @@ class Key(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("assets/images/key.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (int(self.image.get_width() * 0.50), int(self.image.get_height() * 0.50)))
+        self.image = pygame.transform.scale(self.image, (int(self.image.get_width() * 0.3), int(self.image.get_height() * 0.3)))
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
         self.pos = vec((WIDTH//2, 550))

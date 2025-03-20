@@ -9,26 +9,32 @@ from sound_manager import SoundManager
 class Firefly(pygame.sprite.Sprite):
     def __init__(self, firefly_side: Fireflies):
         super().__init__()
-        self.speed = random.uniform(2.5, 3)
+        self.speed = 0
         self.y = 0
         self.x = 0
         self.side = firefly_side
         self.frame_index = 0
         self.animation_speed = 0.1
         self.animation_timer = 0
+        self.wave_amplitude = 0
+        self.wave_frequency = 0
+        self.time = 0
 
         self._load_firefly()
 
     def reset(self):
         if self.side == Fireflies.RIGHT:
-            self.speed = random.uniform(3, 8)
+            self.speed = random.uniform(3, 10)
             self.x = 1000
 
         if self.side == Fireflies.LEFT:
-            self.speed = random.uniform(2, 6)
+            self.speed = random.uniform(4, 8)
             self.x = -0
-
-        self.y = random.randint(100, 650)
+            
+        self.y = random.randint(200, 650)
+        self.wave_amplitude = random.uniform(random.uniform(2, 4), random.uniform(6, 9))
+        self.wave_frequency = random.uniform(0.02, 0.15)
+        self.time = 0  # Reset time for sine wave
     
     def stop(self):
         self.speed = 0
@@ -46,7 +52,7 @@ class Firefly(pygame.sprite.Sprite):
         self.image = self.frames[0]
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
-        self.x = random.randint(150, 450)
+        self.x = random.randint(150, 300)
         self.y = 0
 
     def _load_right_firefly(self):
@@ -54,7 +60,7 @@ class Firefly(pygame.sprite.Sprite):
         self.image = self.frames[0]
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
-        self.x = random.randint(500, 800)
+        self.x = random.randint(700, 850)
         self.y = 40
         
     def _get_firefly_image(self, side):
@@ -73,10 +79,15 @@ class Firefly(pygame.sprite.Sprite):
         if self.speed == 0:
             return
 
+        self.time += 1  # Increment time for sine wave calculation
+        wave_offset = self.wave_amplitude * math.sin(self.time * self.wave_frequency)
+
         if self.side == Fireflies.RIGHT:
             self.x -= self.speed
+            self.y += wave_offset
         elif self.side == Fireflies.LEFT:
             self.x += self.speed
+            self.y += wave_offset
 
         self.rect.center = (self.x, self.y)
 

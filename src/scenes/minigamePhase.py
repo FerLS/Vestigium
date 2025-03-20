@@ -8,7 +8,7 @@ from utils.constants import Fireflies as Fire, GlobalState, Minigame
 from entities.firefly2 import Firefly
 from entities.key import Key
 from entities.lock import Lock
-
+from entities.lifes import Lifes
 
 class MinigamePhase(Phase):
     def __init__(self, director):
@@ -22,6 +22,7 @@ class MinigamePhase(Phase):
         self.key = Key()
         self.lock = Lock(0, 100, director.screen.get_width(), self.game_over)
         self.fireflies = pygame.sprite.Group()
+        self.lifes = Lifes()
 
         self.num_fireflies = 6
         for _ in range(self.num_fireflies // 2):
@@ -47,14 +48,28 @@ class MinigamePhase(Phase):
         if not self.handle_events():
             return
 
+        if self.lifes.animating:
+            self.lifes.update()
+            if self.lifes.ammount == 0 and not self.lifes.animating:
+                self.game_over()
+            return
+
         self.key.update(self.lock)
         self.lock.update(dt, self.key)
         self.fireflies.update(dt)
+        self.lifes.update()
 
         if pygame.sprite.spritecollide(self.key, self.fireflies, False, pygame.sprite.collide_mask):
-            time.sleep(0.5)
-            self.game_over()
-            
+            if self.lifes.ammount > 0:
+                self.lifes.decrease()
+                self.key.reset()
+                for firefly in self.fireflies:
+                    firefly.reset()
+            else:
+                self.lifes.decrease()
+                for firefly in self.fireflies:
+                    firefly.stop()
+
         if pygame.sprite.collide_mask(self.key, self.lock):
             for firefly in self.fireflies:
                 firefly.stop()
@@ -64,8 +79,9 @@ class MinigamePhase(Phase):
         self.lock.draw(self.screen)
         self.fireflies.draw(self.screen)
         self.key.draw(self.screen)
+        self.lifes.draw(self.screen)
 
     def game_over(self):
         GlobalState.GAME_STATE = Minigame.GAME_END
         self.key.reset()
-        time.sleep(0.5)
+        self.lifes.reset()
