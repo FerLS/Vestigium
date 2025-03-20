@@ -10,27 +10,24 @@ class Layer:
         from .tilemap import Tilemap
 
         self.tilemap: Tilemap = tilemap
-        self.render_as_image = self.check_if_render_as_image()
-        self.is_platform_layer = tmx_layer.properties.get(
-            "platform_layer", False
-        )  # Nueva propiedad
         self.solid_tiles = []
-        self.platform_tiles = []  # Nuevo listado para plataformas
+        self.platform_tiles = []
+        self.stairs_tiles = []
+
+        self.render_as_image = self.tmx_layer.properties.get("render_as_image", False)
 
         if self.render_as_image:
             self.image = self.render_layer_as_image()
         else:
             self.tiles = self.load_tiles()
             # Carga tiles según el tipo de capa
-            if self.is_platform_layer:
-                print("Plataforma")
-                self.platform_tiles = self.get_solid_tiles()
+            if self.tmx_layer.properties.get("platform_layer", False):
+                self.platform_tiles = self.get_platform_objects()
+
+            if self.tmx_layer.properties.get("stairs_layer", False):
+                self.stairs_tiles = self.get_solid_tiles()
             else:
                 self.solid_tiles = self.get_solid_tiles()
-
-    def check_if_render_as_image(self):
-        """Verifica si la capa tiene una propiedad para renderizarse como imagen."""
-        return self.tmx_layer.properties.get("render_as_image", False)
 
     def load_tiles(self):
         """Carga los tiles si la capa es un TileLayer."""
@@ -76,6 +73,22 @@ class Layer:
                     )
 
         return surface
+
+    def get_platform_objects(self):
+        """Obtiene los objetos de plataforma sólidos."""
+        platform_objects = []
+        if isinstance(self.tmx_layer, pytmx.TiledObjectGroup):
+
+            for obj in self.tmx_layer:
+                rect = pygame.Rect(
+                    obj.x * SCALE_FACTOR,
+                    obj.y * SCALE_FACTOR,
+                    obj.width * SCALE_FACTOR,
+                    obj.height * SCALE_FACTOR,
+                )
+                platform_objects.append(rect)
+
+        return platform_objects
 
     def get_solid_tiles(self):
         """Obtiene los tiles sólidos si es un TileLayer y debe manejar colisiones."""

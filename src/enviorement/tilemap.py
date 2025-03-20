@@ -61,3 +61,10 @@ class Tilemap:
         for layer in self.layers.values():
             platform_rects.extend(layer.platform_tiles)
         return platform_rects
+
+    def get_stairs_rects(self):
+        """Obtiene rectángulos de escaleras."""
+        stairs_rects = []
+        for layer in self.layers.values():
+            stairs_rects.extend(layer.stairs_tiles)
+        return stairs_rects
