@@ -1,7 +1,7 @@
 import pygame
 from enviorement.tilemap import Tilemap
 from scenes.phase import Phase 
-from trigger import Trigger, swim
+from trigger import Trigger, swim, chage_anglerfish_light_1, chage_anglerfish_light_2
 from utils.constants import SCALE_FACTOR, WIDTH, HEIGHT
 from enviorement.background import Background
 from resource_manager import ResourceManager
@@ -29,7 +29,7 @@ class LakePhase(Phase):
 
         # Fish 
         anglerfish_spawn = self.foreground.load_entity("fish_spawn")
-        self.anglerfish = Anglerfish(anglerfish_spawn.x, anglerfish_spawn.y, 1, 3, 3000)
+        self.anglerfish = Anglerfish(anglerfish_spawn.x, anglerfish_spawn.y, 1, 3, 3000, light_obstacles=self.foreground.get_collision_rects())
 
         # Jellyfish
         top_jellyfishes = self.foreground.load_layer_entities("top_jellyfish")
@@ -48,7 +48,7 @@ class LakePhase(Phase):
 
         # PLayer
         player_spawn = self.foreground.load_entity("player_spawn")
-        self.player = Player(player_spawn.x, player_spawn.y, self.foreground, [], self.camera)
+        self.player = Player(player_spawn.x, player_spawn.y, self.foreground, [], self.camera, self.anglerfish.light)
         self.player.is_swimming = True
 
         # Triggers
@@ -57,7 +57,13 @@ class LakePhase(Phase):
         swim_trigger_rect = pygame.Rect(328 * SCALE_FACTOR, 937 * SCALE_FACTOR, 313 * SCALE_FACTOR, 198 * SCALE_FACTOR) 
         swim_trigger = Trigger(swim_trigger_rect, lambda: swim(self.screen, self.player))
 
-        self.triggers += [swim_trigger]
+        change_light_angle_trigger_rect_1 = pygame.Rect(2960 * SCALE_FACTOR, 904 * SCALE_FACTOR, 184 * SCALE_FACTOR, 260 * SCALE_FACTOR) 
+        change_light_angle_trigger_1 = Trigger(change_light_angle_trigger_rect_1, lambda: chage_anglerfish_light_1(self.anglerfish))
+
+        change_light_angle_trigger_rect_2 = pygame.Rect(6030 * SCALE_FACTOR, 936 * SCALE_FACTOR, 84 * SCALE_FACTOR, 190 * SCALE_FACTOR)
+        change_light_angle_trigger_2 = Trigger(change_light_angle_trigger_rect_2, lambda: chage_anglerfish_light_2(self.anglerfish))
+
+        self.triggers += [swim_trigger, change_light_angle_trigger_1, change_light_angle_trigger_2]
 
         self.sound_manager.play_music("lake.wav", "assets\\music", -1)
 
@@ -71,7 +77,10 @@ class LakePhase(Phase):
         for jellyfish in self.jellyfishes_group:
             jellyfish.update(dt)
 
-        if pygame.sprite.spritecollideany(self.player, self.lights_group):
+        # Player dying logic
+        if self.player.check_pixel_perfect_collision(self.anglerfish.light): # Pixel perfect collision with fish
+            self.player.is_dying = True
+        if pygame.sprite.spritecollideany(self.player, self.lights_group): # Rect collision with other lights
             self.player.is_dying = True
 
         if self.player.dead:

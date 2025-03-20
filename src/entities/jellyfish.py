@@ -52,7 +52,9 @@ class Jellyfish(pygame.sprite.Sprite):
     def draw(self, screen, offset=(0, 0)):
         offset_x, offset_y = offset
 
+        self.light.draw(screen, offset)
+
         draw_pos = self.rect.x - offset_x, self.rect.y - offset_y
         screen.blit(self.image, draw_pos)
 
-        self.light.draw(screen, offset)
+        

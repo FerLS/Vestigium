@@ -1,10 +1,11 @@
 import pygame
+from light2 import CircularLight, ConeLight
 from utils.constants import SCALE_FACTOR
 from utils.images import extract_frames
 from resource_manager import ResourceManager
 
 class Anglerfish(pygame.sprite.Sprite):
-    def __init__(self, x, y, slow_speed=1, fast_speed=1000000, switch_speed_time=5000):
+    def __init__(self, x, y, slow_speed=1, fast_speed=1000000, switch_speed_time=5000, light_obstacles = None,):
         super().__init__()
 
         self.resource_manager = ResourceManager()
@@ -26,14 +27,17 @@ class Anglerfish(pygame.sprite.Sprite):
 
         self.switch_speed_time = switch_speed_time
         self.spawn_time = pygame.time.get_ticks()
+        
+        self.light = ConeLight((self.rect.topright[0] - 40, self.rect.topright[1] + 35), 100 * SCALE_FACTOR, segments=10, angle=40, distance=300)
+        self.light_obstacles = light_obstacles
 
-    def update(self, dt, player_position=None):
-
+    def change_speed(self):
         # Change speed after a certain amount of time
         current_time = pygame.time.get_ticks()
         if current_time - self.spawn_time >= self.switch_speed_time:
             self.current_speed = self.fast_speed
 
+    def follow_player(self, player_position):
         # Follow player
         if player_position:
             player_x, player_y = player_position
@@ -50,6 +54,13 @@ class Anglerfish(pygame.sprite.Sprite):
             follow_strength = 0.025
             self.rect.y += int((player_y - self.rect.y) * follow_strength)
 
+    def update(self, dt, player_position=None):
+        self.light.update(new_position=(self.rect.topright[0] - 40, self.rect.topright[1] + 35), obstacles=self.light_obstacles)
+        self.change_speed()
+        self.follow_player(player_position)
+        self.update_animation(dt)
+
+    def update_animation(self, dt):
         # Check if the fish is flipped
         if self.rect.x > self.prev_x:
             self.flipped = False
@@ -57,10 +68,6 @@ class Anglerfish(pygame.sprite.Sprite):
             self.flipped = True 
 
         self.prev_x = self.rect.x
-
-        self.update_animation(dt)
-
-    def update_animation(self, dt):
         self.animation_timer += dt
         if self.animation_timer >= self.animation_speed:
             self.animation_timer = 0
@@ -69,5 +76,13 @@ class Anglerfish(pygame.sprite.Sprite):
             self.image = pygame.transform.flip(new_frame, True, False) if self.flipped else new_frame
 
     def draw(self, screen, camera_offset=(0, 0)):
-        draw_pos = (self.rect.x - camera_offset[0], self.rect.y - camera_offset[1])
+        offset_x, offset_y = camera_offset
+        self.light.draw(screen, camera_offset)
+        draw_pos = (self.rect.x - offset_x, self.rect.y - offset_y)
         screen.blit(self.image, draw_pos)
+
+        """debug_platform_rect = self.rect.move(-offset_x, -offset_y)
+        pygame.draw.rect(screen, (0, 255, 0), debug_platform_rect, 1)"""
+
+
+        

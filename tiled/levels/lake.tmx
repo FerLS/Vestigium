@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="300" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="11" nextobjectid="44">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="300" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="11" nextobjectid="54">
  <tileset firstgid="1" source="../assets/lake_tiles.tsx"/>
  <tileset firstgid="301" source="../assets/mine.tsx"/>
  <layer id="1" name="Foreground" width="300" height="40">
@@ -47,14 +47,14 @@
 </data>
  </layer>
  <objectgroup id="4" name="player">
-  <object id="1" name="player_spawn" x="474.121" y="1029.15">
+  <object id="1" name="player_spawn" x="551.454" y="1078.85">
    <point/>
   </object>
  </objectgroup>
  <objectgroup id="6" name="triggers">
-  <object id="4" x="340" y="939.333" width="313.333" height="198.667"/>
-  <object id="5" x="2872" y="1640"/>
-  <object id="6" x="3360" y="2368"/>
+  <object id="4" x="372" y="945.333" width="313.333" height="198.667"/>
+  <object id="44" x="3184" y="928" width="184" height="260"/>
+  <object id="46" x="6030.3" y="936.364" width="84.8485" height="190.909"/>
  </objectgroup>
  <objectgroup id="7" name="bot_jellyfish">
   <object id="8" name="j1" type="jellyfish" x="878" y="1122">
@@ -63,22 +63,31 @@
   <object id="13" name="j3" type="jellyfish" x="1184" y="1114.67">
    <point/>
   </object>
-  <object id="15" name="j5" type="jellyfish" x="1437.33" y="1116">
+  <object id="15" name="j5" type="jellyfish" x="1435.33" y="1166">
    <point/>
   </object>
-  <object id="22" name="j7" type="jellyfish" x="1696" y="1114.67">
+  <object id="22" name="j7" type="jellyfish" x="1702" y="1170.67">
    <point/>
   </object>
-  <object id="23" name="j9" type="jellyfish" x="1952" y="1154.67">
+  <object id="23" name="j9" type="jellyfish" x="1962" y="1130.67">
    <point/>
   </object>
-  <object id="27" name="j11" type="jellyfish" x="2209.33" y="1164">
+  <object id="27" name="j11" type="jellyfish" x="2209.33" y="1204">
    <point/>
   </object>
-  <object id="28" name="j13" type="jellyfish" x="2466.67" y="1156">
+  <object id="28" name="j13" type="jellyfish" x="2460.67" y="1108">
    <point/>
   </object>
   <object id="29" name="j15" type="jellyfish" x="2722.67" y="1170.67">
+   <point/>
+  </object>
+  <object id="48" x="4800" y="1185.33">
+   <point/>
+  </object>
+  <object id="50" x="5217.33" y="1177.33">
+   <point/>
+  </object>
+  <object id="53" x="5665.33" y="1185.33">
    <point/>
   </object>
  </objectgroup>
@@ -86,32 +95,38 @@
   <object id="17" name="j2" type="jellyfish" x="1002.67" y="953.333">
    <point/>
   </object>
-  <object id="18" name="j4" type="jellyfish" x="1321.33" y="948">
+  <object id="18" name="j4" type="jellyfish" x="1321.33" y="924">
    <point/>
   </object>
-  <object id="19" name="j6" type="jellyfish" x="1576" y="945.333">
+  <object id="19" name="j6" type="jellyfish" x="1574" y="957.333">
    <point/>
   </object>
   <object id="24" name="j8" type="jellyfish" x="1833.33" y="942.667">
    <point/>
   </object>
-  <object id="25" name="j10" type="jellyfish" x="2089.33" y="970.667">
+  <object id="25" name="j10" type="jellyfish" x="2099.33" y="930.667">
    <point/>
   </object>
-  <object id="30" name="j12" type="jellyfish" x="2342.67" y="965.333">
+  <object id="30" name="j12" type="jellyfish" x="2342.67" y="925.333">
    <point/>
   </object>
-  <object id="31" name="j14" type="jellyfish" x="2601.33" y="953.333">
+  <object id="31" name="j14" type="jellyfish" x="2603.33" y="901.333">
    <point/>
   </object>
-  <object id="32" name="j16" type="jellyfish" x="2857.33" y="958.667">
+  <object id="32" name="j16" type="jellyfish" x="2861.33" y="920.667">
+   <point/>
+  </object>
+  <object id="49" x="4993.33" y="936">
+   <point/>
+  </object>
+  <object id="51" x="5441.33" y="889.333">
    <point/>
   </object>
  </objectgroup>
  <objectgroup id="9" name="go_left_jellyfish"/>
  <objectgroup id="10" name="go_right_jellyfish"/>
  <objectgroup id="5" name="fish">
-  <object id="2" name="fish_spawn" x="114.97" y="1018.36">
+  <object id="2" name="fish_spawn" x="116.909" y="1041.27">
    <point/>
   </object>
  </objectgroup>

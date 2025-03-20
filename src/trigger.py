@@ -1,5 +1,8 @@
+import math
+
 from gui.gui_elements.guiText import GlideInstructionText, SwimInstructionText
-from utils.constants import WIDTH, HEIGHT
+from light2 import ConeLight
+from utils.constants import SCALE_FACTOR, WIDTH, HEIGHT
 
 
 class Trigger:
@@ -44,3 +47,11 @@ def swim(screen, player):
     text = SwimInstructionText(screen, (WIDTH // 4, WIDTH // 1.4))
     player.is_swimming = True
     return text
+
+def chage_anglerfish_light_1(anglerfish):
+    anglerfish.light = ConeLight((anglerfish.rect.topright[0] - 40, anglerfish.rect.topright[1] + 35), 100 * SCALE_FACTOR, segments=10, angle=100, distance=400)
+    return None
+    
+def chage_anglerfish_light_2(anglerfish):
+    anglerfish.light = ConeLight((anglerfish.rect.topright[0] - 40, anglerfish.rect.topright[1] + 35), 100 * SCALE_FACTOR, segments=10, angle=40, distance=300)
+    return None

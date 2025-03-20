@@ -14,8 +14,10 @@ from resource_manager import ResourceManager
 from sound_manager import SoundManager
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, tilemap, obstacles, camera):
+    def __init__(self, x, y, tilemap, obstacles, camera, light):
         super().__init__()
+
+        self.light = light
 
         # Load resources
         self.resource_manager = ResourceManager()
@@ -157,6 +159,9 @@ class Player(pygame.sprite.Sprite):
             self.animation_timer = 0
 
     def check_collisions(self):
+
+
+
         self.on_ground = False
         self.on_wall_left = False
         self.on_wall_right = False
@@ -205,6 +210,12 @@ class Player(pygame.sprite.Sprite):
         
         self.check_camera_bounds() # Check if the player is out of the camera bounds
 
+    def check_pixel_perfect_collision(self, enemy):
+        if enemy.mask and self.mask:
+            offset = (self.rect.left - enemy.rect.left, self.rect.top - enemy.rect.top)
+            if enemy.mask.overlap(self.mask, offset):
+                return True
+            
     def check_camera_bounds(self):
         """Check if the player is out of the camera bounds at lake phase"""
         if self.is_swimming:
