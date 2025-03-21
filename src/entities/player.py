@@ -14,7 +14,7 @@ from resource_manager import ResourceManager
 from sound_manager import SoundManager
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, tilemap, obstacles, camera, light):
+    def __init__(self, x, y, tilemap, obstacles, camera=None, light=None):
         super().__init__()
 
         self.light = light
@@ -56,12 +56,8 @@ class Player(pygame.sprite.Sprite):
         self.swim_ascend_speed = -3 * SCALE_FACTOR
         self.flipped = False
         self.on_ground = False
-        self.on_wall_left = False
-        self.on_wall_right = False
-        self.bouncing = False
-        self.bounce_direction = 1
-        self.from_ground = False
         self.can_glide = False
+        self.bouncing = False
         self.position_corrected = False
 
         self.tilemap = tilemap
@@ -70,6 +66,7 @@ class Player(pygame.sprite.Sprite):
         self.dead = False
 
         self.is_swimming = False
+        self.wall_cooldown = 0
 
     def move_left(self):
         if not self.bouncing:
@@ -78,12 +75,16 @@ class Player(pygame.sprite.Sprite):
             if self.on_ground and not self.is_swimming:
                 self.set_animation("walk")
 
+        self.wall_cooldown = 0.2
+
     def move_right(self):
         if not self.bouncing:
             self.velocity_x = MOVE_SPEED * SCALE_FACTOR
             self.flipped = False
             if self.on_ground and not self.is_swimming:
                 self.set_animation("walk")
+
+        self.wall_cooldown = 0.2
 
     def stop(self):
         if not self.bouncing:
@@ -105,12 +106,12 @@ class Player(pygame.sprite.Sprite):
             self.velocity_x = self.lateral_jump_power
             self.velocity_y = self.jump_power * 0.75
             self.bounce_direction = 1
-            self.set_animation('jump')
+            self.set_animation("jump")
         elif self.on_wall_right and self.from_ground:
             self.flipped = True
             self.bouncing = True
             self.from_ground = False
-            self.velocity_x = - self.lateral_jump_power
+            self.velocity_x = -self.lateral_jump_power
             self.velocity_y = self.jump_power * 0.75
             self.bounce_direction = -1
             self.set_animation('jump')
@@ -149,7 +150,9 @@ class Player(pygame.sprite.Sprite):
                 self.dead = True
 
         new_frame = self.current_animation[self.frame_index]
-        self.image = pygame.transform.flip(new_frame, True, False) if self.flipped else new_frame
+        self.image = (
+            pygame.transform.flip(new_frame, True, False) if self.flipped else new_frame
+        )
         self.mask = pygame.mask.from_surface(self.image)
 
     def set_animation(self, name):
@@ -163,8 +166,6 @@ class Player(pygame.sprite.Sprite):
 
 
         self.on_ground = False
-        self.on_wall_left = False
-        self.on_wall_right = False
         colliders = self.tilemap.get_collision_rects()
         self.bouncy_obstacles = self.obstacles
         colliders += self.obstacles
@@ -264,6 +265,15 @@ class Player(pygame.sprite.Sprite):
             self.set_animation("dead")
             self.update_animation(dt)
 
+        if self.wall_cooldown > 0:
+            self.wall_cooldown -= 1 / 60
+        else:
+            self.on_wall_left = False
+            self.on_wall_right = False
+
     def draw(self, screen, camera_offset=(0, 0)):
-        draw_pos = (self.rect.x - (8 * SCALE_FACTOR) - camera_offset[0], self.rect.y - camera_offset[1])
+        draw_pos = (
+            self.rect.x - (8 * SCALE_FACTOR) - camera_offset[0],
+            self.rect.y - camera_offset[1],
+        )
         screen.blit(self.image, draw_pos)
