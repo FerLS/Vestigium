@@ -42,6 +42,8 @@ class Tilemap:
             if obj.name == entity:
                 obj.x *= SCALE_FACTOR
                 obj.y *= SCALE_FACTOR
+                obj.width *= SCALE_FACTOR
+                obj.height *= SCALE_FACTOR
                 return obj
 
     def draw(self, screen, offset=(0, 0)):

@@ -1,7 +1,9 @@
 import pygame
 from enviorement.tilemap import Tilemap
+from gui.gui_elements.guiText import SwimInstructionText
+from light2 import ConeLight
 from scenes.phase import Phase 
-from trigger import Trigger, swim, chage_anglerfish_light_1, chage_anglerfish_light_2
+from trigger import Trigger
 from utils.constants import SCALE_FACTOR, WIDTH, HEIGHT
 from enviorement.background import Background
 from resource_manager import ResourceManager
@@ -30,6 +32,7 @@ class LakePhase(Phase):
         # Fish 
         anglerfish_spawn = self.foreground.load_entity("fish_spawn")
         self.anglerfish = Anglerfish(anglerfish_spawn.x, anglerfish_spawn.y, 1, 3, 3000, light_obstacles=self.foreground.get_collision_rects())
+        self.camera_focus = self.anglerfish.rect
 
         # Jellyfish
         top_jellyfishes = self.foreground.load_layer_entities("top_jellyfish")
@@ -54,16 +57,25 @@ class LakePhase(Phase):
         # Triggers
         self.triggers = []
 
-        swim_trigger_rect = pygame.Rect(328 * SCALE_FACTOR, 937 * SCALE_FACTOR, 313 * SCALE_FACTOR, 198 * SCALE_FACTOR) 
-        swim_trigger = Trigger(swim_trigger_rect, lambda: swim(self.screen, self.player))
+        r1 = self.foreground.load_entity("can_swim_trigger")
+        swim_trigger_rect = pygame.Rect(r1.x, r1.y, r1.width, r1.height)
+        swim_trigger = Trigger(swim_trigger_rect, lambda: self.swim())
+        self.triggers.append(swim_trigger)
 
-        change_light_angle_trigger_rect_1 = pygame.Rect(2960 * SCALE_FACTOR, 904 * SCALE_FACTOR, 184 * SCALE_FACTOR, 260 * SCALE_FACTOR) 
-        change_light_angle_trigger_1 = Trigger(change_light_angle_trigger_rect_1, lambda: chage_anglerfish_light_1(self.anglerfish))
+        r2 = self.foreground.load_entity("change_light_angle_trigger_1")
+        change_light_angle_trigger_rect_1 = pygame.Rect(r2.x, r2.y, r2.width, r2.height) 
+        change_light_angle_trigger_1 = Trigger(change_light_angle_trigger_rect_1, lambda: self.chage_anglerfish_light(angle=100, distance=400))
+        self.triggers.append(change_light_angle_trigger_1)
 
-        change_light_angle_trigger_rect_2 = pygame.Rect(6030 * SCALE_FACTOR, 936 * SCALE_FACTOR, 84 * SCALE_FACTOR, 190 * SCALE_FACTOR)
-        change_light_angle_trigger_2 = Trigger(change_light_angle_trigger_rect_2, lambda: chage_anglerfish_light_2(self.anglerfish))
+        r3 = self.foreground.load_entity("change_light_angle_trigger_2")
+        change_light_angle_trigger_rect_2 = pygame.Rect(r3.x, r3.y, r3.width, r3.height) 
+        change_light_angle_trigger_2 = Trigger(change_light_angle_trigger_rect_2, lambda: self.chage_anglerfish_light(angle=40, distance=300))
+        self.triggers.append(change_light_angle_trigger_2)
 
-        self.triggers += [swim_trigger, change_light_angle_trigger_1, change_light_angle_trigger_2]
+        r4 = self.foreground.load_entity("change_camera_to_player_view_trigger")
+        change_camera_to_player_view_rect = pygame.Rect(r4.x, r4.y, r4.width, r4.height)
+        change_camera_to_player_view_trigger = Trigger(change_camera_to_player_view_rect, lambda: self.change_camera_focus(self.player.rect))
+        self.triggers.append(change_camera_to_player_view_trigger)
 
         self.sound_manager.play_music("lake.wav", "assets\\music", -1)
 
@@ -92,7 +104,7 @@ class LakePhase(Phase):
             trigger.update(dt)
 
         # Camera
-        self.camera.update(self.anglerfish.rect)
+        self.camera.update(self.camera_focus)
         self.camera.update_x_margin(40, WIDTH * 0.75)
         self.camera.margin_y = HEIGHT // 5
 
@@ -108,6 +120,18 @@ class LakePhase(Phase):
 
         for trigger in self.triggers:
             trigger.draw(self.screen)
+
+    def swim(self):
+        text = SwimInstructionText(self.screen, (WIDTH // 4, WIDTH // 1.4))
+        self.player.is_swimming = True
+        return text
+
+    def chage_anglerfish_light(self, angle: float, distance: int):
+        self.anglerfish.light = ConeLight((self.anglerfish.rect.topright[0] - 40, self.anglerfish.rect.topright[1] + 35), 100 * SCALE_FACTOR, segments=10, angle=angle, distance=distance)
+        return None
+
+    def change_camera_focus(self, camera_focus: pygame.Rect):
+        self.camera_focus = camera_focus 
         
 
     
