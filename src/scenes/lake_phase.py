@@ -29,10 +29,14 @@ class LakePhase(Phase):
 
         self.lights_group = pygame.sprite.Group()
 
-        # Fish 
-        anglerfish_spawn = self.foreground.load_entity("fish_spawn")
-        self.anglerfish = Anglerfish(anglerfish_spawn.x, anglerfish_spawn.y, 1, 3, 3000, light_obstacles=self.foreground.get_collision_rects())
+        # Fish 1
+        self.anglerfishes_group = pygame.sprite.Group()
+        anglerfish_spawn_1 = self.foreground.load_entity("fish_spawn_1")
+        self.anglerfish = Anglerfish(anglerfish_spawn_1.x, anglerfish_spawn_1.y, 1, 3, 3000, light_obstacles=self.foreground.get_collision_rects())
+        self.anglerfishes_group.add(self.anglerfish)
         self.camera_focus = self.anglerfish.rect
+        self.camera.update_x_margin(40, WIDTH * 0.75)
+        self.camera.margin_y = HEIGHT // 5
 
         # Jellyfish
         top_jellyfishes = self.foreground.load_layer_entities("top_jellyfish")
@@ -77,21 +81,28 @@ class LakePhase(Phase):
         change_camera_to_player_view_trigger = Trigger(change_camera_to_player_view_rect, lambda: self.change_camera_focus(self.player.rect))
         self.triggers.append(change_camera_to_player_view_trigger)
 
+        r5 = self.foreground.load_entity("appear_second_anglerfish_trigger")
+        appear_second_anglerfish_trigger_rect = pygame.Rect(r5.x, r5.y, r5.width, r5.height)
+        appear_second_anglerfish_trigger = Trigger(appear_second_anglerfish_trigger_rect, lambda: self.appear_second_anglerfish())
+        self.triggers.append(appear_second_anglerfish_trigger)
+
         self.sound_manager.play_music("lake.wav", "assets\\music", -1)
 
     def update(self):
         dt = self.director.clock.get_time() / 1000
 
         self.player.update(self.pressed_keys, dt)
+        self.anglerfishes_group.update(dt)
 
-        self.anglerfish.update(dt, player_position=(self.player.rect.x, self.player.rect.y))
+        
+        self.anglerfishes_group.update(dt, player_position=(self.player.rect.x, self.player.rect.y))
 
         for jellyfish in self.jellyfishes_group:
             jellyfish.update(dt)
 
         # Player dying logic
-        if self.player.check_pixel_perfect_collision(self.anglerfish.light): # Pixel perfect collision with fish
-            self.player.is_dying = True
+        """if self.player.check_pixel_perfect_collision(self.anglerfish.light): # Pixel perfect collision with fish
+            self.player.is_dying = True"""
         if pygame.sprite.spritecollideany(self.player, self.lights_group): # Rect collision with other lights
             self.player.is_dying = True
 
@@ -105,18 +116,22 @@ class LakePhase(Phase):
 
         # Camera
         self.camera.update(self.camera_focus)
-        self.camera.update_x_margin(40, WIDTH * 0.75)
-        self.camera.margin_y = HEIGHT // 5
+
 
     def draw(self):
         offset = self.camera.get_offset()
 
         self.background.draw(self.screen, offset)
+
         for jellyfish in self.jellyfishes_group:
             jellyfish.draw(self.screen, offset)
+
         self.foreground.draw(self.screen, offset)
+
         self.player.draw(self.screen, camera_offset=offset)
-        self.anglerfish.draw(self.screen, camera_offset=offset)
+
+        for anglerfish in self.anglerfishes_group:
+            anglerfish.draw(self.screen, camera_offset=offset)
 
         for trigger in self.triggers:
             trigger.draw(self.screen)
@@ -132,6 +147,12 @@ class LakePhase(Phase):
 
     def change_camera_focus(self, camera_focus: pygame.Rect):
         self.camera_focus = camera_focus 
-        
+        self.camera.update_x_margin(WIDTH // 4, WIDTH // 4)
+        self.camera.margin_y = HEIGHT // 4
+
+    def appear_second_anglerfish(self):
+        anglerfish_spawn_2 = self.foreground.load_entity("fish_spawn_2")
+        self.anglerfish_2 = Anglerfish(anglerfish_spawn_2.x, anglerfish_spawn_2.y, 1, 3, 3000, light_obstacles=self.foreground.get_collision_rects())
+        self.anglerfishes_group.add(self.anglerfish_2)
 
     
