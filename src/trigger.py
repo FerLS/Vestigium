@@ -55,3 +55,8 @@ def chage_anglerfish_light_1(anglerfish):
 def chage_anglerfish_light_2(anglerfish):
     anglerfish.light = ConeLight((anglerfish.rect.topright[0] - 40, anglerfish.rect.topright[1] + 35), 100 * SCALE_FACTOR, segments=10, angle=40, distance=300)
     return None
+
+def change_scene(director, scene):
+    print("Changing scene to", scene)
+    director.scene_manager.change_scene(scene)
+    return None

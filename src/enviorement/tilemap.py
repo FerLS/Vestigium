@@ -34,6 +34,8 @@ class Tilemap:
         for entity in entities:
             entities[entity].x *= SCALE_FACTOR
             entities[entity].y *= SCALE_FACTOR
+            entities[entity].width *= SCALE_FACTOR
+            entities[entity].height *= SCALE_FACTOR
         return entities
     
     def load_entity(self, entity):
@@ -42,6 +44,8 @@ class Tilemap:
             if obj.name == entity:
                 obj.x *= SCALE_FACTOR
                 obj.y *= SCALE_FACTOR
+                obj.width *= SCALE_FACTOR
+                obj.height *= SCALE_FACTOR
                 return obj
 
     def draw(self, screen, offset=(0, 0)):

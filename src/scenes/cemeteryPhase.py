@@ -11,6 +11,8 @@ from enviorement.camera import Camera
 from entities.gravedigger import Gravedigger
 from entities.firefly import Firefly
 from entities.mushroom import Mushroom
+from trigger import Trigger, change_scene
+from scenes.fadeTransition import FadeTransition, FadeIn, FadeOut
 
 
 class CemeteryPhase(Phase):
@@ -34,11 +36,21 @@ class CemeteryPhase(Phase):
         self.mushroom = Mushroom(100, 800)
         self.lights_group = pygame.sprite.Group(self.firefly.light, self.mushroom.light)
         self.mushrooms_group = pygame.sprite.Group(self.mushroom)
-
         obstacles = [mushroom.platform_rect for mushroom in self.mushrooms_group]
-        self.player = Player(0, WIDTH // 2, self.foreground, obstacles)
+
+        spawn_coords = self.foreground.load_entity("player_spawn")
+        self.player = Player(spawn_coords.x, spawn_coords.y, self.foreground , obstacles)
 
         self.sound_manager.play_music("mystic_forest.mp3", "assets\\music", -1)
+
+        self.fade_out = FadeOut(self.screen, 1, on_complete= lambda: change_scene(self.director, "TreePhase"))
+
+        # Triggers
+        self.triggers = []
+        end_coords = self.foreground.load_entity("cemetery_end")
+        self.end_phase_rect = pygame.Rect(end_coords.x, end_coords.y, end_coords.width, end_coords.height)
+        end_phase_trigger = Trigger(self.end_phase_rect, lambda: self.fade_out.start())
+        self.triggers.append(end_phase_trigger)
 
     index = 0
 
@@ -54,11 +66,18 @@ class CemeteryPhase(Phase):
                 mushroom.glow = True
                 mushroom.bounce = True
 
+        for trigger in self.triggers:
+            trigger.check(self.player.rect)
+            trigger.update(dt)
+        
+
         if pygame.sprite.spritecollideany(self.player, self.lights_group):
             self.player.is_dying = True
 
         if self.player.dead:
             self.director.scene_manager.stack_scene("DyingMenu")
+        
+        self.fade_out.update(dt)
 
         self.camera.update(self.player.rect)
 
@@ -70,3 +89,4 @@ class CemeteryPhase(Phase):
         self.mushroom.draw(self.screen, offset)
         self.player.draw(self.screen, camera_offset=offset)
         self.firefly.draw(self.screen, offset)
+        self.fade_out.draw()
