@@ -1,7 +1,7 @@
 from time import sleep
 import pygame
 from enviorement.tilemap import Tilemap
-from light2 import CircularLight
+from light2 import CircularLight, ConeLight
 from scenes.phase import Phase
 from utils.constants import WIDTH, HEIGHT
 from enviorement.background import Background
@@ -34,7 +34,9 @@ class CemeteryBossPhase(Phase):
 
         # Lantern
 
-        self.lantern_light = CircularLight(self.player.rect.center, 200, segments=40)
+        self.lantern_light = ConeLight(
+            self.player.rect.center, 10, 70, 100, segments=30
+        )
 
         self.lantern_position = (
             self.player.rect.center

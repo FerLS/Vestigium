@@ -31,6 +31,11 @@ class Light(pygame.sprite.Sprite):
             self._generate_mask(obstacles or [])
             self.dirty = False
 
+    def change_origin(self, new_position):
+        self.position = pygame.Vector2(new_position)
+        self.rect.center = self.position
+        self.dirty = True
+
     @abstractmethod
     def _generate_mask(self, obstacles):
         pass
@@ -39,7 +44,7 @@ class Light(pygame.sprite.Sprite):
         offset_x, offset_y = offset
         if self.mask:
             mask_surface = self.mask.to_surface(
-                setcolor=(255, 255, 255, 100), unsetcolor=(0, 0, 0, 0)
+                setcolor=((255, 209, 0, 150)), unsetcolor=(0, 0, 0, 0)
             )
             screen.blit(
                 mask_surface,
@@ -48,8 +53,8 @@ class Light(pygame.sprite.Sprite):
                     self.position.y - self.distance - offset_y,
                 ),
             )
-        debug_platform_rect = self.rect.move(-offset_x, -offset_y)
-        pygame.draw.rect(screen, (0, 255, 0), debug_platform_rect, 1)
+        """debug_platform_rect = self.rect.move(-offset_x, -offset_y)
+        pygame.draw.rect(screen, (0, 255, 0), debug_platform_rect, 1)"""
 
 
 class CircularLight(Light):
@@ -57,7 +62,7 @@ class CircularLight(Light):
         super().__init__(position, radius)
         self.segments = segments
         self.ray_step = ray_step
-        self.use_obstacles = use_obstacles
+        self.use_obstacles = use_obstacles  # Nuevo flag
 
     def _generate_mask(self, obstacles):
         size = int(self.distance * 2)
@@ -139,13 +144,8 @@ class ConeLight(Light):
             relative_point = (end_point - self.position) + center
             points.append(relative_point)
 
-        pygame.draw.polygon(surface, (255, 255, 255, 150), points)
-
+        pygame.draw.polygon(surface, (255, 255, 0, 128), points)
         self.mask = pygame.mask.from_surface(surface)
-
-        # 🔥 LÍNEAS CLAVE QUE FALTABAN 👇
-        self.image = surface
-        self.rect = self.image.get_rect(center=self.position)
 
     def _cast_ray(self, origin, direction, obstacles):
         end = origin + direction * self.distance
