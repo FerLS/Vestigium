@@ -92,8 +92,8 @@ class Anglerfish(pygame.sprite.Sprite):
         draw_pos = (self.rect.x - offset_x, self.rect.y - offset_y)
         screen.blit(self.image, draw_pos)
 
-        debug_platform_rect = self.rect.move(-offset_x, -offset_y)
-        pygame.draw.rect(screen, (0, 255, 0), debug_platform_rect, 1)
+        """debug_platform_rect = self.rect.move(-offset_x, -offset_y)
+        pygame.draw.rect(screen, (0, 255, 0), debug_platform_rect, 1)"""
 
 
         

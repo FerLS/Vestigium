@@ -1,5 +1,7 @@
 import math
 
+import pygame
+
 from gui.gui_elements.guiText import GlideInstructionText, SwimInstructionText
 from light2 import ConeLight
 from utils.constants import SCALE_FACTOR, WIDTH, HEIGHT
@@ -31,7 +33,6 @@ class Trigger:
     def draw(self, screen):
         if self.text is not None:
             self.text.draw(screen)
-
 
 # Actions that can be triggered by a Trigger
 def glide(screen, player):
