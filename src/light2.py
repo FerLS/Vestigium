@@ -26,6 +26,11 @@ class Light(pygame.sprite.Sprite):
             self._generate_mask(obstacles or [])
             self.dirty = False
 
+    def change_origin(self, new_position):
+        self.position = pygame.Vector2(new_position)
+        self.rect.center = self.position
+        self.dirty = True
+
     @abstractmethod
     def _generate_mask(self, obstacles):
         pass

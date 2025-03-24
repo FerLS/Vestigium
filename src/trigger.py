@@ -1,5 +1,7 @@
 import math
 
+import pygame
+
 from gui.gui_elements.guiText import GlideInstructionText, SwimInstructionText
 from light2 import ConeLight
 from utils.constants import SCALE_FACTOR, WIDTH, HEIGHT
@@ -32,7 +34,6 @@ class Trigger:
         if self.text is not None:
             self.text.draw(screen)
 
-
 # Actions that can be triggered by a Trigger
 def glide(screen, player):
     text = GlideInstructionText(screen, (100, 100))
@@ -43,20 +44,3 @@ def change_camera_y_margin(camera, new_margin):
     camera.margin_y = new_margin
     return None
 
-def swim(screen, player):
-    text = SwimInstructionText(screen, (WIDTH // 4, WIDTH // 1.4))
-    player.is_swimming = True
-    return text
-
-def chage_anglerfish_light_1(anglerfish):
-    anglerfish.light = ConeLight((anglerfish.rect.topright[0] - 40, anglerfish.rect.topright[1] + 35), 100 * SCALE_FACTOR, segments=10, angle=100, distance=400)
-    return None
-    
-def chage_anglerfish_light_2(anglerfish):
-    anglerfish.light = ConeLight((anglerfish.rect.topright[0] - 40, anglerfish.rect.topright[1] + 35), 100 * SCALE_FACTOR, segments=10, angle=40, distance=300)
-    return None
-
-def change_scene(director, scene):
-    print("Changing scene to", scene)
-    director.scene_manager.change_scene(scene)
-    return None

@@ -3,6 +3,7 @@ from light2 import CircularLight, ConeLight
 from utils.constants import SCALE_FACTOR
 from utils.images import extract_frames
 from resource_manager import ResourceManager
+import math
 
 class Anglerfish(pygame.sprite.Sprite):
     def __init__(self, x, y, slow_speed=1, fast_speed=1000000, switch_speed_time=5000, light_obstacles = None,):
@@ -28,7 +29,7 @@ class Anglerfish(pygame.sprite.Sprite):
         self.switch_speed_time = switch_speed_time
         self.spawn_time = pygame.time.get_ticks()
         
-        self.light = ConeLight((self.rect.topright[0] - 40, self.rect.topright[1] + 35), 100 * SCALE_FACTOR, segments=10, angle=40, distance=300)
+        self.light = ConeLight((self.rect.topright[0] - 40, self.rect.topright[1] + 35), pygame.Vector2(1, 0), segments=10, angle=40, distance=300)
         self.light_obstacles = light_obstacles
 
     def change_speed(self):
@@ -55,10 +56,19 @@ class Anglerfish(pygame.sprite.Sprite):
             self.rect.y += int((player_y - self.rect.y) * follow_strength)
 
     def update(self, dt, player_position=None):
-        self.light.update(new_position=(self.rect.topright[0] - 40, self.rect.topright[1] + 35), obstacles=self.light_obstacles)
+        self.update_animation(dt)
+        self.light.update(new_position=self.update_light_and_get_position(), obstacles=self.light_obstacles)
         self.change_speed()
         self.follow_player(player_position)
-        self.update_animation(dt)
+
+    def update_light_and_get_position(self):
+        if self.flipped:
+            self.light.direction = pygame.Vector2(-1, 0)
+            new_light_position = (self.rect.topleft[0] + 40, self.rect.topleft[1] + 35)
+        else:
+            self.light.direction = pygame.Vector2(1, 0)
+            new_light_position = (self.rect.topright[0] - 40, self.rect.topright[1] + 35)
+        return new_light_position
 
     def update_animation(self, dt):
         # Check if the fish is flipped
@@ -68,6 +78,7 @@ class Anglerfish(pygame.sprite.Sprite):
             self.flipped = True 
 
         self.prev_x = self.rect.x
+
         self.animation_timer += dt
         if self.animation_timer >= self.animation_speed:
             self.animation_timer = 0
