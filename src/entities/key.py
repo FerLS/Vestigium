@@ -2,13 +2,15 @@ import pygame
 from pygame.locals import *
 
 from utils.constants import *
+from resource_manager import ResourceManager
 
 vec = pygame.math.Vector2
 
 class Key(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("assets/images/key.png").convert_alpha()
+        resource_manager = ResourceManager()
+        self.image = resource_manager.load_image("key.png", "assets/images")
         self.image = pygame.transform.scale(self.image, (int(self.image.get_width() * 0.3), int(self.image.get_height() * 0.3)))
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
@@ -16,6 +18,7 @@ class Key(pygame.sprite.Sprite):
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
         self.player_position = vec(0, 0)
+        self.dead = False
 
     def update(self, lock=None):
         if lock and pygame.sprite.collide_mask(self, lock):

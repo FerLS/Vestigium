@@ -4,12 +4,15 @@ import random
 import pygame
 
 from utils.constants import *
+from light2 import CircularLight
+
+from resource_manager import ResourceManager
 from sound_manager import SoundManager
 
 class Firefly(pygame.sprite.Sprite):
     def __init__(self, firefly_side: Fireflies):
         super().__init__()
-        self.speed = 0
+        self.speed = random.uniform(2.5, 3)
         self.y = 0
         self.x = 0
         self.side = firefly_side
@@ -19,22 +22,33 @@ class Firefly(pygame.sprite.Sprite):
         self.wave_amplitude = 0
         self.wave_frequency = 0
         self.time = 0
-
+        
+        self.resource_manager = ResourceManager()
+        self.sheet = self.resource_manager.load_image("firefly.png", "assets\\images").convert_alpha()
+   
         self._load_firefly()
 
     def reset(self):
+        
         if self.side == Fireflies.RIGHT:
-            self.speed = random.uniform(3, 10)
-            self.x = 1000
+            self.y = random.randint(200, 650)
+            self.speed = random.uniform(3, 8)
+            if self.y < 1000:
+                self.x = 1000
+            else:
+                self.x = 600
 
         if self.side == Fireflies.LEFT:
-            self.speed = random.uniform(4, 8)
-            self.x = -0
-            
-        self.y = random.randint(200, 650)
+            self.y = random.randint(200, 650)
+            self.speed = random.uniform(2, 6)
+            if self.y < 1000:
+                self.x = -0  
+            else:
+                self.x = 400
+        
         self.wave_amplitude = random.uniform(random.uniform(2, 4), random.uniform(6, 9))
         self.wave_frequency = random.uniform(0.02, 0.15)
-        self.time = 0  # Reset time for sine wave
+        self.time = 0
     
     def stop(self):
         self.speed = 0
@@ -51,20 +65,24 @@ class Firefly(pygame.sprite.Sprite):
         self.frames = self._get_firefly_image(Fireflies.LEFT)
         self.image = self.frames[0]
         self.rect = self.image.get_rect()
-        self.mask = pygame.mask.from_surface(self.image)
-        self.x = random.randint(150, 300)
+        
+        self.light = CircularLight(self.rect.center, 15 * SCALE_FACTOR, segments=400, use_obstacles=False)
+        
+        self.x = random.randint(150, 450)
         self.y = 0
 
     def _load_right_firefly(self):
         self.frames = self._get_firefly_image(Fireflies.RIGHT)
         self.image = self.frames[0]
         self.rect = self.image.get_rect()
-        self.mask = pygame.mask.from_surface(self.image)
-        self.x = random.randint(700, 850)
+        
+        self.light = CircularLight(self.rect.center, 15 * SCALE_FACTOR, segments=400, use_obstacles=False)
+
+        self.x = random.randint(500, 800)
         self.y = 40
         
     def _get_firefly_image(self, side):
-        sheet = pygame.image.load("assets/images/firefly.png").convert_alpha()
+        sheet = self.sheet
         frames = []
         frame_width = 32
         frame_height = 32
@@ -79,7 +97,7 @@ class Firefly(pygame.sprite.Sprite):
         if self.speed == 0:
             return
 
-        self.time += 1  # Increment time for sine wave calculation
+        self.time += 1
         wave_offset = self.wave_amplitude * math.sin(self.time * self.wave_frequency)
 
         if self.side == Fireflies.RIGHT:
@@ -103,7 +121,9 @@ class Firefly(pygame.sprite.Sprite):
 
     def update(self, dt):
         self.move()
+        self.light.update(self.rect.center)
         self.update_animation(dt)
 
-    def draw(self, screen):
+    def draw(self, screen, offset=(0, 0)):
+        self.light.draw(screen, offset)
         screen.blit(self.image, self.rect.topleft)
