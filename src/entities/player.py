@@ -57,6 +57,7 @@ class Player(pygame.sprite.Sprite):
         self.flipped = False
         self.on_ground = False
         self.can_glide = False
+        self.bouncing = False
         self.position_corrected = False
         self.bouncing = False
 
@@ -283,3 +284,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.y - camera_offset[1],
         )
         screen.blit(self.image, draw_pos)
+
+        # DEBUG: dibujar máscara como contorno
+        mask_surface = self.mask.to_surface(setcolor=(0,255,0,100), unsetcolor=(0,0,0,0))
+        screen.blit(mask_surface, draw_pos)
