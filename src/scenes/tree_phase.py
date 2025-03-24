@@ -28,14 +28,7 @@ class TreePhase(Phase):
         self.pressed_keys = {}
 
         self.lights_group = pygame.sprite.Group()
-
-
-        # Lights
-        """left_lights = self.foreground.load_layer_entities("left_lights")
-        for left_light in left_lights.values():
-            left_ambient_light = ConeLight((left_light.x, left_light.y), 10, 20, 500)
-            self.lights_group.add(left_ambient_light)"""
-
+        self.pixel_perfect_lights_group = pygame.sprite.Group()
 
         # Mushrooms
         self.bouncy_obstacles = []
@@ -68,13 +61,27 @@ class TreePhase(Phase):
         player_spawn = self.foreground.load_entity("player_spawn")
         self.player = Player(player_spawn.x, player_spawn.y, self.foreground, self.bouncy_obstacles)
 
+        # Lights
+        left_lights = self.foreground.load_layer_entities("left_lights")
+        right_lights = self.foreground.load_layer_entities("right_lights")
+        for left_light in left_lights.values():
+            left_ambient_light = ConeLight((left_light.x, left_light.y), pygame.Vector2(1, 1), 30, 600, ray_step=3)
+            self.pixel_perfect_lights_group.add(left_ambient_light)
+
+        for right_light in right_lights.values():
+            right_ambient_light = ConeLight((right_light.x, right_light.y), pygame.Vector2(-1, 0.6), 30, 600, ray_step=3)
+            self.pixel_perfect_lights_group.add(right_ambient_light)
+
         # Triggers
         self.triggers = []
 
-        glide_trigger_rect = pygame.Rect(577 * SCALE_FACTOR, 6921 * SCALE_FACTOR, 60 * SCALE_FACTOR, 52 * SCALE_FACTOR) 
+        r1 = self.foreground.load_entity("glide_trigger")
+
+        glide_trigger_rect = pygame.Rect(r1.x, r1.y, r1.width, r1.height) 
         glide_trigger = Trigger(glide_trigger_rect, lambda: glide(self.screen, self.player))
 
-        camera_margin_trigger_rect = pygame.Rect(651 * SCALE_FACTOR, 6787 * SCALE_FACTOR, 293 * SCALE_FACTOR, 219 * SCALE_FACTOR)
+        r2 = self.foreground.load_entity("camera_y_margin_trigger")
+        camera_margin_trigger_rect = pygame.Rect(r2.x, r2.y, r2.width, r2.height)
         camera_margin_trigger = Trigger(camera_margin_trigger_rect, lambda: change_camera_y_margin(self.camera, self.camera.screen_height // 2.2))
 
         self.triggers += [glide_trigger, camera_margin_trigger]
@@ -85,9 +92,6 @@ class TreePhase(Phase):
 
         self.player.update(self.pressed_keys, dt)
 
-        # Lights
-        # self.lights_group.update(obstacles=self.foreground.get_collision_rects() + self.bouncy_obstacles)
-
         # Mushrooms
         self.mushrooms_group.update()
         for mushroom in self.mushrooms_group:
@@ -96,12 +100,20 @@ class TreePhase(Phase):
                 mushroom.bounce = True
 
         # Ants
-        self.ants_group.update()
+        self.ants_group.update(dt)
 
         # Fireflies
         self.fireflies_group.update()
 
+        # Lights
+        ant_rects = [ant.rect for ant in self.ants_group]
+        self.collidable_obstacles = self.foreground.get_collision_rects() + self.bouncy_obstacles + ant_rects
+        self.pixel_perfect_lights_group.update(obstacles=self.collidable_obstacles, camera_rect=self.camera.get_view_rect())
+
         # Player dying logic
+        for light in self.pixel_perfect_lights_group:
+            if self.player.check_pixel_perfect_collision(light):
+                self.player.is_dying = True
         if pygame.sprite.spritecollideany(self.player, self.lights_group):
             self.player.is_dying = True
         if self.player.dead:
@@ -117,15 +129,22 @@ class TreePhase(Phase):
         offset = self.camera.get_offset()
 
         self.background.draw(self.screen, offset)
-        self.foreground.draw(self.screen, offset)
-        for light in self.lights_group:
+
+        for light in self.pixel_perfect_lights_group: 
             light.draw(self.screen, offset)
+
+        self.foreground.draw(self.screen, offset)
+
         for mushroom in self.mushrooms_group:
             mushroom.draw(self.screen, offset)
+
         for ant in self.ants_group:
             ant.draw(self.screen, offset)
+
         for firefly in self.fireflies_group:
             firefly.draw(self.screen, offset)
+
         self.player.draw(self.screen, camera_offset=offset)
+
         for trigger in self.triggers:
             trigger.draw(self.screen)
