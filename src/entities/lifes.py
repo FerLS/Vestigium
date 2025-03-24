@@ -1,11 +1,14 @@
 import pygame
+from resource_manager import ResourceManager
+from sound_manager import SoundManager
 
 class Lifes:
     def __init__(self):
+        self.resource_manager = ResourceManager()
         self.ammount = 3
-        self.heart_image = pygame.image.load("assets/life/heart.png")
+        self.heart_image = self.resource_manager.load_image("heart.png", "assets/life")
         self.heart_image = pygame.transform.scale(self.heart_image, (40, 40))
-        self.animation_sheet = pygame.image.load("assets/life/heart_animated_1.png")
+        self.animation_sheet = self.resource_manager.load_image("heart_animated_1.png", "assets/life")
         self.frame_width = self.animation_sheet.get_width() // 5
         self.frame_height = self.animation_sheet.get_height()
         self.current_frame = 0
@@ -19,6 +22,8 @@ class Lifes:
             )
             for i in range(5)
         ]
+        
+        self.sound_manager = SoundManager()
 
     def decrease(self):
         if self.ammount > 0:
@@ -26,6 +31,7 @@ class Lifes:
             self.animating = True
             self.current_frame = 0
             self.animation_timer = pygame.time.get_ticks()
+            self.sound_manager.play_sound("damage.wav", "assets/sounds", 0.1, 0.5)
 
     def update(self):
         if self.animating:
