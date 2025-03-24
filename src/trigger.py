@@ -44,3 +44,8 @@ def change_camera_y_margin(camera, new_margin):
     camera.margin_y = new_margin
     return None
 
+
+def change_scene(director, scene):
+    print("Changing scene to", scene)
+    director.scene_manager.change_scene(scene)
+    return None
