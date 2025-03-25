@@ -4,6 +4,8 @@ from scenes.pauseMenu import PauseMenu
 from scenes.startMenu import StartMenu
 from scenes.dyingMenu import DyingMenu
 from scenes.cemeteryPhase import CemeteryPhase
+from scenes.tree_phase import TreePhase
+from scenes.lake_phase import LakePhase
 from scene_manager import SceneManager
 
 class Director(object):
@@ -28,7 +30,8 @@ class Director(object):
         self.scene_manager.register_scene("PauseMenu", PauseMenu)
         self.scene_manager.register_scene("DyingMenu", DyingMenu)
         self.scene_manager.register_scene("CemeteryPhase", CemeteryPhase)
-
+        self.scene_manager.register_scene("TreePhase", TreePhase)
+        self.scene_manager.register_scene("LakePhase", LakePhase)
     
     def finish_current_scene(self):
         self.leave_current_scene = True
