@@ -7,8 +7,9 @@ from entities.player import Player
 from entities.mushroom import Mushroom
 from entities.ant import Ant
 from entities.firefly import Firefly
+from gui.gui_elements.guiText import GlideInstructionText
 from light2 import ConeLight
-from trigger import Trigger, glide, change_camera_y_margin
+from trigger import Trigger
 from resource_manager import ResourceManager
 from scenes.phase import Phase
 from sound_manager import SoundManager
@@ -65,27 +66,30 @@ class TreePhase(Phase):
         left_lights = self.foreground.load_layer_entities("left_lights")
         right_lights = self.foreground.load_layer_entities("right_lights")
         for left_light in left_lights.values():
-            left_ambient_light = ConeLight((left_light.x, left_light.y), pygame.Vector2(1, 1), 30, 600, ray_step=3)
+            left_ambient_light = ConeLight((left_light.x, left_light.y), pygame.Vector2(1, 1), 30, 500, segments=10, ray_step=4)
             self.pixel_perfect_lights_group.add(left_ambient_light)
 
         for right_light in right_lights.values():
-            right_ambient_light = ConeLight((right_light.x, right_light.y), pygame.Vector2(-1, 0.6), 30, 600, ray_step=3)
+            right_ambient_light = ConeLight((right_light.x, right_light.y), pygame.Vector2(-1, 0.6), 30, 500, segments = 10, ray_step=4)
             self.pixel_perfect_lights_group.add(right_ambient_light)
 
         # Triggers
         self.triggers = []
 
         r1 = self.foreground.load_entity("glide_trigger")
-
         glide_trigger_rect = pygame.Rect(r1.x, r1.y, r1.width, r1.height) 
-        glide_trigger = Trigger(glide_trigger_rect, lambda: glide(self.screen, self.player))
+        glide_trigger = Trigger(glide_trigger_rect, lambda: self.glide())
+        self.triggers.append(glide_trigger)
 
         r2 = self.foreground.load_entity("camera_y_margin_trigger")
         camera_margin_trigger_rect = pygame.Rect(r2.x, r2.y, r2.width, r2.height)
-        camera_margin_trigger = Trigger(camera_margin_trigger_rect, lambda: change_camera_y_margin(self.camera, self.camera.screen_height // 2.2))
+        camera_margin_trigger = Trigger(camera_margin_trigger_rect, lambda: self.change_camera_y_margin(self.camera.screen_height // 2.2))
+        self.triggers.append(camera_margin_trigger)
 
-        self.triggers += [glide_trigger, camera_margin_trigger]
-
+        r3 = self.foreground.load_entity("end_of_phase")
+        end_of_phase_trigger_rect = pygame.Rect(r3.x, r3.y, r3.width, r3.height)
+        end_of_phase_trigger = Trigger(end_of_phase_trigger_rect, lambda: self.end_of_phase())
+        self.triggers.append(end_of_phase_trigger)
 
     def update(self):
         dt = self.director.clock.get_time() / 1000
@@ -130,10 +134,10 @@ class TreePhase(Phase):
 
         self.background.draw(self.screen, offset)
 
+        self.foreground.draw(self.screen, offset)
+
         for light in self.pixel_perfect_lights_group: 
             light.draw(self.screen, offset)
-
-        self.foreground.draw(self.screen, offset)
 
         for mushroom in self.mushrooms_group:
             mushroom.draw(self.screen, offset)
@@ -148,3 +152,15 @@ class TreePhase(Phase):
 
         for trigger in self.triggers:
             trigger.draw(self.screen)
+
+    def glide(self):
+        text = GlideInstructionText(self.screen, (100, 100))
+        self.can_glide = True
+        return text
+
+    def change_camera_y_margin(self, new_margin):
+        self.camera.margin_y = new_margin
+        return None
+    
+    def end_of_phase(self):
+        pass

@@ -8,7 +8,7 @@ class Light(pygame.sprite.Sprite):
         self.position = pygame.Vector2(position)
         self.distance = distance
         self.mask = None
-        self.use_obstacles = use_obstacles  # ← ahora está aquí
+        self.use_obstacles = use_obstacles 
 
         size = int(distance * 2)
         self.image = pygame.Surface((size, size), pygame.SRCALPHA)
@@ -21,7 +21,9 @@ class Light(pygame.sprite.Sprite):
             self.rect.center = self.position
 
         # Crear rectángulo alrededor del punto de la luz
-        light_area = pygame.Rect(0, 0, self.distance // 3, self.distance // 3)
+        if self.mask == None:
+            self._generate_mask(obstacles or [])
+        light_area = pygame.Rect(0, 0, 300, 300)
         light_area.center = self.position
 
         if not camera_rect or light_area.colliderect(camera_rect):

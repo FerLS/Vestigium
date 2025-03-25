@@ -47,9 +47,9 @@ class Tilemap:
                 return obj
 
     def draw(self, screen, offset=(0, 0)):
-        """Dibuja todas las capas aplicando el desplazamiento de cámara."""
         for _, v in self.layers.items():
             v.draw(screen, offset)
+
 
     def get_collision_rects(self):
         """Devuelve rects del mundo real (sin offset visual)."""
