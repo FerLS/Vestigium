@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="left-down" width="63" height="37" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="11">
+<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="left-down" width="63" height="37" tilewidth="32" tileheight="32" infinite="0" nextlayerid="9" nextobjectid="13">
  <tileset firstgid="1" source="../assets/TX Tileset Ground.tsx"/>
  <tileset firstgid="257" source="../assets/TX Village Props.tsx"/>
  <tileset firstgid="1281" source="../assets/Lantern 7 Small - Silver and Orange_019.tsx"/>
@@ -46,6 +46,9 @@
 0,0,0,0,0,0,0,0,0,415,415,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
+ <objectgroup id="7" name="trigger">
+  <object id="11" name="cemetery_end" type="trigger" x="1769.97" y="274.899" width="229.083" height="156.741"/>
+ </objectgroup>
  <layer id="5" name="Objetos" width="63" height="37">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -92,6 +95,11 @@
    <point/>
   </object>
   <object id="7" name="gravedigger_spawn" x="1452" y="364.5">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="8" name="player">
+  <object id="12" name="player_spawn" x="1545.71" y="376.178">
    <point/>
   </object>
  </objectgroup>

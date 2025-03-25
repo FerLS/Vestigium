@@ -53,3 +53,8 @@ class Trigger:
         if self.text is not None:
             self.text.draw(screen)
 
+
+def change_scene(director, scene):
+    print("Changing scene to", scene)
+    director.scene_manager.change_scene(scene)
+    return None

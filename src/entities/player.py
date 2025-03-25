@@ -59,6 +59,9 @@ class Player(pygame.sprite.Sprite):
         self.can_glide = False
         self.bouncing = False
         self.position_corrected = False
+        self.on_wall_left = False
+        self.on_wall_right = False
+        self.from_ground = False
 
         self.tilemap = tilemap
         self.obstacles = obstacles
