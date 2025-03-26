@@ -105,7 +105,7 @@ class LakePhase(Phase):
         if self.player.dead:
             self.director.scene_manager.stack_scene("DyingMenu")
 
-        # Update and ckeck triggers
+        # Update and check triggers
         for trigger in self.triggers:
             trigger.check(self.player.rect)
             trigger.update(dt)
@@ -141,8 +141,10 @@ class LakePhase(Phase):
         player_spawn = self.foreground.load_entity("player_spawn")
         self.player = Player(
             player_spawn.x, player_spawn.y,
-            self.foreground, [], self.camera,
-            self.anglerfish.light
+            self.foreground, 
+            obstacles=[], 
+            camera=self.camera,
+            light=self.anglerfish.light
         )
         self.player.is_swimming = True
 

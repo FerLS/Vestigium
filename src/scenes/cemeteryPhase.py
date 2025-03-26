@@ -1,4 +1,3 @@
-from time import sleep
 import pygame
 from enviorement.tilemap import Tilemap
 from scenes.phase import Phase
@@ -11,7 +10,7 @@ from enviorement.camera import Camera
 from entities.gravedigger import Gravedigger
 from entities.firefly import Firefly
 from entities.mushroom import Mushroom
-from trigger import Trigger, change_scene
+from trigger import Trigger
 from scenes.fadeTransition import FadeTransition, FadeIn, FadeOut
 
 
@@ -43,7 +42,7 @@ class CemeteryPhase(Phase):
 
         self.sound_manager.play_music("mystic_forest.mp3", "assets\\music", -1)
 
-        self.fade_out = FadeOut(self.screen, 1, on_complete= lambda: change_scene(self.director, "TreePhase"))
+        self.fade_out = FadeOut(self.screen, 1, on_complete= lambda: self.end_of_phase("TreePhase"))
 
         # Triggers
         self.triggers = []
@@ -90,3 +89,6 @@ class CemeteryPhase(Phase):
         self.player.draw(self.screen, camera_offset=offset)
         self.firefly.draw(self.screen, offset)
         self.fade_out.draw()
+
+    def end_of_phase(self, phase: str):
+        self.director.scene_manager.change_scene(phase)

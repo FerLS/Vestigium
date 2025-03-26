@@ -32,6 +32,7 @@ class Player(pygame.sprite.Sprite):
             "walk": extract_frames(sheet, 0, 96, 32, 32, 8, SCALE_FACTOR),
             "jump": extract_frames(sheet, 0, 160, 32, 32, 8, SCALE_FACTOR),
             "fall": extract_frames(sheet, 128, 160, 32, 32, 1, SCALE_FACTOR),
+            "glide": extract_frames(sheet, 0, 224, 32, 32, 1, SCALE_FACTOR),
             "dead": extract_frames(sheet, 0, 192, 32, 32, 6, SCALE_FACTOR),
             "swim": extract_frames(sheet, 0, 160, 32, 32, 8, SCALE_FACTOR, lying=-10.0),
         }
@@ -57,6 +58,7 @@ class Player(pygame.sprite.Sprite):
         self.flipped = False
         self.on_ground = False
         self.can_glide = False
+        self.is_gliding = False
         self.bouncing = False
         self.position_corrected = False
         self.on_wall_left = False
@@ -123,7 +125,8 @@ class Player(pygame.sprite.Sprite):
         if self.can_glide and not self.is_swimming and not self.on_ground and self.velocity_y > 0:
             self.from_ground = False
             self.velocity_y = MAX_FALL_SPEED // 2
-            self.set_animation("fall")
+            self.is_gliding = True
+            self.set_animation("glide")
 
     def apply_gravity(self):
         if self.is_swimming:
@@ -133,7 +136,7 @@ class Player(pygame.sprite.Sprite):
         else:
             if not self.on_ground:
                 self.velocity_y += self.gravity
-                if self.velocity_y > 0:
+                if self.velocity_y > 0 and not self.is_gliding:
                     self.bouncing = False
                     self.set_animation("fall")
                 if self.velocity_y > MAX_FALL_SPEED:
@@ -248,6 +251,8 @@ class Player(pygame.sprite.Sprite):
             if keys[pygame.K_SPACE]:
                 self.jump()
                 self.glide()
+            else: 
+                self.is_gliding = False
 
         if keys[pygame.K_LEFT]:
             self.move_left()
