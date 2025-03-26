@@ -1,8 +1,8 @@
 import pygame
 
 from gui.guiScreen import GUIScreen
-from gui.gui_elements.guiText import MusicVolumeText, SoundEffectsVolumeText, GoBackText
-from gui.gui_elements.gui_slider import MusicVolumeSlider
+from gui.gui_elements.guiText import MusicVolumeText, SoundEffectsVolumeText,GoBackText
+from gui.gui_elements.gui_slider import MusicVolumeSlider, SoundEffectsVolumeSlider
 from utils.constants import WIDTH
 
 class OptionsScreen(GUIScreen):
@@ -11,7 +11,8 @@ class OptionsScreen(GUIScreen):
         self.gui_elements.append(MusicVolumeText(self, (WIDTH//2 - 50, 360)))
         self.gui_elements.append(MusicVolumeSlider(self, WIDTH//2 - 75, 390, 125, 10))
         self.gui_elements.append(SoundEffectsVolumeText(self, (WIDTH//2 - 120, 420)))
-        self.gui_elements.append(GoBackText(self, (WIDTH//2 - 70, 480)))
+        self.gui_elements.append(SoundEffectsVolumeSlider(self, WIDTH//2 - 75, 450, 125, 10))
+        self.gui_elements.append(GoBackText(self, (WIDTH//2 - 70, 500)))
 
 
     def events(self, event_list):

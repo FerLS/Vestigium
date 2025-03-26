@@ -90,3 +90,6 @@ class CemeteryPhase(Phase):
         self.player.draw(self.screen, camera_offset=offset)
         self.firefly.draw(self.screen, offset)
         self.fade_out.draw()
+
+    def continue_procedure(self):
+        pass

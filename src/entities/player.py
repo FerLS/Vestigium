@@ -30,7 +30,7 @@ class Player(pygame.sprite.Sprite):
         self.animations = {
             "idle": extract_frames(sheet, 0, 0, 32, 32, 2, SCALE_FACTOR)
             + extract_frames(sheet, 0, 32, 32, 32, 2, SCALE_FACTOR),
-            "run": extract_frames(sheet, 0, 96, 32, 32, 8, SCALE_FACTOR),
+            "walk": extract_frames(sheet, 0, 96, 32, 32, 8, SCALE_FACTOR),
             "jump": extract_frames(sheet, 0, 160, 32, 32, 8, SCALE_FACTOR),
             "fall": extract_frames(sheet, 128, 160, 32, 32, 1, SCALE_FACTOR),
             "dead": extract_frames(sheet, 0, 192, 32, 32, 6, SCALE_FACTOR),
@@ -72,6 +72,13 @@ class Player(pygame.sprite.Sprite):
 
         self.is_swimming = False
         self.wall_cooldown = 0
+        self.jump_sound_flag = True
+        self.fall_sound_flag = False
+        self.glide_sound_flag = True
+        
+        # Sounds
+        self.footsteps_sound = [sound for sound in os.listdir("assets\\sounds\\footsteps")]
+        self.step_index = 0
 
     def move_left(self):
         if not self.bouncing:
@@ -104,6 +111,13 @@ class Player(pygame.sprite.Sprite):
             self.velocity_y = self.jump_power
             self.from_ground = True
             self.set_animation("jump")
+
+            self.fall_sound_flag = True
+
+            if self.jump_sound_flag:
+                self.jump_sound_flag = False
+                self.sound_manager.play_sound("falling.ogg", "assets\\sounds", category="player", pan = 0.5)
+
         elif self.on_wall_left and self.from_ground:
             self.flipped = False
             self.bouncing = True
@@ -112,6 +126,11 @@ class Player(pygame.sprite.Sprite):
             self.velocity_y = self.jump_power * 0.75
             self.bounce_direction = 1
             self.set_animation("jump")
+            self.fall_sound_flag = True
+
+            if self.jump_sound_flag:
+                self.jump_sound_flag = False
+                self.sound_manager.play_sound("falling.ogg", "assets\\sounds", category="player", pan = 0.5)
         elif self.on_wall_right and self.from_ground:
             self.flipped = True
             self.bouncing = True
@@ -120,12 +139,20 @@ class Player(pygame.sprite.Sprite):
             self.velocity_y = self.jump_power * 0.75
             self.bounce_direction = -1
             self.set_animation('jump')
+            self.fall_sound_flag = True
+
+            if self.jump_sound_flag:
+                self.jump_sound_flag = False
+                self.sound_manager.play_sound("falling.ogg", "assets\\sounds", category="player", pan = 0.5)
 
     def glide(self):
         if self.can_glide and not self.is_swimming and not self.on_ground and self.velocity_y > 0:
             self.from_ground = False
             self.velocity_y = MAX_FALL_SPEED // 2
             self.set_animation("fall")
+            if self.glide_sound_flag:
+                self.glide_sound_flag = False
+                self.sound_manager.play_sound("falling.ogg", "assets\\sounds", category="player", pan = 0.5)
 
     def apply_gravity(self):
         if self.is_swimming:
@@ -140,9 +167,7 @@ class Player(pygame.sprite.Sprite):
                     self.set_animation("fall")
                 if self.velocity_y > MAX_FALL_SPEED:
                     self.velocity_y = MAX_FALL_SPEED
-        # Sounds
-        self.footsteps_sound = [sound for sound in os.listdir("assets\\sounds\\footsteps")]
-        self.step_index = 0
+            
 
     def apply_lateral_gravity(self):
         if not self.on_ground and self.bouncing and not self.is_swimming:
@@ -151,13 +176,20 @@ class Player(pygame.sprite.Sprite):
     def update_animation(self, dt):
                 
         self.animation_timer += dt
-        animation_speed = self.running_animation_speed if self.current_animation == self.animations["run"] else self.animation_speed
+        animation_speed = self.running_animation_speed if self.current_animation == self.animations["walk"] else self.animation_speed
 
         if self.animation_timer >= animation_speed:
             self.animation_timer = 0
             self.frame_index = (self.frame_index + 1) % len(self.current_animation)
             if self.is_dying and self.frame_index == 5:
                 self.dead = True
+
+            if self.current_animation == self.animations["walk"] and (self.frame_index == 0 or self.frame_index == 4):
+                if self.velocity_x > 0:
+                    self.sound_manager.play_sound(self.footsteps_sound[self.step_index], "assets\\sounds\\footsteps", category="player", pan = 0.7)
+                elif self.velocity_x < 0:
+                    self.sound_manager.play_sound(self.footsteps_sound[self.step_index], "assets\\sounds\\footsteps", category="player" , pan = 0.3)
+                self.step_index = 1 - self.step_index
 
         new_frame = self.current_animation[self.frame_index]
         self.image = (
@@ -189,6 +221,7 @@ class Player(pygame.sprite.Sprite):
                         self.velocity_y = self.jump_power * 1.25
                         self.from_ground = True
                         self.set_animation("jump")
+                        self.sound_manager.play_sound("falling.ogg", "assets\\sounds", category="player", pan = 0.5)
                     else:
                         self.velocity_y = 0
                         self.bouncing = False
@@ -201,6 +234,10 @@ class Player(pygame.sprite.Sprite):
                 elif self.velocity_y == 0:
                     self.bouncing = False
                     self.on_ground = True
+                    self.jump_sound_flag = True
+                    if self.fall_sound_flag:
+                        self.fall_sound_flag = False
+                        self.sound_manager.play_sound("fall.wav", "assets\\sounds", category="player" , pan = 0.5)
 
         self.rect.x += self.velocity_x
         for collider in colliders:
@@ -239,6 +276,11 @@ class Player(pygame.sprite.Sprite):
             self.velocity_x = 0
 
 
+    def dying(self):
+        self.is_dying = True
+        self.sound_manager.play_sound("exhale.wav", "assets\\sounds", category="player", pan = 0.5)
+
+
     def handle_swim_input(self, keys):
         self.set_animation("swim")
         if keys[pygame.K_UP]:
@@ -255,6 +297,9 @@ class Player(pygame.sprite.Sprite):
             if keys[pygame.K_SPACE]:
                 self.jump()
                 self.glide()
+            else:   
+                print("Space not pressed")
+                self.glide_sound_flag = True
 
         if keys[pygame.K_LEFT]:
             self.move_left()

@@ -1,5 +1,6 @@
 import pygame 
 from abc import ABC
+from sound_manager import SoundManager
 
 class GUIElement(ABC):
     def __init__(self, screen, rect):
@@ -7,9 +8,17 @@ class GUIElement(ABC):
         self.rect = rect # To know if click was pressed
         self.clicked = False
         self.hovered = False
+        self.sound_manager = SoundManager()
+        self.hover_sound_flag = True
 
     def update_hover(self, mouse_pos):
         self.hovered = self.position_in_element(mouse_pos)
+        if self.hovered:
+            if self.hover_sound_flag:
+                self.hover_sound_flag = False
+                self.sound_manager.play_sound("hover.wav", "assets\\sounds")
+        else:
+            self.hover_sound_flag = True
 
     # Locate the element in the screen  
     def set_position(self, position): 
@@ -34,6 +43,8 @@ class GUIElement(ABC):
         if event.type == pygame.MOUSEBUTTONUP:
             if self.position_in_element(event.pos):
                 if self.clicked:
+                    self.sound_manager.play_sound("click.wav", "assets\\sounds")
+                    print("Clicked")
                     self.action()
  
     def draw(self):

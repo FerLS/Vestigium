@@ -22,7 +22,8 @@ class TreePhase(Phase):
         self.foreground = Tilemap("tiled/levels/tree.tmx")
         self.resources = ResourceManager()
         self.sound_manager = SoundManager()
-        self.sound_manager.play_music("mystic_forest.mp3", "assets\\music", -1)
+        self.sound_manager.play_music("tree_music.mp3", "assets\\music", -1)
+        self.sound_manager.play_sound("forest_ambient.wav", "assets\\sounds", category='ambient', loop=True)
         self.background = Background(self.resources, "assets\\images\\backgrounds\\tree_phase_parallax", enable_vertical_scroll=True)
         self.camera = Camera(WIDTH, HEIGHT)
         self.pressed_keys = {}
@@ -103,8 +104,9 @@ class TreePhase(Phase):
 
         # Player dying logic
         if pygame.sprite.spritecollideany(self.player, self.lights_group):
-            self.player.is_dying = True
+            self.player.dying()
         if self.player.dead:
+            self.director.sound_manager.stop_music()
             self.director.scene_manager.stack_scene("DyingMenu")
 
         self.camera.update(self.player.rect)
@@ -129,3 +131,6 @@ class TreePhase(Phase):
         self.player.draw(self.screen, camera_offset=offset)
         for trigger in self.triggers:
             trigger.draw(self.screen)
+
+    def continue_procedure(self):
+        self.sound_manager.play_sound("forest_ambient.wav", "assets\\sounds", category='ambient', loop=True)
