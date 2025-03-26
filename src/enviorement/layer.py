@@ -13,6 +13,7 @@ class Layer:
         self.solid_tiles = []
         self.platform_tiles = []
         self.stairs_tiles = []
+        self.safe_tiles = []
 
         self.render_as_image = self.tmx_layer.properties.get("render_as_image", False)
 
@@ -26,6 +27,10 @@ class Layer:
 
             if self.tmx_layer.properties.get("stairs_layer", False):
                 self.stairs_tiles = self.get_solid_tiles()
+
+            elif self.tmx_layer.properties.get("safe_zone", False):
+                self.safe_tiles = self.get_solid_tiles()
+
             else:
                 self.solid_tiles = self.get_solid_tiles()
 

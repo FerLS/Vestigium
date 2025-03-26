@@ -2,7 +2,6 @@ import pygame
 import os
 import random
 
-from entities.light import Light
 from resource_manager import ResourceManager
 from utils.constants import MovementDirections, MovementType
 

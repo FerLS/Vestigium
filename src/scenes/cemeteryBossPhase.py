@@ -1,6 +1,7 @@
 from time import sleep
 import pygame
 from enviorement.tilemap import Tilemap
+from entities.lantern import Lantern
 from light2 import CircularLight, ConeLight
 from scenes.phase import Phase
 from utils.constants import WIDTH, HEIGHT
@@ -34,16 +35,21 @@ class CemeteryBossPhase(Phase):
 
         # Lantern
 
-        self.lantern_light = ConeLight(
-            self.player.rect.center, 10, 70, 100, segments=30
-        )
+        path_points = {}
 
-        self.lantern_position = (
-            self.player.rect.center
-        )  # Puedes ajustar esto según sea necesario
-        self.lantern_direction = "right"  # Dirección inicial de movimiento
+        for obj in self.foreground.tmx_data.objects:
+            if obj.type == "Point":
+                path_points[int(obj.name)] = (obj.x, obj.y)
+                print(path_points)
+
+        # Ordenar los puntos por su índice y devolverlos como lista
+        path_points = [path_points[i] for i in sorted(path_points.keys())]
+        self.lantern = Lantern(position=path_points[0], path=path_points, speed=5)
 
         self.sound_manager.play_music("mystic_forest.mp3", "assets\\music", -1)
+
+        self.foreground.insert_sprite(self.player, 2)
+        self.foreground.insert_sprite(self.lantern, -1)
 
     index = 0
 
@@ -51,34 +57,9 @@ class CemeteryBossPhase(Phase):
         dt = self.director.clock.get_time() / 1000
 
         self.player.update(self.pressed_keys, dt)
-
+        self.lantern.update(self.player, self.foreground, self.camera.get_offset())
         if self.player.dead:
             self.director.scene_manager.stack_scene("DyingMenu")
-
-        # Actualiza la posición de la linterna en función de la dirección
-        if self.lantern_direction == "right":
-            self.lantern_position = (
-                self.lantern_position[0] + 1,  # Ajusta la velocidad de movimiento aquí
-                self.lantern_position[1],
-            )
-            # Cambia de dirección si llega al borde derecho del mapa
-            if self.lantern_position[0] >= WIDTH:
-                self.lantern_direction = "left"
-        elif self.lantern_direction == "left":
-            self.lantern_position = (
-                self.lantern_position[0] - 1,  # Ajusta la velocidad de movimiento aquí
-                self.lantern_position[1],
-            )
-            # Cambia de dirección si llega al borde izquierdo del mapa
-            if self.lantern_position[0] <= 0:
-                self.lantern_direction = "right"
-
-        # Actualiza la luz de la linterna con la nueva posición
-        self.lantern_light.update(
-            new_position=self.lantern_position,
-            obstacles=self.foreground.get_solid_rects()
-            + self.foreground.get_platform_rects(),
-        )
 
         self.camera.update(self.player.rect)
 
@@ -87,5 +68,3 @@ class CemeteryBossPhase(Phase):
 
         self.background.draw(self.screen, offset)
         self.foreground.draw(self.screen, offset)
-        self.player.draw(self.screen, camera_offset=offset)
-        self.lantern_light.draw(self.screen, offset)
