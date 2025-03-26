@@ -44,7 +44,7 @@ class FadeOut(FadeTransition):
                 self.on_complete()
 
 class FadeIn(FadeTransition):
-    def __init__(self, screen, duration=1.0, on_complete=None):
+    def __init__(self, screen, duration=2.5, on_complete=None):
         super().__init__(screen, duration, on_complete)
         self.alpha = 255 
 

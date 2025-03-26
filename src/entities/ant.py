@@ -1,6 +1,7 @@
 import pygame
 from light2 import CircularLight
 from resource_manager import ResourceManager
+from sound_manager import SoundManager
 from utils.images import extract_frames
 from utils.constants import SCALE_FACTOR
 
@@ -9,7 +10,7 @@ class Ant(pygame.sprite.Sprite):
         super().__init__()
         self.resource_manager = ResourceManager()
         sheet = self.resource_manager.load_image("spider_spritesheet.png", "assets\\images")
-        self.animations = extract_frames(sheet, 0, 0, 32, 32, 4, SCALE_FACTOR)  # Ajusta si el spritesheet tiene más frames
+        self.animations = extract_frames(sheet, 0, 0, 32, 32, 4, SCALE_FACTOR)
 
         self.frame_index = 0
         self.animation_speed = 0.2
@@ -46,8 +47,7 @@ class Ant(pygame.sprite.Sprite):
             self.frame_index = (self.frame_index + 1) % len(self.animations)
             new_frame = self.animations[self.frame_index]
             self.image = pygame.transform.flip(new_frame, False, True) if self.flipped else new_frame
-
-
+    
     def draw(self, screen, offset=(0, 0)):
         offset_x, offset_y = offset
         # self.light.draw(screen, offset) # Manage light with animation

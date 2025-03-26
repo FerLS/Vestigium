@@ -90,5 +90,8 @@ class CemeteryPhase(Phase):
         self.firefly.draw(self.screen, offset)
         self.fade_out.draw()
 
+    def continue_procedure(self):
+        pass
+
     def end_of_phase(self, phase: str):
         self.director.scene_manager.change_scene(phase)

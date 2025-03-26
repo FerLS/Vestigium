@@ -81,7 +81,8 @@ class LakePhase(Phase):
         """
         Setup the audio for the scene.
         """
-        self.sound_manager.play_music("lake.wav", "assets\\music", -1)
+        self.sound_manager.play_music("lake_music.mp3", "assets\\music", -1)
+        self.sound_manager.play_sound("bubbles.wav", "assets\\sounds", category='ambient', loop=True)
 
     def update(self):
         dt = self.director.clock.get_time() / 1000
@@ -95,11 +96,11 @@ class LakePhase(Phase):
         # Check for collisions pixel perfect with fish light
         for anglerfish in self.anglerfishes_group:
             if self.player.check_pixel_perfect_collision(anglerfish.light):
-                self.player.is_dying = True
+                self.player.dying()
 
         # Check for collisions with jellyfishes
         if pygame.sprite.spritecollideany(self.player, self.lights_group):
-            self.player.is_dying = True
+            self.player.dying()
 
         # Check for player dying condition
         if self.player.dead:
@@ -234,3 +235,7 @@ class LakePhase(Phase):
         """
         self.sound_manager.stop_music()
         self.director.scene_manager.stack_scene("FinalCutscene")
+
+
+    def continue_procedure(self):
+        self.sound_manager.play_sound("bubbles.wav", "assets\\sounds", category='ambient', loop=True)

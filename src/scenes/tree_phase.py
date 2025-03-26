@@ -66,7 +66,8 @@ class TreePhase(Phase):
         """
         Setup the audio for the scene.
         """
-        self.sound_manager.play_music("mystic_forest.mp3", "assets\\music", -1)
+        self.sound_manager.play_music("tree_music.mp3", "assets\\music", -1)
+        self.sound_manager.play_sound("forest_ambient.wav", "assets\\sounds", category='ambient', loop=True)
 
     def setup_fade(self):
         """
@@ -186,10 +187,9 @@ class TreePhase(Phase):
 
         # Check if the player is colliding with lights with rects
         if pygame.sprite.spritecollideany(self.player, self.lights_group):
-            self.player.is_dying = True
-
-        # Check player dying condition
+            self.player.dying()
         if self.player.dead:
+            self.director.sound_manager.stop_music()
             self.director.scene_manager.stack_scene("DyingMenu")
 
         # Update and check triggers
@@ -228,6 +228,15 @@ class TreePhase(Phase):
         # Draw fade out transition
         self.fade_out.draw()
 
+    def continue_procedure(self):
+        self.sound_manager.play_sound("forest_ambient.wav", "assets\\sounds", category='ambient', loop=True)
+
+    def continue_procedure(self):
+        self.sound_manager.play_sound("forest_ambient.wav", "assets\\sounds", category='ambient', loop=True)
+
+        # Draw fade out transition
+        self.fade_out.draw()
+
     # Actions that can be triggered by a Trigger
     def glide(self):
         """
@@ -248,5 +257,6 @@ class TreePhase(Phase):
         """
         Change the scene to the next phase.
         """
+        self.sound_manager.play_sound("water-splash.ogg", "assets\\sounds", category='ambient')
         self.director.scene_manager.change_scene(scene)
         return None
