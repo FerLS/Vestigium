@@ -63,14 +63,18 @@ class MinigamePhase(Phase):
             "6": SimpleNamespace(x=450, y=350),
             "7": SimpleNamespace(x=900, y=400),
             "8": SimpleNamespace(x=550, y=450),
-            "9": SimpleNamespace(x=50, y=500),
-            "10": SimpleNamespace(x=950, y=550),
+            #"9": SimpleNamespace(x=50, y=500),
+            #"10": SimpleNamespace(x=950, y=550),
+            
         }
 
         for firefly in fireflies.values():
             firefly = Firefly(firefly.x, firefly.y, None, "wave")
+            firefly_extra = Firefly(500, 150, None, "random")
             self.fireflies_group.add(firefly)
+            self.fireflies_group.add(firefly_extra)
             self.lights_group.add(firefly.light)
+            self.lights_group.add(firefly_extra.light)
             
     def setup_audio(self):
         """
@@ -94,7 +98,6 @@ class MinigamePhase(Phase):
         self.lock.update(dt, self.key)
         self.fireflies_group.update()
         self.lifes.update()
-
         if pygame.sprite.spritecollide(self.key, self.lights_group, False, pygame.sprite.collide_mask):
             if self.lifes.ammount > 0:
                 self.lifes.decrease()
@@ -116,10 +119,8 @@ class MinigamePhase(Phase):
         
     def draw(self):
         self.screen.blit(self.background, (0, 0))
-        self.lock.draw(self.screen)
         for firefly in self.fireflies_group:
             firefly.draw(self.screen)
-        for light in self.lights_group:
-            light.draw(self.screen)
-        self.key.draw(self.screen)
         self.lifes.draw(self.screen)
+        self.lock.draw(self.screen)
+        self.key.draw(self.screen)
