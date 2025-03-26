@@ -8,26 +8,52 @@ from entities.key import Key
 from entities.lock import Lock
 from entities.lifes import Lifes
 from resource_manager import ResourceManager
+from sound_manager import SoundManager
 
 class MinigamePhase(Phase):
     def __init__(self, director):
         super().__init__(director)
         self.screen = director.screen
-        resource_manager = ResourceManager()
+        
+        self.load_resources()
+        self.setup_groups()
+        self.setup_entities()
+        self.create_fireflies()
+        self.setup_audio()
+        
+    def load_resources(self):
+        """
+        Load all resources needed for the scene
+        """
+        self.resources = ResourceManager()
+        self.sound_manager = SoundManager()
         self.background = pygame.transform.scale(
-            resource_manager.load_image(
+            self.resources.load_image(
                 "minigame_background.png", 
                 "assets/images/backgrounds"
             ),
-            (director.screen.get_width(), director.screen.get_height())
+            (self.screen.get_width(), self.screen.get_height())
         )
-
-        self.key = Key()
-        self.lifes = Lifes()
-        self.lock = Lock(0, 100, director.screen.get_width())
+    
+    def setup_groups(self):
+        """
+        Setup all sprite groups
+        """
         self.fireflies_group = pygame.sprite.Group()
         self.lights_group = pygame.sprite.Group()
-                
+    
+    def setup_entities(self):
+        """
+        Setup all entities
+        """
+        self.key = Key()
+        self.lifes = Lifes()
+        self.lock = Lock(0, 100, self.screen.get_width())
+
+    def create_fireflies(self):
+        """
+        Setup all firefly enemies
+        """
         fireflies = {
             "1": SimpleNamespace(x=100, y=100),
             "2": SimpleNamespace(x=450, y=150),
@@ -45,8 +71,13 @@ class MinigamePhase(Phase):
             firefly = Firefly(firefly.x, firefly.y, None, "wave")
             self.fireflies_group.add(firefly)
             self.lights_group.add(firefly.light)
-
-
+            
+    def setup_audio(self):
+        """
+        Setup the audio for the scene.
+        """
+        pass
+    
     def update(self):
         dt = self.director.clock.get_time() / 1000
 
