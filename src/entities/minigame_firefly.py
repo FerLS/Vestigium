@@ -4,14 +4,15 @@ import random
 import pygame
 
 from utils.constants import *
+from entities.firefly import Firefly
 from light2 import CircularLight
 
 from resource_manager import ResourceManager
 from sound_manager import SoundManager
 
-class Firefly(pygame.sprite.Sprite):
+class MinigameFirefly(Firefly):
     def __init__(self, firefly_side: Fireflies):
-        super().__init__()
+        super().__init__(0, 0, movement_type="wave")
         self.speed = random.uniform(2.5, 3)
         self.y = 0
         self.x = 0

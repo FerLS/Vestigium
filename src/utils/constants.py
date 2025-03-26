@@ -25,10 +25,3 @@ class MovementType(Enum):
 class Fireflies(Enum):
     RIGHT = 0
     LEFT = 1
-
-class Minigame(Enum):
-    GAMEPLAY = 1
-    GAME_END = 2
-    
-class GlobalState(Enum):
-    GAME_STATE = Minigame.GAMEPLAY

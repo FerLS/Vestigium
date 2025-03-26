@@ -14,7 +14,7 @@ class Key(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (int(self.image.get_width() * 0.3), int(self.image.get_height() * 0.3)))
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
-        self.pos = vec((WIDTH//2, 550))
+        self.pos = vec((WIDTH//2, 700))
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
         self.player_position = vec(0, 0)
@@ -61,6 +61,6 @@ class Key(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
 
     def reset(self):
-        self.pos = vec((WIDTH//2, 550))
+        self.pos = vec((WIDTH//2, 700))
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
