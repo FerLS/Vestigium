@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="34" height="36" tilewidth="32" tileheight="32" infinite="0" nextlayerid="18" nextobjectid="29">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="34" height="36" tilewidth="32" tileheight="32" infinite="0" nextlayerid="18" nextobjectid="31">
  <tileset firstgid="1" source="../assets/TX Tileset Ground.tsx"/>
  <tileset firstgid="257" source="../assets/TX Village Props.tsx"/>
  <layer id="17" name="Safe_Zone" width="34" height="36">
@@ -277,19 +277,25 @@
   </object>
  </objectgroup>
  <objectgroup id="16" name="Path">
-  <object id="24" name="1" type="Point" x="90.1212" y="349.394">
+  <object id="24" name="1" type="Point" x="445.455" y="371.394">
    <point/>
   </object>
-  <object id="25" name="2" type="Point" x="617.667" y="411.333">
+  <object id="25" name="2" type="Point" x="998.333" y="451.333">
    <point/>
   </object>
-  <object id="26" name="3" type="Point" x="949.333" y="202.667">
+  <object id="26" name="3" type="Point" x="1046.67" y="53.3333">
    <point/>
   </object>
-  <object id="27" name="4" type="Point" x="270.545" y="96.6667">
+  <object id="27" name="4" type="Point" x="245.212" y="-179.333">
    <point/>
   </object>
-  <object id="28" name="0" type="Point" x="524" y="572">
+  <object id="28" name="0" type="Point" x="-10" y="206.667">
+   <point/>
+  </object>
+  <object id="29" name="6" type="Point" x="799.333" y="880">
+   <point/>
+  </object>
+  <object id="30" name="7" type="Point" x="750" y="322">
    <point/>
   </object>
  </objectgroup>
