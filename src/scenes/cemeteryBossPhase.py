@@ -2,6 +2,7 @@ from time import sleep
 import pygame
 from enviorement.tilemap import Tilemap
 from entities.lantern import Lantern
+from entities.keyItem import KeyItem
 from light2 import CircularLight, ConeLight
 from scenes.phase import Phase
 from utils.constants import WIDTH, HEIGHT
@@ -51,6 +52,12 @@ class CemeteryBossPhase(Phase):
         self.foreground.insert_sprite(self.player, 2)
         self.foreground.insert_sprite(self.lantern, -1)
 
+        # Key
+
+        key_spawn = self.foreground.load_entity("key_spawn")
+        self.key = KeyItem(key_spawn.x, key_spawn.y)
+        self.foreground.insert_sprite(self.key, 2)
+
     index = 0
 
     def update(self):
@@ -60,6 +67,8 @@ class CemeteryBossPhase(Phase):
         self.lantern.update(self.player, self.foreground, self.camera.get_offset())
         if self.player.dead:
             self.director.scene_manager.stack_scene("DyingMenu")
+
+        self.key.update(self.player)
 
         self.camera.update(self.player.rect)
 
