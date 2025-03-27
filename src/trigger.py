@@ -2,7 +2,11 @@ import math
 
 import pygame
 
-from gui.gui_elements.guiText import GlideInstructionText, SwimInstructionText
+from gui.gui_elements.guiText import (
+    BossTutorialText,
+    GlideInstructionText,
+    SwimInstructionText,
+)
 from light2 import ConeLight
 from utils.constants import SCALE_FACTOR, WIDTH, HEIGHT
 
@@ -44,8 +48,8 @@ def glide(screen, player):
     return text
 
 
-def boss_tutorial(screen, player):
-    text = boss_tutorial(screen, (player.rect.x, player.rect.y + 10))
+def boss_tutorial(screen, player_rect):
+    text = BossTutorialText(screen, (player_rect.x, player_rect.y - 10))
     return text
 
 

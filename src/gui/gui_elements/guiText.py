@@ -227,7 +227,7 @@ class SwimInstructionText(TextGUI):
         pass
 
 
-class BossTutorial(TextGUI):
+class BossTutorialText(TextGUI):
     def __init__(self, screen, position):
         font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
         TextGUI.__init__(
