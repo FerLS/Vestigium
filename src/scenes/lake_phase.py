@@ -169,10 +169,10 @@ class LakePhase(Phase):
         for jellyfish in self.jellyfishes_group:
             jellyfish.update(dt)
 
-        """for anglerfish in self.anglerfishes_group:
+        for anglerfish in self.anglerfishes_group:
             if self.player.check_pixel_perfect_collision(anglerfish.light) and not self.player.is_dying and not self.player.dead:
                 self.player.dying()
-                self.fades['death_fade_out'].start()"""
+                self.fades['death_fade_out'].start()
 
         if pygame.sprite.spritecollideany(self.player, self.lights_group) and not self.player.is_dying and not self.player.dead:
             self.player.dying()
@@ -293,9 +293,7 @@ class LakePhase(Phase):
         """
         Action that ends the phase.
         """
-        #self.sound_manager.stop_music()
         self.director.scene_manager.change_scene(scene)
-
 
     def continue_procedure(self):
         self.sound_manager.play_sound("bubbles.wav", "assets\\sounds", category='ambient', loop=True)

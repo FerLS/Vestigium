@@ -86,7 +86,7 @@ class TreePhase(Phase):
         Create the player entity.
         """
         
-        player_spawn = self.spawns_rects[3].center
+        player_spawn = self.spawns_rects[0].center
         self.player = Player(player_spawn[0], player_spawn[1], 
                              self.foreground, 
                              obstacles=self.bouncy_obstacles)

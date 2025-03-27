@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="300" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="12" nextobjectid="83">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="300" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="12" nextobjectid="84">
  <tileset firstgid="1" source="../assets/lake_tiles.tsx"/>
  <tileset firstgid="301" source="../assets/mine.tsx"/>
  <layer id="1" name="Foreground" width="300" height="40">
@@ -147,7 +147,7 @@
   <object id="55" name="fish_spawn_2" x="7928" y="1084">
    <point/>
   </object>
-  <object id="81" name="fish_spawn_1" x="7454" y="806">
+  <object id="83" name="fish_spawn_1" x="112" y="1064">
    <point/>
   </object>
  </objectgroup>

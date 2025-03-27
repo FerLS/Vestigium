@@ -8,7 +8,6 @@ class EndMenu(Menu):
     def __init__(self, director):
         Menu.__init__(self, director)
         self.sound_manager = SoundManager()
-        #self.sound_manager.play_music("start_menu.mp3", "assets\\music", -1)        
         self.sound_manager.stop_all_sounds()
         self.screen_list = [EndScreen(self)]
 
