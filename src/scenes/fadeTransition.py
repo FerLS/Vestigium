@@ -5,6 +5,7 @@ class FadeTransition:
         self.screen = screen
         self.duration = duration
         self.on_complete = on_complete
+        self.completed = False
         self.active = False
         self.timer = 0
         self.overlay = pygame.Surface(screen.get_size()).convert()
@@ -12,8 +13,11 @@ class FadeTransition:
         self.alpha = 0
 
     def start(self):
-        self.active = True
-        self.timer = 0
+        if not self.active:
+            self.active = True
+            self.timer = 0
+        
+            
 
     def update(self, dt):
         raise NotImplementedError("Implement this in FadeIn or FadeOut")
@@ -42,6 +46,7 @@ class FadeOut(FadeTransition):
             self.active = False
             if self.on_complete:
                 self.on_complete()
+            self.alpha = 0  
 
 class FadeIn(FadeTransition):
     def __init__(self, screen, duration=2.5, on_complete=None):
@@ -49,6 +54,7 @@ class FadeIn(FadeTransition):
         self.alpha = 255 
 
     def update(self, dt):
+
         if not self.active:
             return
 
@@ -60,3 +66,4 @@ class FadeIn(FadeTransition):
             self.active = False
             if self.on_complete:
                 self.on_complete()
+            self.alpha = 255

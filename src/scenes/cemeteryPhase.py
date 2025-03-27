@@ -37,13 +37,6 @@ class CemeteryPhase(Phase):
         self.mushrooms_group = pygame.sprite.Group(self.mushroom)
         obstacles = [mushroom.platform_rect for mushroom in self.mushrooms_group]
 
-        spawn_coords = self.foreground.load_entity("player_spawn")
-        self.player = Player(spawn_coords.x, spawn_coords.y, self.foreground , obstacles)
-
-        self.sound_manager.play_music("mystic_forest.mp3", "assets\\music", -1)
-
-        self.fade_out = FadeOut(self.screen, 1, on_complete= lambda: self.end_of_phase("TreePhase"))
-
         # Triggers
         self.triggers = []
         end_coords = self.foreground.load_entity("cemetery_end")
@@ -51,7 +44,37 @@ class CemeteryPhase(Phase):
         end_phase_trigger = Trigger(self.end_phase_rect, lambda: self.fade_out.start())
         self.triggers.append(end_phase_trigger)
 
-    index = 0
+        self.spawns_rects = [pygame.Rect(v.x, v.y, v.width, v.height) for v in self.foreground.load_layer_entities("checkpoints").values()]
+        for spawn_rect in self.spawns_rects:
+            self.triggers.append(Trigger(spawn_rect, self.increment_spawn_index))
+        self.spawn_index = 0
+        self.current_spawn = self.spawns_rects[self.spawn_index].center
+        self.player = Player(self.current_spawn[0], self.current_spawn[1], self.foreground , obstacles)
+
+        self.sound_manager.play_music("mystic_forest.mp3", "assets\\music", -1)
+
+        # Fades
+        self.fades = {}
+        fade_in = FadeIn(self.screen)
+        fade_in.start()
+        self.fades['fade_in'] = fade_in
+
+
+        fade_out = FadeOut(self.screen, on_complete= lambda: self.end_of_phase("TreePhase"))
+        self.fades['fade_out'] = fade_out
+
+        revive_fade_in = FadeIn(self.screen, duration=2, on_complete=lambda: self.revive_player())
+        self.fades['revive_fade_in'] = revive_fade_in
+        death_fade_out = FadeOut(self.screen, duration=2, on_complete=lambda:  self.fades['revive_fade_in'].start())
+        self.fades['death_fade_out'] = death_fade_out      
+
+    def increment_spawn_index(self):
+        self.spawn_index += 1
+    
+    def revive_player(self):
+        self.player.rect.center = self.current_spawn
+        self.player.dead = False
+        
 
     def update(self):
         dt = self.director.clock.get_time() / 1000
@@ -69,15 +92,14 @@ class CemeteryPhase(Phase):
             trigger.check(self.player.rect)
             trigger.update(dt)
         
+        for fade in self.fades.values():
+            fade.update(dt)
 
-        if pygame.sprite.spritecollideany(self.player, self.lights_group):
-            self.player.is_dying = True
-
-        if self.player.dead:
-            self.director.scene_manager.stack_scene("DyingMenu")
-        
-        self.fade_out.update(dt)
-
+        if pygame.sprite.spritecollideany(self.player, self.lights_group) and not self.player.is_dying and not self.player.dead:
+            print("colliding")
+            self.player.dying()
+            self.fades['death_fade_out'].start()
+           
         self.camera.update(self.player.rect)
 
     def draw(self):
@@ -88,7 +110,8 @@ class CemeteryPhase(Phase):
         self.mushroom.draw(self.screen, offset)
         self.player.draw(self.screen, camera_offset=offset)
         self.firefly.draw(self.screen, offset)
-        self.fade_out.draw()
+        for fade in self.fades.values():
+            fade.draw()
 
     def continue_procedure(self):
         pass

@@ -2,6 +2,7 @@ import pygame
 from enviorement.tilemap import Tilemap
 from gui.gui_elements.guiText import SwimInstructionText
 from light2 import ConeLight
+from scenes.fadeTransition import FadeIn, FadeOut
 from scenes.phase import Phase
 from trigger import Trigger
 from utils.constants import SCALE_FACTOR, WIDTH, HEIGHT
@@ -23,9 +24,11 @@ class LakePhase(Phase):
         self.setup_groups()
         self.setup_enemies()
         self.setup_camera()
+        self.setup_spawns()
         self.setup_player()
         self.setup_triggers()
         self.setup_audio()
+        self.setup_fades()
 
     def load_resources(self):
         """
@@ -71,11 +74,19 @@ class LakePhase(Phase):
         Setup the triggers for the scene.
         """
         self.init_trigger("can_swim_trigger", lambda: self.swim())
-        self.init_trigger("change_light_angle_trigger_1", lambda: self.change_anglerfish_light(angle=100, distance=400))
-        self.init_trigger("change_light_angle_trigger_2", lambda: self.change_anglerfish_light(angle=40, distance=300))
-        self.init_trigger("change_camera_to_player_view_trigger", lambda: self.change_camera_focus(self.player.rect))
-        self.init_trigger("appear_second_anglerfish_trigger", lambda: self.appear_second_anglerfish())
-        self.init_trigger("end_phase_trigger", lambda: self.end_phase())
+        self.init_trigger("change_light_angle_trigger_1", lambda: self.change_anglerfish_light(angle=100, distance=400), triggered_once=False)
+        self.init_trigger("change_light_angle_trigger_2", lambda: self.change_anglerfish_light(angle=40, distance=300), triggered_once=False)
+        self.init_trigger("change_camera_to_player_view_trigger", lambda: self.change_camera_focus(self.player.rect), triggered_once=False)
+        self.init_trigger("appear_second_anglerfish_trigger", lambda: self.appear_second_anglerfish(), triggered_once=False)
+        self.init_trigger("end_phase_trigger", lambda: self.fades['fade_out'].start())
+
+    def init_trigger(self, entity_name: str, callback: callable, triggered_once: bool=True):
+        """
+        Initialize a trigger with a callback function.
+        """
+        entity = self.foreground.load_entity(entity_name)
+        trigger_rect = pygame.Rect(entity.x, entity.y, entity.width, entity.height)
+        self.triggers.append(Trigger(trigger_rect, callback, triggered_once=triggered_once))
 
     def setup_audio(self):
         """
@@ -84,34 +95,99 @@ class LakePhase(Phase):
         self.sound_manager.play_music("lake_music.mp3", "assets\\music", -1)
         self.sound_manager.play_sound("bubbles.wav", "assets\\sounds", category='ambient', loop=True)
 
+    def setup_spawns(self):
+        """
+        Setup the spawn points for the scene.
+        """
+        self.spawns_rects = [pygame.Rect(v.x, v.y, v.width, v.height)
+                             for v in self.foreground.load_layer_entities("checkpoints").values()]
+        for spawn_rect in self.spawns_rects:
+            self.triggers.append(Trigger(spawn_rect, lambda: self.increment_spawn_index()))
+        self.spawn_index = -1
+        self.current_spawn = self.spawns_rects[self.spawn_index].center
+
+    def setup_player(self):
+        """
+        Create the player entity.
+        """
+        player_spawn = self.spawns_rects[0].center
+        self.player = Player(
+            player_spawn[0], player_spawn[1],
+            self.foreground,
+            obstacles=[],
+            camera=self.camera,
+            light=self.anglerfish.light
+        )
+        self.player.is_swimming = True
+
+    def revive_player(self):
+        """
+        Revive the player after dying.
+        """
+        self.player.dead = False
+
+    def move_player_to_spawn(self):
+        """
+        Move the camera and player to the current spawn point.
+        """
+        self.player.rect.center = self.current_spawn
+        self.anglerfish.rect.center = (self.current_spawn[0] - 1000, self.current_spawn[1])
+        self.camera.update_x_margin(40, WIDTH * 0.75)
+        self.camera.margin_y = HEIGHT // 5
+        self.camera_focus = self.anglerfish.rect
+        
+        if self.anglerfish_2 is not None:
+            self.anglerfishes_group.remove(self.anglerfish_2)
+            self.anglerfish_2 = None
+        self.fades['revive_fade_in'].start()
+
+    def setup_fades(self):
+        """
+        Setup all fade effects for the scene.
+        """
+        fade_in = FadeIn(self.screen)
+        fade_in.start()
+        self.fades = {
+            'fade_in': fade_in,
+            'fade_out': FadeOut(self.screen, on_complete=lambda: self.end_of_phase("EndMenu")),
+            'revive_fade_in': FadeIn(self.screen, duration=2, on_complete=lambda: self.revive_player()),
+            'death_fade_out': FadeOut(self.screen, duration=2, on_complete=lambda: self.move_player_to_spawn())
+        }
+
+    def increment_spawn_index(self):
+        """
+        Increment the spawn index.
+        """
+        self.spawn_index += 1
+        self.current_spawn = self.spawns_rects[self.spawn_index].center
+
     def update(self):
         dt = self.director.clock.get_time() / 1000
         self.player.update(self.pressed_keys, dt)
         self.anglerfishes_group.update(dt, player_position=self.player.rect.center)
 
-        # Update jellyfishes
         for jellyfish in self.jellyfishes_group:
             jellyfish.update(dt)
 
-        # Check for collisions pixel perfect with fish light
-        for anglerfish in self.anglerfishes_group:
-            if self.player.check_pixel_perfect_collision(anglerfish.light):
+        """for anglerfish in self.anglerfishes_group:
+            if self.player.check_pixel_perfect_collision(anglerfish.light) and not self.player.is_dying and not self.player.dead:
                 self.player.dying()
+                self.fades['death_fade_out'].start()"""
 
-        # Check for collisions with jellyfishes
-        if pygame.sprite.spritecollideany(self.player, self.lights_group):
+        if pygame.sprite.spritecollideany(self.player, self.lights_group) and not self.player.is_dying and not self.player.dead:
             self.player.dying()
+            self.fades['death_fade_out'].start()
 
-        # Check for player dying condition
-        if self.player.dead:
-            self.director.scene_manager.stack_scene("DyingMenu")
-
-        # Update and check triggers
+        # Triggers
         for trigger in self.triggers:
             trigger.check(self.player.rect)
             trigger.update(dt)
-        
-        # Update camera
+
+        # Fades
+        for fade in self.fades.values():
+            fade.update(dt)
+
+        # Camera
         self.camera.update(self.camera_focus)
 
     def draw(self):
@@ -135,19 +211,9 @@ class LakePhase(Phase):
         for trigger in self.triggers:
             trigger.draw(self.screen)
 
-    def setup_player(self):
-        """
-        Create the player entity.
-        """
-        player_spawn = self.foreground.load_entity("player_spawn")
-        self.player = Player(
-            player_spawn.x, player_spawn.y,
-            self.foreground, 
-            obstacles=[], 
-            camera=self.camera,
-            light=self.anglerfish.light
-        )
-        self.player.is_swimming = True
+        # Draw fades
+        for fade in self.fades.values():
+            fade.draw()
 
     def create_fish(self):
         """
@@ -156,6 +222,8 @@ class LakePhase(Phase):
         spawn = self.foreground.load_entity("fish_spawn_1")
         self.anglerfish = Anglerfish(spawn.x, spawn.y, 1, 3, 3000, light_obstacles=self.foreground.get_collision_rects())
         self.anglerfishes_group.add(self.anglerfish)
+        self.anglerfish_2_spawn = self.foreground.load_entity("fish_spawn_2")
+        self.anglerfish_2 = None
 
     def create_jellyfishes(self):
         """
@@ -178,14 +246,6 @@ class LakePhase(Phase):
                 )
                 self.jellyfishes_group.add(jellyfish)
                 self.lights_group.add(jellyfish.light)
-
-    def init_trigger(self, entity_name: str, callback: callable):
-        """
-        Initialize a trigger with a callback function.
-        """
-        entity = self.foreground.load_entity(entity_name)
-        trigger_rect = pygame.Rect(entity.x, entity.y, entity.width, entity.height)
-        self.triggers.append(Trigger(trigger_rect, callback))
 
     # Actions that can be triggered by a Trigger
     def swim(self):
@@ -225,16 +285,16 @@ class LakePhase(Phase):
         """
         Action that makes a second fish appear.
         """
-        spawn = self.foreground.load_entity("fish_spawn_2")
-        self.anglerfish_2 = Anglerfish(spawn.x, spawn.y, 1, 3, 3000, light_obstacles=self.foreground.get_collision_rects())
-        self.anglerfishes_group.add(self.anglerfish_2)
+        if self.anglerfish_2 is None:
+            self.anglerfish_2 = Anglerfish(self.anglerfish_2_spawn.x, self.anglerfish_2_spawn.y, 1, 3, 3000, light_obstacles=self.foreground.get_collision_rects())
+            self.anglerfishes_group.add(self.anglerfish_2)
 
-    def end_phase(self):
+    def end_of_phase(self, scene=str):
         """
         Action that ends the phase.
         """
-        self.sound_manager.stop_music()
-        self.director.scene_manager.stack_scene("FinalCutscene")
+        #self.sound_manager.stop_music()
+        self.director.scene_manager.change_scene(scene)
 
 
     def continue_procedure(self):

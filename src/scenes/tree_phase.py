@@ -8,7 +8,7 @@ from entities.ant import Ant
 from entities.firefly import Firefly
 from gui.gui_elements.guiText import GlideInstructionText
 from light2 import ConeLight
-from scenes.fadeTransition import FadeOut
+from scenes.fadeTransition import FadeIn, FadeOut
 from trigger import Trigger
 from resource_manager import ResourceManager
 from scenes.phase import Phase
@@ -25,11 +25,12 @@ class TreePhase(Phase):
         self.load_resources()
         self.setup_groups()
         self.setup_camera()
+        self.setup_spawns()
         self.setup_enemies()
         self.setup_player()
         self.setup_triggers()
         self.setup_audio()
-        self.setup_fade()
+        self.setup_fades()
 
     def load_resources(self):
         """
@@ -61,6 +62,7 @@ class TreePhase(Phase):
         self.fireflies_group = pygame.sprite.Group()
         self.bouncy_obstacles = []
         self.triggers = []
+        self.fades = {}
 
     def setup_audio(self):
         """
@@ -69,11 +71,39 @@ class TreePhase(Phase):
         self.sound_manager.play_music("tree_music.mp3", "assets\\music", -1)
         self.sound_manager.play_sound("forest_ambient.wav", "assets\\sounds", category='ambient', loop=True)
 
-    def setup_fade(self):
+    def setup_spawns(self):
         """
-        Setup the fade out transition.
+        Setup the spawn points for the scene.
         """
-        self.fade_out = FadeOut(self.screen, 1, on_complete=lambda: self.end_of_phase("LakePhase"))
+        self.spawns_rects = [pygame.Rect(v.x, v.y, v.width, v.height) for v in self.foreground.load_layer_entities("checkpoints").values()]
+        for spawn_rect in self.spawns_rects:
+            self.triggers.append(Trigger(spawn_rect, lambda: self.increment_spawn_index()))
+        self.spawn_index = -1
+        self.current_spawn = self.spawns_rects[self.spawn_index].center
+
+    def setup_player(self):
+        """
+        Create the player entity.
+        """
+        
+        player_spawn = self.spawns_rects[3].center
+        self.player = Player(player_spawn[0], player_spawn[1], 
+                             self.foreground, 
+                             obstacles=self.bouncy_obstacles)
+        
+    def revive_player(self):
+        """
+        Revive the player after dying.
+        """
+        self.player.dead = False
+
+    def move_player_to_spawn(self):
+        """
+        Move the camera to the current spawn point.
+        """
+        self.player.rect.center = self.current_spawn
+        self.camera.update(self.player.rect)
+        self.fades['revive_fade_in'].start()
 
     def setup_enemies(self):
         """
@@ -83,15 +113,6 @@ class TreePhase(Phase):
         self.load_ants()
         self.load_fireflies()
         self.load_static_lights()
-
-    def setup_player(self):
-        """
-        Create the player entity.
-        """
-        player_spawn = self.foreground.load_entity("player_spawn")
-        self.player = Player(player_spawn.x, player_spawn.y, 
-                             self.foreground, 
-                             obstacles=self.bouncy_obstacles)
 
     def load_mushrooms(self):
         """
@@ -130,6 +151,7 @@ class TreePhase(Phase):
         """
         Place the static lights in the scene and add them to the pixel perfect light group to perform collision with mask.
         """
+        self.hide_lights = False
         left_lights = self.foreground.load_layer_entities("left_lights")
         for light in left_lights.values():
             self.pixel_perfect_lights_group.add(
@@ -148,7 +170,7 @@ class TreePhase(Phase):
         """
         self.init_trigger("glide_trigger", lambda: self.glide())
         self.init_trigger("camera_y_margin_trigger", lambda: self.change_camera_y_margin(self.camera.screen_height // 2.2))
-        self.init_trigger("end_of_phase", lambda: self.fade_out.start())
+        self.init_trigger("end_of_phase", lambda: self.fades['fade_out'].start())
 
     def init_trigger(self, entity_name: str, callback: callable):
         """
@@ -157,6 +179,30 @@ class TreePhase(Phase):
         entity = self.foreground.load_entity(entity_name)
         trigger_rect = pygame.Rect(entity.x, entity.y, entity.width, entity.height)
         self.triggers.append(Trigger(trigger_rect, callback))
+
+    def setup_fades(self):
+        """
+        Setup all fade effects for the scene.
+        """
+        fade_in = FadeIn(self.screen)
+        fade_in.start()
+        self.fades['fade_in'] = fade_in
+
+        fade_out = FadeOut(self.screen, on_complete=lambda: self.end_of_phase("LakePhase"))
+        self.fades['fade_out'] = fade_out
+
+        revive_fade_in = FadeIn(self.screen, duration=2, on_complete=lambda: self.revive_player())
+        self.fades['revive_fade_in'] = revive_fade_in
+
+        death_fade_out = FadeOut(self.screen, duration=2, on_complete=lambda: self.move_player_to_spawn())
+        self.fades['death_fade_out'] = death_fade_out
+
+    def increment_spawn_index(self):
+        """
+        Increment the spawn index.
+        """
+        self.spawn_index += 1
+        self.current_spawn = self.spawns_rects[self.spawn_index].center
 
     def update(self):
         dt = self.director.clock.get_time() / 1000
@@ -182,26 +228,26 @@ class TreePhase(Phase):
         self.pixel_perfect_lights_group.update(obstacles=self.collidable_obstacles, camera_rect=self.camera.get_view_rect())
 
         # Check if the player is colliding with the pixel perfect collisions
-        if any(self.player.check_pixel_perfect_collision(light) for light in self.pixel_perfect_lights_group):
-            self.player.is_dying = True
+        if any(self.player.check_pixel_perfect_collision(light) for light in self.pixel_perfect_lights_group) and not self.player.is_dying and not self.player.dead:
+            self.player.dying()            
+            self.fades['death_fade_out'].start()
 
         # Check if the player is colliding with lights with rects
-        if pygame.sprite.spritecollideany(self.player, self.lights_group):
+        if pygame.sprite.spritecollideany(self.player, self.lights_group) and not self.player.is_dying and not self.player.dead:
             self.player.dying()
-        if self.player.dead:
-            self.director.sound_manager.stop_music()
-            self.director.scene_manager.stack_scene("DyingMenu")
+            self.fades['death_fade_out'].start()
 
         # Update and check triggers
         for trigger in self.triggers:
             trigger.check(self.player.rect)
             trigger.update(dt)
+        
+        # Update fade effects
+        for fade in self.fades.values():
+            fade.update(dt)
 
         # Update camera
         self.camera.update(self.player.rect)
-
-        # Update fade out transition
-        self.fade_out.update(dt)
 
     def draw(self):
         offset = self.camera.get_offset()
@@ -212,7 +258,8 @@ class TreePhase(Phase):
 
         # Draw pixel perfect lights (lights of enemies are drawn in their respective draw method)
         for light in self.pixel_perfect_lights_group:
-            light.draw(self.screen, offset)
+            if not self.hide_lights:
+                light.draw(self.screen, offset)
 
         # Draw entities
         for group in [self.mushrooms_group, self.ants_group, self.fireflies_group]:
@@ -226,16 +273,11 @@ class TreePhase(Phase):
             trigger.draw(self.screen)
 
         # Draw fade out transition
-        self.fade_out.draw()
+        for fade in self.fades.values():
+            fade.draw()
 
     def continue_procedure(self):
         self.sound_manager.play_sound("forest_ambient.wav", "assets\\sounds", category='ambient', loop=True)
-
-    def continue_procedure(self):
-        self.sound_manager.play_sound("forest_ambient.wav", "assets\\sounds", category='ambient', loop=True)
-
-        # Draw fade out transition
-        self.fade_out.draw()
 
     # Actions that can be triggered by a Trigger
     def glide(self):
@@ -244,6 +286,7 @@ class TreePhase(Phase):
         """
         text = GlideInstructionText(self.screen, (100, 100))
         self.player.can_glide = True
+        self.hide_lights = True
         return text
 
     def change_camera_y_margin(self, new_margin: int):

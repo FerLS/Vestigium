@@ -2,7 +2,7 @@ import pygame
 from utils.constants import *
 from scenes.pauseMenu import PauseMenu
 from scenes.startMenu import StartMenu
-from scenes.dyingMenu import DyingMenu
+from scenes.end_menu import EndMenu
 from scenes.cemeteryPhase import CemeteryPhase
 from scenes.tree_phase import TreePhase
 from scenes.lake_phase import LakePhase
@@ -32,7 +32,7 @@ class Director(object):
     def setup_scenes(self):
         self.scene_manager.register_scene("StartMenu", StartMenu)
         self.scene_manager.register_scene("PauseMenu", PauseMenu)
-        self.scene_manager.register_scene("DyingMenu", DyingMenu)
+        self.scene_manager.register_scene("EndMenu", EndMenu)
         self.scene_manager.register_scene("CemeteryPhase", CemeteryPhase)
         self.scene_manager.register_scene("TreePhase", TreePhase)
         self.scene_manager.register_scene("LakePhase", LakePhase)

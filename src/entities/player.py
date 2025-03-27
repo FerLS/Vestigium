@@ -186,6 +186,7 @@ class Player(pygame.sprite.Sprite):
             self.frame_index = (self.frame_index + 1) % len(self.current_animation)
             if self.is_dying and self.frame_index == 5:
                 self.dead = True
+                self.is_dying = False
 
             if self.current_animation == self.animations["walk"] and (self.frame_index == 0 or self.frame_index == 4):
                 if self.velocity_x > 0:
@@ -207,9 +208,6 @@ class Player(pygame.sprite.Sprite):
             self.animation_timer = 0
 
     def check_collisions(self):
-
-
-
         self.on_ground = False
         colliders = self.tilemap.get_collision_rects()
         self.bouncy_obstacles = self.obstacles
@@ -313,7 +311,7 @@ class Player(pygame.sprite.Sprite):
 
 
     def update(self, keys, dt):
-        if not self.is_dying:
+        if not self.is_dying and not self.dead: # Si estou morrendo ou morto non fago nada mentras
             self.handle_input(keys)
             self.check_collisions()
             self.apply_gravity()
@@ -330,8 +328,9 @@ class Player(pygame.sprite.Sprite):
             self.on_wall_right = False
 
     def draw(self, screen, camera_offset=(0, 0)):
-        draw_pos = (
-            self.rect.x - (8 * SCALE_FACTOR) - camera_offset[0],
-            self.rect.y - camera_offset[1],
-        )
-        screen.blit(self.image, draw_pos)
+        if not self.dead:
+            draw_pos = (
+                self.rect.x - (8 * SCALE_FACTOR) - camera_offset[0],
+                self.rect.y - camera_offset[1],
+            )
+            screen.blit(self.image, draw_pos)

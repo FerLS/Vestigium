@@ -23,7 +23,7 @@ class StartMenu(Menu):
         self.director.finish_program()
 
     def play_game(self):
-        self.director.scene_manager.stack_scene("TreePhase")
+        self.director.scene_manager.stack_scene("LakePhase")
 
     def show_options_screen(self):
         self.screen_list.append(
