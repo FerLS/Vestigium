@@ -66,7 +66,7 @@ class CemeteryBossPhase(Phase):
         trigger = self.foreground.load_entity("tutorial_trigger")
         self.trigger = Trigger(
             pygame.Rect(trigger.x, trigger.y, trigger.width, trigger.height),
-            lambda: boss_tutorial(self.screen, self.player.rect),
+            lambda: boss_tutorial(self.screen, (trigger.x, trigger.y)),
         )
 
         # GraveDigger

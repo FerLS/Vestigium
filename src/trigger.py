@@ -48,8 +48,8 @@ def glide(screen, player):
     return text
 
 
-def boss_tutorial(screen, player_rect):
-    text = BossTutorialText(screen, (player_rect.x, player_rect.y - 10))
+def boss_tutorial(screen, pos):
+    text = BossTutorialText(screen, pos)
     return text
 
 
