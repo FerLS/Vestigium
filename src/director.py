@@ -5,7 +5,10 @@ from scenes.startMenu import StartMenu
 from scenes.dyingMenu import DyingMenu
 from scenes.cemeteryPhase import CemeteryPhase
 from scenes.tree_phase import TreePhase
+from scenes.lake_phase import LakePhase
 from scene_manager import SceneManager
+from sound_manager import SoundManager
+from scenes.minigamePhase import MinigamePhase
 
 class Director(object):
     _instance = None
@@ -18,6 +21,8 @@ class Director(object):
             cls.screen = pygame.display.set_mode((WIDTH, HEIGHT))
             cls.scene_manager = SceneManager(cls._instance)
             cls.setup_scenes(cls)
+            cls.sound_manager = SoundManager()
+            cls.restart_flag = False
 
         return cls._instance
 
@@ -30,11 +35,14 @@ class Director(object):
         self.scene_manager.register_scene("DyingMenu", DyingMenu)
         self.scene_manager.register_scene("CemeteryPhase", CemeteryPhase)
         self.scene_manager.register_scene("TreePhase", TreePhase)
+        self.scene_manager.register_scene("LakePhase", LakePhase)
+        self.scene_manager.register_scene("MinigamePhase", MinigamePhase)
     
     def finish_current_scene(self):
         self.leave_current_scene = True
         if self.scenes_stack:
             self.scenes_stack.pop()
+            self.restart_flag = True
 
     def finish_program(self):
         self.leave_current_scene = True
@@ -54,10 +62,14 @@ class Director(object):
 
         while not self.leave_current_scene:
             self.clock.tick(60)
+            if self.restart_flag:
+                self.restart_flag = False
+                scene.continue_procedure()
             scene.events(pygame.event.get())
             scene.update()
             scene.draw()
             pygame.display.update()
+        
     
     def run(self):
         while self.scenes_stack:

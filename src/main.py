@@ -11,4 +11,5 @@ if __name__ == "__main__":
     first_scene = StartMenu(director)
     director.stack_scene(first_scene)
     director.run()
-    pygame.quit()
+    pygame.quit()    
+    

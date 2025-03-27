@@ -2,10 +2,14 @@ import pygame
 
 from scenes.menu import Menu
 from gui.gui_screens.dying_screen import DyingScreen
+from sound_manager import SoundManager
 
 class DyingMenu(Menu):
     def __init__(self, director):
         Menu.__init__(self, director)
+        self.sound_manager = SoundManager()
+        self.sound_manager.pause_music()
+        self.sound_manager.stop_all_sounds()
         self.screen_list = []
         self.screen_list.append(DyingScreen(self, "assets\\images\\backgrounds\\pause_menu_background"))
         

@@ -1,5 +1,4 @@
 import os
-import random
 import pygame
 from resource_manager import ResourceManager
 
@@ -12,15 +11,25 @@ class SoundManager(object):
             pygame.mixer.pre_init(44100, -16, 2, 4096)
             pygame.mixer.init()
             pygame.mixer.set_num_channels(8)
+            pygame.mixer.set_reserved(4)
             cls._instance.channels = [pygame.mixer.Channel(i) for i in range(8)]
+
+            # Grupos de canales por categoría
+            cls._instance.channel_groups = {
+                'player': [0, 1, 2],
+                'ambient': [3],
+                'enemies': [4]
+            }
+
             cls._instance.music_volume = 0.5
             cls._instance.sound_volume = 0.5
             cls._instance.resource_manager = ResourceManager()
-            cls._instance.footstep_channel = pygame.mixer.Channel(7)
 
         return cls._instance
 
-    # Music related methods
+    # ==========================
+    # MUSIC METHODS
+    # ==========================
     def play_music(self, music_name, music_path, loop=-1):
         fullname = os.path.join(music_path, music_name)
         pygame.mixer.music.load(fullname)
@@ -43,23 +52,35 @@ class SoundManager(object):
     def get_music_volume(self):
         return pygame.mixer.music.get_volume()
 
-    def play_sound(self, sound_name, sound_path, volume=None, pan=0.5):
-        sound = ResourceManager().load_sound(sound_name, sound_path)
-        if sound:
-            """
-            if "footstep" in sound_name.lower():
-                if not self.footstep_channel.get_busy(): 
-                    self.footstep_channel.set_volume(self.sound_volume)
-                    self.footstep_channel.play(sound)
-            else:"""
-                # Para otros sonidos, buscar un canal libre
-            canal_libre = pygame.mixer.find_channel()
-            if canal_libre:
-                final_volume = volume if volume is not None else self.sound_volume
-                left = max(0.0, 1.0 - pan) * final_volume
-                right = max(0.0, pan) * final_volume
-                canal_libre.set_volume(left, right)
-                canal_libre.play(sound)
+    # ==========================
+    # SOUND METHODS
+    # ==========================
+    def play_sound(self, sound_name, sound_path, category='default', pan=0.5, loop=False):
+        sound = self.resource_manager.load_sound(sound_name, sound_path)
+        if not sound:
+            return
+
+        # Calcular volumen izquierdo y derecho usando pan
+        left = max(0.0, min(1.0, 1.0 - pan)) * self.sound_volume
+        right = max(0.0, min(1.0, pan)) * self.sound_volume
+
+        # Buscar canal en el grupo
+        group_channels = self.channel_groups.get(category, [])
+        channel = None
+        for ch_index in group_channels:
+            ch = self.channels[ch_index]
+            if not ch.get_busy():
+                channel = ch
+                break
+
+        # Si no hay canal libre, usar uno no reservado
+        if not channel:
+            channel = pygame.mixer.find_channel()
+
+        if channel:
+            channel.set_volume(left, right)
+            loops = -1 if loop else 0
+            channel.play(sound, loops=loops)
 
     def stop_all_sounds(self):
         for channel in self.channels:

@@ -7,6 +7,8 @@ CAMERA_LIMITS_X = 240, 560
 CAMERA_LIMITS_Y = 100, 700
 MAX_FALL_SPEED = 10
 
+ACC = 1.2
+FRIC = -0.10
 
 class MovementDirections(Enum):
     UP = 1
@@ -19,3 +21,7 @@ class MovementType(Enum):
     IDLE = 1
     WALK = 2
     JUMP = 3
+
+class Fireflies(Enum):
+    RIGHT = 0
+    LEFT = 1

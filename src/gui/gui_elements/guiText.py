@@ -1,6 +1,7 @@
 import pygame
 from gui.guiElement import GUIElement
 from resource_manager import ResourceManager
+from sound_manager import SoundManager
 
 class TextGUI(GUIElement):
     def __init__(self, screen, font, color, text, position):
@@ -11,6 +12,7 @@ class TextGUI(GUIElement):
         self.image = font.render(text, True, color)
         GUIElement.__init__(self, screen, self.image.get_rect())
         self.set_position(position)
+        
 
     def update_hover(self, mouse_pos):
         super().update_hover(mouse_pos)
@@ -63,12 +65,18 @@ class MusicVolumeText(TextGUI):
     def action(self):
         pass
 
+    def update_hover(self, mouse_pos):
+        pass
+
 class SoundEffectsVolumeText(TextGUI):
     def __init__(self, screen, position):
         font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets\\fonts", 20)
         TextGUI.__init__(self, screen, font, (255, 209, 0), "Sound Effects", position)
 
     def action(self):
+        pass
+
+    def update_hover(self, mouse_pos):
         pass
 
 # Pause menu text
@@ -113,6 +121,14 @@ class GlideInstructionText(TextGUI):
     def __init__(self, screen, position):
         font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
         TextGUI.__init__(self, screen, font, (255, 255, 255), "while falling, press SPACE to glide", position)
+
+    def action(self):
+        pass
+
+class SwimInstructionText(TextGUI):
+    def __init__(self, screen, position):
+        font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
+        TextGUI.__init__(self, screen, font, (255, 255, 255), "use LEFT, RIGHT, UP and DOWN to swim", position)
 
     def action(self):
         pass

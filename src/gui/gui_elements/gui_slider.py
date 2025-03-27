@@ -34,6 +34,9 @@ class Slider(GUIElement):
             self.knob_x = max(self.rect.x, min(self.rect.x + self.rect.width, event.pos[0]))
             self.value = self._position_to_value(self.knob_x)
 
+    def update_hover(self, mouse_pos):
+        pass
+
     def draw(self, screen):
         pygame.draw.rect(screen, (180, 180, 180), self.rect, border_radius=self.rect.height // 2)
 
@@ -52,4 +55,13 @@ class MusicVolumeSlider(Slider):
         
     def action(self):
         self.sound_manager.set_music_volume(self.value)
+
+class SoundEffectsVolumeSlider(Slider):
+    def __init__(self, screen, x, y, width, height, min_value=0, max_value=1, initial_value=0.5):
+        self.sound_manager = SoundManager()
+        initial_value = self.sound_manager.get_sound_volume()   
+        super().__init__(screen, x, y, width, height, min_value, max_value, initial_value)
+
+    def action(self):
+        self.sound_manager.set_sound_volume(self.value)
 
