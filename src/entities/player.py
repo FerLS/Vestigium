@@ -205,7 +205,11 @@ class Player(pygame.sprite.Sprite):
                     self.velocity_y = 0
                     self.on_ground = True
                     self._coyote_timer = self.coyote_time
-                    self.set_animation("idle")
+
+                    if self.velocity_x == 0:
+                        self.set_animation("idle")
+                    else:
+                        self.set_animation("walk")
 
         # Horizontal
         self.rect.x += self.velocity_x
