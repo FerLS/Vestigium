@@ -5,6 +5,7 @@ from entities.lantern import Lantern
 from entities.keyItem import KeyItem
 from light2 import CircularLight, ConeLight
 from scenes.phase import Phase
+from trigger import Trigger
 from utils.constants import WIDTH, HEIGHT
 from enviorement.background import Background
 from resource_manager import ResourceManager
@@ -58,6 +59,11 @@ class CemeteryBossPhase(Phase):
         self.key = KeyItem(key_spawn.x, key_spawn.y)
         self.foreground.insert_sprite(self.key, 2)
 
+        # Trigger
+
+        trigger = self.foreground.load_entity("tutorial_trigger")
+        self.trigger = Trigger(trigger.x, trigger.y, trigger.width, trigger.height)
+
     index = 0
 
     def update(self):
@@ -69,6 +75,8 @@ class CemeteryBossPhase(Phase):
             self.director.scene_manager.stack_scene("DyingMenu")
 
         self.key.update(self.player)
+        self.trigger.check(self.player.rect)
+        self.trigger.update(dt)
 
         self.camera.update(self.player.rect)
 
@@ -77,3 +85,4 @@ class CemeteryBossPhase(Phase):
 
         self.background.draw(self.screen, offset)
         self.foreground.draw(self.screen, offset)
+        self.trigger.draw(self.screen)
