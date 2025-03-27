@@ -21,19 +21,17 @@ class Lantern(pygame.sprite.Sprite):
             light_image, (light_width * scale, light_height * scale)
         )
 
+        # Generar máscara de colisión para la luz (ignora transparencia)
+        self.mask = pygame.mask.from_surface(self.light_image)
+
         # Ajustar rectángulo usando el centro
         self.rect = self.image.get_rect(center=position)
         self.pos = pygame.math.Vector2(position)  # Posición absoluta en el mundo
 
-        # La máscara de colisión coincide exactamente con la imagen de la luz
-        self.mask = pygame.mask.from_surface(self.light_image)
-
         # Convertir path a posiciones absolutas en el mundo
-        if len(path) < 4:
-            raise ValueError(
-                "El path debe contener al menos 4 puntos para formar un recorrido cuadrado."
-            )
+
         self.path = [pygame.math.Vector2(p) for p in path]
+        # Ordenar los puntos del path
 
         # Iniciar en el primer punto correctamente
         self.current_point_index = 0
@@ -64,8 +62,13 @@ class Lantern(pygame.sprite.Sprite):
             round(self.pos.y - offset[1]),
         )
 
-        # Colisión con el jugador
-        if pygame.sprite.collide_mask(self, player):
+        # Ajustar la posición de la máscara (coincide con la luz)
+        light_rect = self.light_image.get_rect(center=self.rect.center)
+
+        # Colisión con el jugador solo en píxeles visibles de la luz
+        if player.mask.overlap(
+            self.mask, (light_rect.x - player.rect.x, light_rect.y - player.rect.y)
+        ):
             safe_tiles = tilemap.get_safe_rects()
             player_in_safe_zone = any(
                 player.rect.colliderect(safe_tile) for safe_tile in safe_tiles
@@ -81,10 +84,9 @@ class Lantern(pygame.sprite.Sprite):
             self.pos.y - self.light_image.get_height() // 2 - offset[1],
         )
 
+        # Dibujar la linterna encima, aplicando el offset
+        screen.blit(self.image, (self.rect.x, self.rect.y))
         # Dibujar la luz con opacidad ajustada
         light_surface = self.light_image.copy()
         light_surface.set_alpha(128)
         screen.blit(light_surface, light_pos)
-
-        # Dibujar la linterna encima, aplicando el offset
-        screen.blit(self.image, (self.rect.x, self.rect.y))
