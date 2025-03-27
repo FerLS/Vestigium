@@ -36,6 +36,11 @@ class Light(pygame.sprite.Sprite):
         self.rect.center = self.position
         self.dirty = True
 
+    def change_origin(self, new_position):
+        self.position = pygame.Vector2(new_position)
+        self.rect.center = self.position
+        self.dirty = True
+
     @abstractmethod
     def _generate_mask(self, obstacles):
         pass
@@ -63,6 +68,7 @@ class CircularLight(Light):
         self.segments = segments
         self.ray_step = ray_step
         self.use_obstacles = use_obstacles  # Nuevo flag
+        self.position = pygame.Vector2(position)
 
     def _generate_mask(self, obstacles):
         size = int(self.distance * 2)
@@ -144,6 +150,7 @@ class ConeLight(Light):
             relative_point = (end_point - self.position) + center
             points.append(relative_point)
 
+        pygame.draw.polygon(surface, (255, 255, 0, 128), points)
         pygame.draw.polygon(surface, (255, 255, 0, 128), points)
         self.mask = pygame.mask.from_surface(surface)
 
