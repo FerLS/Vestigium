@@ -5,7 +5,7 @@ from entities.lantern import Lantern
 from entities.keyItem import KeyItem
 from light2 import CircularLight, ConeLight
 from scenes.phase import Phase
-from trigger import Trigger
+from trigger import Trigger, boss_tutorial
 from utils.constants import WIDTH, HEIGHT
 from enviorement.background import Background
 from resource_manager import ResourceManager
@@ -64,7 +64,10 @@ class CemeteryBossPhase(Phase):
         # Trigger
 
         trigger = self.foreground.load_entity("tutorial_trigger")
-        self.trigger = Trigger(trigger.x, trigger.y, trigger.width, trigger.height)
+        self.trigger = Trigger(
+            (trigger.x, trigger.y, trigger.width, trigger.height),
+            lambda: boss_tutorial(self.screen, self.player),
+        )
 
         # GraveDigger
 
@@ -86,7 +89,7 @@ class CemeteryBossPhase(Phase):
 
         self.gravedigger.update(self.player)
         self.key.update(self.player)
-        # self.trigger.check(self.player.rect)
+        self.trigger.check(self.player.rect)
         self.trigger.update(dt)
 
         self.camera.update(self.player.rect)

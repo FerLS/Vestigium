@@ -44,6 +44,11 @@ def glide(screen, player):
     return text
 
 
+def boss_tutorial(screen, player):
+    text = boss_tutorial(screen, (player.rect.x, player.rect.y + 10))
+    return text
+
+
 def change_camera_y_margin(camera, new_margin):
     camera.margin_y = new_margin
     return None
