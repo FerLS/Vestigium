@@ -20,6 +20,7 @@ class Director(object):
             cls.screen = pygame.display.set_mode((WIDTH, HEIGHT))
             cls.scene_manager = SceneManager(cls._instance)
             cls.setup_scenes(cls)
+            cls.restarted = False
 
         return cls._instance
 
