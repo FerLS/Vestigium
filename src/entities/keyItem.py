@@ -23,5 +23,7 @@ class KeyItem(pygame.sprite.Sprite):
 
     def draw(self, screen, offset):
 
+        if self.picked:
+            return
         offset_x, offset_y = offset
         screen.blit(self.image, (self.rect.x - offset_x, self.rect.y - offset_y))

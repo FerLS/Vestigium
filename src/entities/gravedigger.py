@@ -3,36 +3,35 @@ import os
 import random
 
 from resource_manager import ResourceManager
-from utils.constants import MovementDirections, MovementType
+from utils.constants import MovementDirections, MovementType, SCALE_FACTOR
+from light2 import CircularLight  # Importa CircularLight
 
 
 class Gravedigger(pygame.sprite.Sprite):
     def __init__(self, x, y, tilemap):
         pygame.sprite.Sprite.__init__(self)
         self.resource_manager = ResourceManager()
-        self.walk_sheet = self.resource_manager.load_image(
-            "enemy-walk.png", "assets\\enemy"
+        self.walk_sheet = self.scale_image(
+            self.resource_manager.load_image("enemy-walk.png", "assets\\enemy")
         )
-        self.idle_sheet = self.resource_manager.load_image(
-            "enemy-idle.png", "assets\\enemy"
+        self.idle_sheet = self.scale_image(
+            self.resource_manager.load_image("enemy-idle.png", "assets\\enemy")
         )
 
         self.tilemap = tilemap
-        self.rect = pygame.Rect((0, 0), (42, 47))
-        self.light = Light(
-            x + 20, y, "assets/enemy/lantern.png"
-        )  # Asociamos light ao farolillo
+        self.rect = pygame.Rect((0, 0), (42 * SCALE_FACTOR, 47 * SCALE_FACTOR))
+
         self.image = self.idle_sheet.subsurface(self.rect)
         self.mask = pygame.mask.from_surface(self.image)
 
-        self.initial_position = (x, y)  # posición inicial
+        self.initial_position = (x, y)
         self.rect.x = x
         self.rect.y = y
         self.velocity = 1
-        self.range = (200, 500)  # Range de movemento en x
+        self.range = (200, 500)
         self.state = MovementType.IDLE
         self.movement = MovementDirections.LEFT
-        self.time = random.randint(60, 120)  # Cada 60 ou 120 frames cambia de direccion
+        self.time = random.randint(60, 120)
 
         self.walk_frames = self.load_frames(self.walk_sheet)
         self.idle_frames = self.load_frames(self.idle_sheet)
@@ -43,17 +42,27 @@ class Gravedigger(pygame.sprite.Sprite):
         self.collided = False
         self.offset_x = 0
 
-    # Cargar cada sheet
+        # Crear una luz circular
+        self.light = CircularLight(
+            (self.rect.centerx - 20, self.rect.centery), radius=15
+        )
+
+    def scale_image(self, image):
+        width, height = image.get_width(), image.get_height()
+        return pygame.transform.scale(
+            image, (width * SCALE_FACTOR, height * SCALE_FACTOR)
+        )
+
     def load_frames(self, sheet):
         frames = []
-        frame_width = 42
+        frame_width = 42 * SCALE_FACTOR
+        frame_height = 47 * SCALE_FACTOR
         num_frames = sheet.get_width() // frame_width
         for i in range(num_frames):
-            frame = sheet.subsurface((i * 42, 0, 42, 47))
+            frame = sheet.subsurface((i * frame_width, 0, frame_width, frame_height))
             frames.append(frame)
         return frames
 
-    # Animacion idle e walk
     def animate(self):
         self.animationCounter += 1
         if self.animationCounter >= self.animationSpeed:
@@ -68,7 +77,6 @@ class Gravedigger(pygame.sprite.Sprite):
         else:
             self.image = self.idle_frames[self.imagePosture]
 
-    # Moverse nun rango e aleatoriamente
     def move(self):
         if self.state == MovementType.WALK:
             if self.movement == MovementDirections.LEFT:
@@ -86,71 +94,35 @@ class Gravedigger(pygame.sprite.Sprite):
                 self.movement = random.choice(
                     [MovementDirections.LEFT, MovementDirections.RIGHT]
                 )
-                self.time = random.randint(60, 120)  # Novo tempo
-        self.light.update_position(self)
+                self.time = random.randint(60, 120)
 
     def collide(self, player):
         if self.mask.overlap(
             player.mask, (player.rect.x - self.rect.x, player.rect.y - self.rect.y)
         ):
-            if (
-                self.movement == MovementDirections.RIGHT
-                and player.rect.x < self.rect.x
-            ) or (
-                self.movement == MovementDirections.LEFT and player.rect.x > self.rect.x
-            ):
-                player.get_key()
-                self.stop()
+            player.is_dying = True
 
     def stop(self):
         self.state = MovementType.IDLE
         self.collided = True
 
-    # Cando estea preto comeza a andar
     def start(self, player):
         if not self.collided:
             distance = abs(self.rect.x - player.rect.x)
-            if distance < 100:
+            if distance < 300:
                 self.state = MovementType.WALK
 
-    def check_collisions(self):
-        colliders = self.tilemap.get_collision_rects()
-
-        self.on_ground = False
-        return
-
-        # Colisiones en el eje Y
-        self.rect.y += self.velocity
-        for collider in colliders:
-            if self.rect.colliderect(collider):
-                if self.velocity > 0:
-                    self.rect.bottom = collider.top
-                    self.velocity = 0
-                    self.on_ground = True
-                elif self.velocity < 0:
-                    self.rect.top = collider.bottom
-                    self.velocity = 0
-
-        # Colisiones en el eje X
-        self.rect.x += self.velocity
-        for collider in colliders:
-            if self.rect.colliderect(collider):
-                if self.velocity > 0:
-                    self.rect.right = collider.left
-                elif self.velocity < 0:
-                    self.rect.left = collider.right
-
-    def update(self, player, camera_scroll, screen):
+    def update(self, player):
         self.start(player)
         self.collide(player)
         self.move()
         self.animate()
-        self.light.update_position(self)
-        self.light.collide(player, self)
-        self.check_collisions()
-        self.draw(screen, camera_scroll)
-        # self.rect.x = self.initial_position[0] - camera_scroll
-        # print(f"Gravedigger position: ({self.rect.x}, {self.rect.y})")
+
+        # Actualizar la posición de la luz
+        light_offset = -25 if self.movement == MovementDirections.LEFT else 25
+        self.light.update(
+            new_position=(self.rect.centerx + light_offset, self.rect.centery + 15)
+        )
 
     def draw(self, screen, camera_scroll):
         img = self.image
@@ -158,6 +130,8 @@ class Gravedigger(pygame.sprite.Sprite):
         if self.movement == MovementDirections.LEFT:
             img = pygame.transform.flip(img, 1, 0)
 
-        self.offset_x += camera_scroll
-        screen.blit(img, (self.rect.x - self.offset_x, self.rect.y))
-        self.light.draw(screen)
+        offset_x, offset_y = camera_scroll
+        screen.blit(img, (self.rect.x - offset_x, self.rect.y - offset_y))
+
+        # Dibujar la luz
+        self.light.draw(screen, offset=camera_scroll)

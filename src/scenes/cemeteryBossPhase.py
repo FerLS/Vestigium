@@ -33,7 +33,9 @@ class CemeteryBossPhase(Phase):
         # Player
 
         player_spawn = self.foreground.load_entity("player_spawn")
-        self.player = Player(player_spawn.x, player_spawn.y, self.foreground)
+        self.player = Player(
+            player_spawn.x, player_spawn.y, self.foreground, obstacles=[]
+        )
 
         # Lantern
 
@@ -64,6 +66,14 @@ class CemeteryBossPhase(Phase):
         trigger = self.foreground.load_entity("tutorial_trigger")
         self.trigger = Trigger(trigger.x, trigger.y, trigger.width, trigger.height)
 
+        # GraveDigger
+
+        gravedigger_spawn = self.foreground.load_entity("gravedigger_spawn")
+        self.gravedigger = Gravedigger(
+            gravedigger_spawn.x, gravedigger_spawn.y, self.foreground
+        )
+        self.foreground.insert_sprite(self.gravedigger, 2)
+
     index = 0
 
     def update(self):
@@ -74,8 +84,9 @@ class CemeteryBossPhase(Phase):
         if self.player.dead:
             self.director.scene_manager.stack_scene("DyingMenu")
 
+        self.gravedigger.update(self.player)
         self.key.update(self.player)
-        self.trigger.check(self.player.rect)
+        # self.trigger.check(self.player.rect)
         self.trigger.update(dt)
 
         self.camera.update(self.player.rect)
