@@ -34,11 +34,11 @@ class BackgroundLayer:
 
 
 class Background:
-    def __init__(self, resource_manager, assets_path, enable_vertical_scroll=False):
+    def __init__(self, resource_manager, assets_path, speed_increment=0.2, enable_vertical_scroll=False):
         self.layers = []
         speed = 0.0
         for layer in sorted(os.listdir(assets_path)):  
-            speed += 0.2
+            speed += speed_increment
             vertical_speed = speed if enable_vertical_scroll else 0.0
             self.layers.append(
                 BackgroundLayer(resource_manager, layer, assets_path, speed_x=speed, speed_y=vertical_speed)

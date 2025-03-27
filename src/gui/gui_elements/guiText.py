@@ -109,10 +109,58 @@ class RestartLevel(TextGUI):
         self.screen.menu.restart_level()
 
 # Tutorial text
+class InitialInstructionText(TextGUI):
+    def __init__(self, screen, position):
+        font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
+        self.lines = [
+            font.render("use LEFT and RIGHT to move and UP to jump", True, (255, 255, 255)),
+            font.render("but be careful with the lights...", True, (255, 255, 255))
+        ]
+        self.line_spacing = 5  # Space between lines
+        self.rects = [line.get_rect() for line in self.lines]
+        self.set_position(position)
+
+    def set_position(self, position):
+        # Adjust positions for each line
+        for i, rect in enumerate(self.rects):
+            rect.topleft = (position[0], position[1] + i * (rect.height + self.line_spacing))
+
+    def draw(self, screen):
+        for line, rect in zip(self.lines, self.rects):
+            screen.blit(line, rect)
+            
+class RetryInstructionText(TextGUI):
+    def __init__(self, screen, position):
+        font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
+        self.lines = [
+            font.render("lets try again-", True, (255, 255, 255)),
+            font.render("this time be more careful", True, (255, 255, 255))
+        ]
+        self.line_spacing = 5  # Space between lines
+        self.rects = [line.get_rect() for line in self.lines]
+        self.set_position(position)
+
+    def set_position(self, position):
+        # Adjust positions for each line
+        for i, rect in enumerate(self.rects):
+            rect.topleft = (position[0], position[1] + i * (rect.height + self.line_spacing))
+
+    def draw(self, screen):
+        for line, rect in zip(self.lines, self.rects):
+            screen.blit(line, rect)
+
 class GlideInstructionText(TextGUI):
     def __init__(self, screen, position):
         font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
         TextGUI.__init__(self, screen, font, (255, 255, 255), "while falling, press SPACE to glide", position)
+
+    def action(self):
+        pass
+
+class SwimInstructionText(TextGUI):
+    def __init__(self, screen, position):
+        font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
+        TextGUI.__init__(self, screen, font, (255, 255, 255), "use LEFT, RIGHT, UP and DOWN to swim", position)
 
     def action(self):
         pass

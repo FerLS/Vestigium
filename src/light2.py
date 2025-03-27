@@ -4,12 +4,14 @@ from abc import abstractmethod
 
 
 class Light(pygame.sprite.Sprite):
-    def __init__(self, position, distance):
+    def __init__(self, position, distance, fixed_position=None):
         super().__init__()
         self.position = pygame.Vector2(position)
+        self.fixed_position = pygame.Vector2(fixed_position) if fixed_position else None
         self.distance = distance
         self.mask = None
         self.dirty = True  # Solo recalcular si hay cambios
+        self.intensity = 1  # Add intensity attribute (0 to 1)
 
         # Elementos requeridos por un Sprite
         size = int(distance * 2)
@@ -22,7 +24,10 @@ class Light(pygame.sprite.Sprite):
         self.rect.center = self.position
 
     def update(self, new_position=None, obstacles=None):
-        if new_position and self.position != pygame.Vector2(new_position):
+        # Usar posición fija si se proporciona
+        if self.fixed_position:
+            self.position = self.fixed_position
+        elif new_position and self.position != pygame.Vector2(new_position):
             self.position = pygame.Vector2(new_position)
             self.dirty = True
             self.rect.center = self.position  # <-- sincronizar rect con posición
@@ -47,15 +52,17 @@ class Light(pygame.sprite.Sprite):
 
     def draw(self, screen, offset=(0, 0)):
         offset_x, offset_y = offset
+        draw_position = self.fixed_position if self.fixed_position else self.position
         if self.mask:
             mask_surface = self.mask.to_surface(
-                setcolor=((255, 209, 0, 150)), unsetcolor=(0, 0, 0, 0)
+                setcolor=(255, 209, 0, int(150 * self.intensity)),  # Apply intensity
+                unsetcolor=(0, 0, 0, 0),
             )
             screen.blit(
                 mask_surface,
                 (
-                    self.position.x - self.distance - offset_x,
-                    self.position.y - self.distance - offset_y,
+                    draw_position.x - self.distance - offset_x,
+                    draw_position.y - self.distance - offset_y,
                 ),
             )
         """debug_platform_rect = self.rect.move(-offset_x, -offset_y)
@@ -68,7 +75,6 @@ class CircularLight(Light):
         self.segments = segments
         self.ray_step = ray_step
         self.use_obstacles = use_obstacles  # Nuevo flag
-        self.position = pygame.Vector2(position)
 
     def _generate_mask(self, obstacles):
         size = int(self.distance * 2)
@@ -120,8 +126,17 @@ class CircularLight(Light):
 
 
 class ConeLight(Light):
-    def __init__(self, position, direction, angle, distance, segments=60, ray_step=2):
-        super().__init__(position, distance)
+    def __init__(
+        self,
+        position,
+        direction,
+        angle,
+        distance,
+        segments=60,
+        ray_step=2,
+        fixed_position=None,
+    ):
+        super().__init__(position, distance, fixed_position)
         self.direction = pygame.Vector2(direction).normalize()
         self.angle = math.radians(angle)
         self.segments = segments

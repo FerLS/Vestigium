@@ -6,6 +6,7 @@ from scenes.dyingMenu import DyingMenu
 from scenes.cemeteryPhase import CemeteryPhase
 from scenes.cemeteryBossPhase import CemeteryBossPhase
 from scenes.tree_phase import TreePhase
+from scenes.lake_phase import LakePhase
 from scene_manager import SceneManager
 
 
@@ -21,6 +22,7 @@ class Director(object):
             cls.screen = pygame.display.set_mode((WIDTH, HEIGHT))
             cls.scene_manager = SceneManager(cls._instance)
             cls.setup_scenes(cls)
+            cls.restarted = False
 
         return cls._instance
 

@@ -1,5 +1,6 @@
 import pygame 
-def extract_frames(sheet, start_x, start_y, frame_width, frame_height, num_frames, scale_factor):
+
+def extract_frames(sheet, start_x, start_y, frame_width, frame_height, num_frames, scale_factor=1, lying=None):
     """
     Extracts animation frames from a sprite sheet.
 
@@ -10,8 +11,8 @@ def extract_frames(sheet, start_x, start_y, frame_width, frame_height, num_frame
     - frame_width (int): Width of each frame.
     - frame_height (int): Height of each frame.
     - num_frames (int): Total number of frames in the animation.
-    - scale_factor (float): Factor to scale the frames.
-
+    - scale_factor (float, optional): Factor to scale the frames. Default is 1.
+    - lying (float, optional): Angle to rotate the frames. Default is None.
 
     Returns:
     - List[pygame.Surface]: A list containing the extracted animation frames.
@@ -24,6 +25,11 @@ def extract_frames(sheet, start_x, start_y, frame_width, frame_height, num_frame
         # Scale the frame if needed
         if scale_factor != 1:
             frame = pygame.transform.scale(frame, (int(frame_width * scale_factor), int(frame_height * scale_factor)))
+
+        # Rotate the frame if lying is True
+        if lying is not None:
+            frame = pygame.transform.rotate(frame, lying) 
+            
 
         frames.append(frame)
     return frames
