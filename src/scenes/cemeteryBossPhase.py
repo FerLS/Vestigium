@@ -13,7 +13,7 @@ from scenes.fadeTransition import FadeIn, FadeOut
 from trigger import Trigger
 from resource_manager import ResourceManager
 from sound_manager import SoundManager
-from utils.constants import WIDTH, HEIGHT
+from utils.constants import SCALE_FACTOR, WIDTH, HEIGHT
 
 
 class CemeteryBossPhase(Phase):
@@ -54,16 +54,24 @@ class CemeteryBossPhase(Phase):
         """
         Setup the spawn points for the scene.
         """
-        self.spawns_rects = [pygame.Rect(v.x, v.y, v.width, v.height) for v in self.foreground.load_layer_entities("checkpoints").values()]
+        self.spawns_rects = [
+            pygame.Rect(v.x, v.y, v.width, v.height)
+            for v in self.foreground.load_layer_entities("checkpoints").values()
+        ]
         self.spawn_index = -1
-        self.current_spawn = self.spawns_rects[0].center if self.spawns_rects else (0, 0)
+        self.current_spawn = (
+            self.spawns_rects[0].center if self.spawns_rects else (0, 0)
+        )
 
     def setup_player(self):
         """
         Create the player entity.
         """
         player_spawn = self.spawns_rects[0].center if self.spawns_rects else (0, 0)
-        self.player = Player(player_spawn[0], player_spawn[1], self.foreground, obstacles=[])
+        self.player = Player(
+            player_spawn[0], player_spawn[1], self.foreground, obstacles=[]
+        )
+        self.player.jump_power_coyote = -4 * SCALE_FACTOR
         self.foreground.insert_sprite(self.player, 2)
 
     def revive_player(self):
@@ -72,7 +80,7 @@ class CemeteryBossPhase(Phase):
     def move_player_to_spawn(self):
         self.player.rect.center = self.current_spawn
         self.camera.update(self.player.rect)
-        self.fades['revive_fade_in'].start()
+        self.fades["revive_fade_in"].start()
 
     def setup_lantern(self):
         """
@@ -80,7 +88,8 @@ class CemeteryBossPhase(Phase):
         """
         path_points = {
             int(obj.name): (obj.x, obj.y)
-            for obj in self.foreground.tmx_data.objects if obj.type == "Point"
+            for obj in self.foreground.tmx_data.objects
+            if obj.type == "Point"
         }
         path_points = [path_points[i] for i in sorted(path_points.keys())]
         self.lantern = Lantern(position=path_points[0], path=path_points, speed=5)
@@ -108,16 +117,22 @@ class CemeteryBossPhase(Phase):
         """
         self.triggers = []
         self.init_trigger("tutorial_trigger", lambda: self.boss_tutorial())
-        self.init_trigger("end_of_phase", lambda: self.end_of_phase(), triggered_once=False)
+        self.init_trigger(
+            "end_of_phase", lambda: self.end_of_phase(), triggered_once=False
+        )
         self.init_trigger("key_trigger", lambda: self.show_key_obtained_text())
 
-    def init_trigger(self, entity_name: str, callback: callable, triggered_once: bool = True):
+    def init_trigger(
+        self, entity_name: str, callback: callable, triggered_once: bool = True
+    ):
         """
         Initialize a trigger with a callback function.
         """
         entity = self.foreground.load_entity(entity_name)
         trigger_rect = pygame.Rect(entity.x, entity.y, entity.width, entity.height)
-        self.triggers.append(Trigger(trigger_rect, callback, triggered_once=triggered_once))
+        self.triggers.append(
+            Trigger(trigger_rect, callback, triggered_once=triggered_once)
+        )
 
     def setup_audio(self):
         """
@@ -133,16 +148,23 @@ class CemeteryBossPhase(Phase):
 
         fade_in = FadeIn(self.screen)
         fade_in.start()
-        self.fades['fade_in'] = fade_in
+        self.fades["fade_in"] = fade_in
 
-        fade_out = FadeOut(self.screen, on_complete=lambda: self.director.scene_manager.change_scene("Minigame"))
-        self.fades['fade_out'] = fade_out
+        fade_out = FadeOut(
+            self.screen,
+            on_complete=lambda: self.director.scene_manager.change_scene("Minigame"),
+        )
+        self.fades["fade_out"] = fade_out
 
-        revive_fade_in = FadeIn(self.screen, duration=2, on_complete=lambda: self.revive_player())
-        self.fades['revive_fade_in'] = revive_fade_in
+        revive_fade_in = FadeIn(
+            self.screen, duration=2, on_complete=lambda: self.revive_player()
+        )
+        self.fades["revive_fade_in"] = revive_fade_in
 
-        death_fade_out = FadeOut(self.screen, duration=2, on_complete=lambda: self.move_player_to_spawn())
-        self.fades['death_fade_out'] = death_fade_out
+        death_fade_out = FadeOut(
+            self.screen, duration=2, on_complete=lambda: self.move_player_to_spawn()
+        )
+        self.fades["death_fade_out"] = death_fade_out
 
     def update(self):
         dt = self.director.clock.get_time() / 1000
@@ -151,7 +173,7 @@ class CemeteryBossPhase(Phase):
         self.lantern.update(self.player, self.foreground, self.camera.get_offset())
 
         if self.player.is_dying:
-            self.fades['death_fade_out'].start()
+            self.fades["death_fade_out"].start()
 
         self.gravedigger.update(self.player)
         self.key.update(self.player)
@@ -182,20 +204,22 @@ class CemeteryBossPhase(Phase):
     def boss_tutorial(self):
         text = BossTutorialText(self.screen, (100, 100))
         return text
-    
+
     def show_key_obtained_text(self):
         text = KeyText(self.screen, (100, 100))
         return text
 
     def continue_procedure(self):
-        self.sound_manager.play_sound("forest_ambient.wav", "assets\\sounds", category='ambient', loop=True)
+        self.sound_manager.play_sound(
+            "forest_ambient.wav", "assets\\sounds", category="ambient", loop=True
+        )
 
     def end_of_phase(self):
         if self.key.picked:
-            self.fades['fade_out'].start()
+            self.fades["fade_out"].start()
+            self.player.jump_power_coyote = -6 * SCALE_FACTOR
             return None
 
         else:
             text = DoorText(self.screen, (100, 100))
             return text
-
