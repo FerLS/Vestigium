@@ -10,6 +10,7 @@ class PauseMenu(Menu):
         Menu.__init__(self, director)
         self.sound_manager = SoundManager()
         self.sound_manager.pause_music()
+        self.sound_manager.stop_all_sounds()
         self.screen_list = []
         self.screen_list.append(PauseScreen(self, "assets\\images\\backgrounds\\pause_menu_background")) # Self parameter refers to menu
 

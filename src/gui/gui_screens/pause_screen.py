@@ -12,4 +12,7 @@ class PauseScreen(GUIScreen):
         self.gui_elements.append(OptionsText(self, (WIDTH//2 - 67, 440)))
         self.gui_elements.append(GoToMainMenuText(self, (WIDTH//2 - 83, 480)))
 
-        
+    def events(self, event_list):
+        for event in event_list:
+            for element in self.gui_elements:
+                element.handle_event(event)   

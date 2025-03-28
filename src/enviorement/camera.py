@@ -1,3 +1,6 @@
+import pygame
+
+
 class Camera:
     def __init__(self, screen_width, screen_height):
         self.scroll_x = 0
@@ -36,3 +39,13 @@ class Camera:
     def update_x_margin(self, new_left_margin, new_right_margin):
         self.left_margin = new_left_margin
         self.right_margin = new_right_margin
+
+    def get_view_rect(self):
+        """Returns the view rectangle of the camera"""
+        return pygame.Rect(self.scroll_x, self.scroll_y, self.screen_width, self.screen_height)
+    
+    def mask_from_rect(self, rect):
+        surface = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
+        surface.fill((255, 255, 255, 255))
+        return pygame.mask.from_surface(surface)
+

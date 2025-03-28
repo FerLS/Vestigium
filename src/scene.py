@@ -14,3 +14,6 @@ class Scene(ABC):
     
     def draw(self):
         raise NotImplementedError("Subclasses must implement this method")
+    
+    def continue_procedure(self):
+        raise NotImplementedError("Subclasses must implement this method")

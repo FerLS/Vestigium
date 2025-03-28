@@ -3,9 +3,10 @@ import pygame
 from enviorement.tilemap import Tilemap
 from entities.lantern import Lantern
 from entities.keyItem import KeyItem
+from gui.gui_elements.guiText import BossTutorialText
 from light2 import CircularLight, ConeLight
 from scenes.phase import Phase
-from trigger import Trigger, boss_tutorial
+from trigger import Trigger
 from utils.constants import WIDTH, HEIGHT
 from enviorement.background import Background
 from resource_manager import ResourceManager
@@ -66,7 +67,7 @@ class CemeteryBossPhase(Phase):
         trigger = self.foreground.load_entity("tutorial_trigger")
         self.trigger = Trigger(
             pygame.Rect(trigger.x, trigger.y, trigger.width, trigger.height),
-            lambda: boss_tutorial(self.screen, (trigger.x, trigger.y)),
+            lambda: self.boss_tutorial()
         )
 
         # GraveDigger
@@ -100,3 +101,11 @@ class CemeteryBossPhase(Phase):
         self.background.draw(self.screen, offset)
         self.foreground.draw(self.screen, offset)
         self.trigger.draw(self.screen)
+
+    def boss_tutorial(self):
+
+        text = BossTutorialText(self.screen, (100, 100))
+        return text
+    
+    def continue_procedure(self):
+        self.sound_manager.play_sound("forest_ambient.wav", "assets\\sounds", category='ambient', loop=True)

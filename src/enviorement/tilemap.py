@@ -74,7 +74,7 @@ class Tilemap:
                 self.sprites[sprite_index][0].draw(screen, offset)
                 sprite_index += 1
 
-    def get_solid_rects(self):
+    def get_collision_rects(self):
         """Obtiene rectángulos de colisión sólidos (todas las direcciones)."""
         solid_rects = []
         for layer in self.layers.values():
