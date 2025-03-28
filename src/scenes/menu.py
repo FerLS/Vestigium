@@ -17,3 +17,6 @@ class Menu(Scene):
     
     def draw(self):
         self.screen_list[-1].draw(self.director.screen)
+    
+    def continue_procedure(self):
+        pass

@@ -16,8 +16,12 @@ class Phase(Scene):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.director.scene_manager.stack_scene("PauseMenu")
+                    
 
         self.pressed_keys = pygame.key.get_pressed()
     
     def draw(self):
+        raise NotImplementedError("Subclasses must implement this method")
+
+    def continue_procedure(self):
         raise NotImplementedError("Subclasses must implement this method")
