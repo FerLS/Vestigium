@@ -191,7 +191,7 @@ class BossTutorialText(TextGUI):
             screen,
             font,
             (255, 255, 255),
-            "Be careful, hide behind the walls!",
+            "Find the GraveDiggers Key! But be careful, hide behind the walls!",
             position,
         )
 
