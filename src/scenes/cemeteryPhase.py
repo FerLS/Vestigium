@@ -22,15 +22,9 @@ class CemeteryPhase(Phase):
         self.screen = director.screen
         self.camera = Camera(WIDTH, HEIGHT)
         self.pressed_keys = {}
-        
-        area_rect = pygame.Rect(500, 500, 300, 200)
-        self.firefly = Firefly(600, 600, area_rect)
-        
+                
         self.lamppost_blink_timer = 0
         self.lamppost_blink_state = 1
-
-        self.fade_out = FadeOut(self.screen, 1, on_complete= lambda: change_scene(self.director, "MinigamePhase"))        
-
         self.instruction_text = None
         self.instruction_timer = 0
         
@@ -39,6 +33,7 @@ class CemeteryPhase(Phase):
         self.setup_enemies()
         self.setup_player()
         self.setup_triggers()
+        self.setup_fade_out()
         self.setup_audio()
         
     def load_resources(self):
@@ -57,14 +52,30 @@ class CemeteryPhase(Phase):
         Setup the sprite groups and trigger list for the scene.
         """
         self.lampposts_group = pygame.sprite.Group()
-        self.lights_group = pygame.sprite.Group(self.firefly.light)
+        self.lights_group = pygame.sprite.Group()
+        self.fireflies_group = pygame.sprite.Group()
         self.triggers = []
         
     def setup_enemies(self):
         """
         Setup the entities for the scene.
         """
+        # Lampposts
         self.create_lampposts()
+        
+        # Vertical fireflies
+        fireflies = self.foreground.load_layer_entities("fireflies_v")
+        for firefly in fireflies.values():
+            firefly = Firefly(firefly.x, firefly.y, movement_type="vertical")
+            self.fireflies_group.add(firefly)
+            self.lights_group.add(firefly.light)
+        
+        # Horizontal fireflies
+        fireflies = self.foreground.load_layer_entities("fireflies_h")
+        for firefly in fireflies.values():
+            firefly = Firefly(firefly.x, firefly.y,movement_type="horizontal")
+            self.fireflies_group.add(firefly)
+            self.lights_group.add(firefly.light)
         
     def setup_player(self):
         """
@@ -78,11 +89,19 @@ class CemeteryPhase(Phase):
         Setup the triggers for the scene.
         """
         self.init_trigger("cemetery_end", lambda: self.fade_out.start())
+        self.init_trigger("death", lambda: self.fade_out_death.start())
         if not self.director.restarted:
                 self.init_trigger("start_trigger", lambda: self.start_trigger())
         else:
             self.init_trigger("start_trigger", lambda: self.start_trigger())
             self.init_trigger("start_again_trigger", lambda: self.start_again_trigger())
+            
+    def setup_fade_out(self):
+        """
+        Setup the fade out for the scene.
+        """
+        self.fade_out = FadeOut(self.screen, 1, on_complete= lambda: change_scene(self.director, "MinigamePhase"))
+        self.fade_out_death = FadeOut(self.screen, 1, on_complete= lambda: change_scene(self.director, "CemeteryPhase"))        
     
     def setup_audio(self):
         """
@@ -100,8 +119,8 @@ class CemeteryPhase(Phase):
             light = ConeLight(
                 (lamppost.x, lamppost.y),
                 direction=(0, 1),
-                angle=40,
-                distance=200,
+                angle=35,
+                distance=260,
                 fixed_position=(lamppost.x, lamppost.y)
             )
             light.blink_offset = index * 2
@@ -132,9 +151,15 @@ class CemeteryPhase(Phase):
 
     def update(self):
         dt = self.director.clock.get_time() / 1000
+        
         # Update entities
         self.player.update(self.pressed_keys, dt)
-        self.firefly.update()
+        for firefly in self.fireflies_group:
+            firefly.update()
+            
+        self.fireflies_group.update()
+        
+        self.lights_group.update()
 
         # Update triggers
         for trigger in self.triggers:
@@ -158,20 +183,9 @@ class CemeteryPhase(Phase):
         for light in self.lampposts_group:
             light.update(dt)
             
-        # Collision detection with delay
-        in_collision = any(light.intensity > 0 and self.player.check_pixel_perfect_collision(light) for light in self.lights_group)
-
-        if in_collision:
-            self.collision_delay_timer += dt  # Start counting
-            if self.collision_delay_timer >= 0.25: 
+        for light in self.lights_group:          
+            if light.intensity > 0.4 and self.player.check_pixel_perfect_collision(light): 
                 self.player.is_dying = True
-        else:
-            self.collision_delay_timer = 0  # Reset timer if no collision
-        """
-        for light in self.lights_group:
-            if light.intensity > 0 and self.player.check_pixel_perfect_collision(light): 
-                self.player.is_dying = True
-        """
         
         # Restart if dead
         if self.player.dead:
@@ -179,6 +193,8 @@ class CemeteryPhase(Phase):
             self.director.scene_manager.stack_scene("CemeteryPhase")
         
         self.fade_out.update(dt)
+        self.fade_out_death.update(dt)
+        
         self.camera.update(self.player.rect)
 
         if self.instruction_timer > 0:
@@ -192,7 +208,9 @@ class CemeteryPhase(Phase):
         self.background.draw(self.screen, offset)
         self.foreground.draw(self.screen, offset)
         self.player.draw(self.screen, camera_offset=offset)
-        self.firefly.draw(self.screen, offset)
+        
+        for firefly in self.fireflies_group:
+            firefly.draw(self.screen, offset)
         
         for light in self.lampposts_group:
             light.draw(self.screen, offset)
@@ -204,3 +222,4 @@ class CemeteryPhase(Phase):
             self.instruction_text.draw(self.screen)
 
         self.fade_out.draw()
+        self.fade_out_death.draw()

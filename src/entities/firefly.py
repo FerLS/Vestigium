@@ -6,7 +6,7 @@ from light2 import CircularLight
 class Firefly(pygame.sprite.Sprite):
     def __init__(self, x, y, movement_bounds=None, movement_type="random"):
         super().__init__()
-        self.RADIUS = 10
+        self.RADIUS = 5
         self.radius_variation = 2
         self.blink_interval = 15
         self.current_radius = self.RADIUS
@@ -29,6 +29,9 @@ class Firefly(pygame.sprite.Sprite):
         self.speed = random.uniform(8, 10) if y > 500 else random.uniform(2, 4)
         self.wave_amplitude = random.uniform(1, 4) if y > 250 else 6
         self.wave_frequency = random.uniform(0.01, 0.1)
+        
+        self.vertical_direction = random.choice([1, -1])
+        self.horizontal_direction = random.choice([1, -1])
         
     def update(self):
         
@@ -56,6 +59,19 @@ class Firefly(pygame.sprite.Sprite):
                           
         elif self.movement_type == "wave":
             self._move()
+            
+        elif self.movement_type == "vertical":
+            self.rect.y += 1 * self.vertical_direction
+            if abs(self.rect.y - self.start_y) >= 100:
+                self.vertical_direction *= -1
+            self.time += 1
+
+        elif self.movement_type == "horizontal":
+            self.rect.x += 1 * self.horizontal_direction
+            if abs(self.rect.x - self.start_x) >= 100:
+                self.horizontal_direction *= -1
+            self.time += 1
+
               
         # Parpadeo
         self.blink_timer += 1
