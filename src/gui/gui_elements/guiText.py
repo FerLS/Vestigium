@@ -235,7 +235,7 @@ class BossTutorialText(TextGUI):
             screen,
             font,
             (255, 255, 255),
-            "Be careful, hide from the light!",
+            "Be careful, hide behind the walls!",
             position,
         )
 
