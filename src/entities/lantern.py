@@ -87,13 +87,13 @@ class Lantern(pygame.sprite.Sprite):
 
         # Colisión con el jugador usando el collider circular
         distance_to_player = self.pos.distance_to((player.rect.x, player.rect.y))
-        if distance_to_player <= self.radius:
+        if distance_to_player <= self.radius and not player.is_dying and not player.dead:
             safe_tiles = tilemap.get_safe_rects()
             player_in_safe_zone = any(
                 player.rect.colliderect(safe_tile) for safe_tile in safe_tiles
             )
             if not player_in_safe_zone:
-                player.is_dying = True
+                player.dying()
 
     def draw(self, screen, offset=(0, 0)):
         """Dibuja la linterna, su luz y el collider circular en la pantalla con desplazamiento de cámara."""

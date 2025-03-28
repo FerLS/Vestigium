@@ -99,8 +99,8 @@ class Gravedigger(pygame.sprite.Sprite):
     def collide(self, player):
         if self.mask.overlap(
             player.mask, (player.rect.x - self.rect.x, player.rect.y - self.rect.y)
-        ):
-            player.is_dying = True
+        ) and not player.is_dying and not player.dead:
+            player.dying()
 
     def stop(self):
         self.state = MovementType.IDLE
