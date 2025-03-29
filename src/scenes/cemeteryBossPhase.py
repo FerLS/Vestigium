@@ -152,7 +152,7 @@ class CemeteryBossPhase(Phase):
 
         fade_out = FadeOut(
             self.screen,
-            on_complete=lambda: self.director.scene_manager.change_scene("Minigame"),
+            on_complete=lambda: self.director.scene_manager.change_scene("MinigamePhase"),
         )
         self.fades["fade_out"] = fade_out
 
