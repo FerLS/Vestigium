@@ -35,9 +35,16 @@ class SoundManager:
 
         return cls._instance
 
-    def play_music(self, music_name: str, music_path: str, loop: int = -1):
+    def play_music(self, 
+                   music_name: str, 
+                   music_path: str, 
+                   loop: int = -1):
         """
         Loads and plays a music track from disk. Supports looping.
+
+        :param music_name: Name of the music file (e.g., "track.mp3").
+        :param music_path: Path to the directory containing the music file.
+        :param loop: Number of times to loop the music (-1 for infinite loop).
         """
         fullname = os.path.join(music_path, music_name)
         pygame.mixer.music.load(fullname)
@@ -62,9 +69,12 @@ class SoundManager:
         """
         pygame.mixer.music.unpause()
 
-    def set_music_volume(self, volume: float):
+    def set_music_volume(self, 
+                         volume: float):
         """
         Sets the global music volume (range: 0.0 to 1.0).
+
+        :param volume: Volume level between 0.0 (mute) and 1.0 (max).
         """
         self.music_volume = volume
         pygame.mixer.music.set_volume(self.music_volume)
@@ -86,10 +96,11 @@ class SoundManager:
         """
         Plays a sound effect with optional stereo panning and loop control.
 
-        Parameters:
-        - category: determines which group of audio channels to use (e.g., 'player', 'ambient')
-        - pan: stereo balance from 0.0 (left) to 1.0 (right)
-        - loop: if True, the sound loops indefinitely
+        :param sound_name: Name of the sound file (e.g., "effect.wav").
+        :param sound_path: Path to the directory containing the sound file.
+        :param category: Category of the sound (e.g., 'player', 'ambient').
+        :param pan: Stereo panning value (0.0 = left, 1.0 = right).
+        :param loop: Whether to loop the sound (True for infinite loop).
         """
         sound = self.resource_manager.load_sound(sound_name, sound_path)
         if not sound:
@@ -124,9 +135,12 @@ class SoundManager:
         for channel in self.channels:
             channel.stop()
 
-    def set_sound_volume(self, volume: float):
+    def set_sound_volume(self,
+                        volume: float):
         """
         Sets the global volume for sound effects (range: 0.0 to 1.0).
+
+        :param volume: Volume level between 0.0 (mute) and 1.0 (max).
         """
         self.sound_volume = max(0.0, min(1.0, volume))
 

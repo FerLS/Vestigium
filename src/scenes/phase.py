@@ -11,6 +11,8 @@ from utils.trigger import Trigger
 from utils.constants import HEIGHT, WIDTH
 
 
+NOT_IMPLEMENTED_MSG = "Subclasses must implement this method"
+
 class Phase(Scene):
     def __init__(self, director):
         Scene.__init__(self, director)
@@ -47,17 +49,16 @@ class Phase(Scene):
 
     def setup_groups(self):
         """
-        Setup all sprite groups, lists and dictionaries for the scene.
-
+        Setup all groups for the scene.
         """
-        raise NotImplementedError("Subclasses must implement this method")
+        raise NotImplementedError(NOT_IMPLEMENTED_MSG)
 
     def setup_enemies(self):
         """
         Setup all enemies for the scene.
 
         """
-        raise NotImplementedError("Subclasses must implement this method")
+        raise NotImplementedError(NOT_IMPLEMENTED_MSG)
     
     def setup_spawns(self):
         """
@@ -81,11 +82,12 @@ class Phase(Scene):
         Setup the player for the scene.
 
         """
-        raise NotImplementedError("Subclasses must implement this method")
+        raise NotImplementedError(NOT_IMPLEMENTED_MSG)
     
     def revive_player(self):
         """
         Revive the player entity.
+
         """
         self.player.dead = False
 
@@ -109,7 +111,7 @@ class Phase(Scene):
         """
         Setup the triggers for the scene using init_trigger generic function.
         """
-        raise NotImplementedError("Subclasses must implement this method")
+        raise NotImplementedError(NOT_IMPLEMENTED_MSG)
     
     def setup_fades(self, scene_name: str):
         """
@@ -119,7 +121,7 @@ class Phase(Scene):
         fade_in.start()
         self.fades = {
             'fade_in': fade_in,
-            'fade_out': FadeOut(self.screen, on_complete=lambda: self.end_of_phase(scene_name)),
+            'fade_out': FadeOut(self.screen, on_complete=lambda: self.end_of_phase()),
             'revive_fade_in': FadeIn(self.screen, duration=2, on_complete=lambda: self.revive_player()),
             'death_fade_out': FadeOut(self.screen, duration=2, on_complete=lambda: self.move_player_to_spawn())
         }
@@ -128,7 +130,7 @@ class Phase(Scene):
         """
         Actions to be executed once the final fade out is finished
         """
-        raise NotImplementedError("Subclasses must implement this method")
+        raise NotImplementedError(NOT_IMPLEMENTED_MSG)
     
     def setup_audio(self, music_name: str=None, sound_name: str=None):
         """
@@ -140,7 +142,7 @@ class Phase(Scene):
             self.sound_manager.play_sound(sound_name, "assets\\sounds", category='ambient', loop=True)
 
     def update(self, *args):
-        raise NotImplementedError("Subclasses must implement this method")
+        raise NotImplementedError(NOT_IMPLEMENTED_MSG)
     
     def events(self, events: list):
         for event in events:
@@ -154,7 +156,7 @@ class Phase(Scene):
         self.pressed_keys = pygame.key.get_pressed()
     
     def draw(self):
-        raise NotImplementedError("Subclasses must implement this method")
+        raise NotImplementedError(NOT_IMPLEMENTED_MSG)
 
     def continue_procedure(self):
-        raise NotImplementedError("Subclasses must implement this method")
+        raise NotImplementedError(NOT_IMPLEMENTED_MSG)

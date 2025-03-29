@@ -13,15 +13,22 @@ class ResourceManager:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
-            cls.images = {}
+            cls.images =  {}
             cls.fonts = {}
             cls.sounds = {}
         return cls._instance
 
-    def load_image(self, image_name: str, image_path: str, colorkey=None):
+    def load_image(self, 
+                   image_name: str, 
+                   image_path: str, 
+                   colorkey=None) -> pygame.Surface:
         """
         Loads an image from disk and caches it. Applies optional transparency.
-        Returns a pygame.Surface.
+
+        :param image_name: Name of the image file (e.g., "image.png").
+        :param image_path: Path to the directory containing the image.
+        :param colorkey: Color key for transparency (default is None). If -1, uses the top-left pixel color.
+        :return: A pygame.Surface object representing the loaded image.
         """
         if image_name not in self.images:
             fullname = os.path.join(image_path, image_name)
@@ -39,9 +46,17 @@ class ResourceManager:
 
         return self.images[image_name]
 
-    def load_font(self, font_name: str, font_path: str, size: int):
+    def load_font(self, 
+                  font_name: str, 
+                  font_path: str, 
+                  size: int) -> pygame.font.Font:
         """
-        Loads a font from disk and caches it. Returns a pygame.font.Font object.
+        Loads a font from disk and caches it.
+
+        :param font_name: Name of the font file (e.g., "font.ttf").
+        :param font_path: Path to the directory containing the font.
+        :param size: Size of the font in points.
+        :return: A pygame.font.Font object representing the loaded font.
         """
         if font_name not in self.fonts:
             fullname = os.path.join(font_path, font_name)
@@ -54,9 +69,15 @@ class ResourceManager:
 
         return self.fonts[font_name]
 
-    def load_sound(self, sound_name: str, sound_path: str):
+    def load_sound(self, 
+                   sound_name: str, 
+                   sound_path: str) -> pygame.mixer.Sound:
         """
-        Loads a sound from disk and caches it. Returns a pygame.mixer.Sound object.
+        Loads a sound from disk and caches it.
+
+        :param sound_name: Name of the sound file (e.g., "sound.wav").
+        :param sound_path: Path to the directory containing the sound.
+        :return: A pygame.mixer.Sound object representing the loaded sound.
         """
         if sound_name not in self.sounds:
             fullname = os.path.join(sound_path, sound_name)
