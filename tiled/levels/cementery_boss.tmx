@@ -291,7 +291,7 @@
  </objectgroup>
  <objectgroup id="19" name="checkpoints">
   <object id="37" name="c1" x="315.479" y="529.991" width="124.654" height="148.027"/>
-  <object id="39" name="c2" x="995" y="-37" width="155" height="133"/>
+  <object id="39" name="c2" x="1056" y="-37" width="94" height="133"/>
  </objectgroup>
  <objectgroup id="18" name="Triggers">
   <object id="32" name="tutorial_trigger" x="446.5" y="641" width="37" height="30.5"/>

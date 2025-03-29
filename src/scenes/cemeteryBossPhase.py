@@ -206,6 +206,7 @@ class CemeteryBossPhase(Phase):
         return text
 
     def show_key_obtained_text(self):
+        self.sound_manager.play_sound("key-clang.wav", "assets\\sounds")
         text = KeyText(self.screen, (100, 100))
         return text
 
