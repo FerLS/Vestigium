@@ -212,8 +212,7 @@ class CemeteryBossPhase(Phase):
 
     def continue_procedure(self):
         self.sound_manager.play_sound(
-            "forest_ambient.wav", "assets\\sounds", category="ambient", loop=True
-        )
+            "forest_ambient.wav", "assets\\sounds", category="ambient", loop=True)
 
     def end_of_phase(self):
         if self.key.picked:

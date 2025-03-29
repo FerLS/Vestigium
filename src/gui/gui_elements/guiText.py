@@ -191,8 +191,8 @@ class BossTutorialText(TextGUI):
             screen,
             font,
             (255, 255, 255),
-            "Find the GraveDiggers Key! "
-            "But be careful, hide behind the walls!",
+            """find the gravedigger's key! 
+            but be careful, hide behind the walls!""",
             position,
         )
 
@@ -207,7 +207,7 @@ class DoorText(TextGUI):
             screen,
             font,
             (255, 255, 255),
-            "You need to find the key to open this door!",
+            "you need to find the key to open this door!",
             position,
         )
 
@@ -222,7 +222,7 @@ class KeyText(TextGUI):
             screen,
             font,
             (255, 255, 255),
-            "Now that you have the key, you can open the door!",
+            "now that you have the key, you can open the door!",
             position,
         )
 
@@ -274,8 +274,8 @@ class EndOfGameText(TextGUI):
 class InitialInstructionText(TextGUI):
     def __init__(self, screen, position, time=10):
         font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
-        text = """use LEFT and RIGHT to move and SPACE to jump..." 
-        "but be careful with the lights!"""
+        text = """use LEFT and RIGHT to move and SPACE to jump...
+        but be careful with the lights!"""
         TextGUI.__init__(self, screen, font, (255, 255, 255), text, position)
         self.time = time
         self.visible = False
