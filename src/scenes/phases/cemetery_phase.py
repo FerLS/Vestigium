@@ -10,8 +10,8 @@ from utils.light import ConeLight
 class CemeteryPhase(Phase):
     def __init__(self, director):
         super().__init__(director)
-        self.screen = director.screen
-        self.pressed_keys = {}
+        self.screen: pygame.Surface = director.screen
+        self.pressed_keys: dict = {}
                         
         self.load_resources(tilemap_path="tiled/levels/cemetery.tmx",
                             background_path="assets\\images\\backgrounds\\cemetery_phase_background")
@@ -58,6 +58,9 @@ class CemeteryPhase(Phase):
         super().revive_player()
 
     def increment_spawn_index(self):
+        """
+        Increment the spawn index and show dying instructions.
+        """
         self.instruction_text.visible = True
         super().increment_spawn_index()
         
@@ -172,9 +175,12 @@ class CemeteryPhase(Phase):
             fade.draw()
 
     def continue_procedure(self):
+        """
+        Continue the procedure after the fade out.
+        """
         self.sound_manager.play_sound("cemetery_background_sound.ogg", "assets\\sounds", category='ambient', loop=True)
 
-    def end_of_phase(self, scene=str):
+    def end_of_phase(self, scene: str):
         """
         Action that ends the phase.
         """

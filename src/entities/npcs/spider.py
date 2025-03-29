@@ -5,7 +5,7 @@ from managers.sound_manager import SoundManager
 from utils.images import extract_frames
 from utils.constants import SCALE_FACTOR
 
-class Ant(pygame.sprite.Sprite):
+class Spider(pygame.sprite.Sprite):
     def __init__(self, x, y, move_distance=100, speed=0.5):
         super().__init__()
         self.resource_manager = ResourceManager()

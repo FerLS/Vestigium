@@ -1,7 +1,7 @@
 import pygame
 from entities.players.player import Player
 from entities.npcs.mushroom import Mushroom
-from entities.npcs.ant import Ant
+from entities.npcs.spider import Spider
 from entities.npcs.firefly import Firefly
 from gui.gui_elements.gui_text import GlideInstructionText
 from utils.light import ConeLight
@@ -37,7 +37,7 @@ class TreePhase(Phase):
         self.lights_group = pygame.sprite.Group()
         self.pixel_perfect_lights_group = pygame.sprite.Group()
         self.mushrooms_group = pygame.sprite.Group()
-        self.ants_group = pygame.sprite.Group()
+        self.spiders_group = pygame.sprite.Group()
         self.fireflies_group = pygame.sprite.Group()
         self.bouncy_obstacles = []
         self.triggers = []
@@ -57,7 +57,7 @@ class TreePhase(Phase):
         Setup the entities for the scene.
         """
         self.load_mushrooms()
-        self.load_ants()
+        self.load_spiders()
         self.load_fireflies()
         self.load_static_lights()
 
@@ -72,15 +72,15 @@ class TreePhase(Phase):
             self.mushrooms_group.add(mushroom)
             self.lights_group.add(mushroom.light)
 
-    def load_ants(self):
+    def load_spiders(self):
         """
-        Place the ants in the scene and add them to the groups.
+        Place the spiders in the scene and add them to the groups.
         """
-        ants = self.foreground.load_layer_entities("ants")
-        for data in ants.values():
-            ant = Ant(data.x, data.y)
-            self.ants_group.add(ant)
-            self.lights_group.add(ant.light)
+        spiders = self.foreground.load_layer_entities("spiders")
+        for spider in spiders.values():
+            spider = Spider(spider.x, spider.y)
+            self.spiders_group.add(spider)
+            self.lights_group.add(spider.light)
 
     def load_fireflies(self):
         """
@@ -127,7 +127,7 @@ class TreePhase(Phase):
 
         self.mushrooms_group.update()
 
-        self.ants_group.update(dt)
+        self.spiders_group.update(dt)
 
         self.fireflies_group.update()
 
@@ -138,8 +138,8 @@ class TreePhase(Phase):
                 mushroom.bounce = True
 
         # Check pixel perfect collision of lights and obstacles 
-        ant_rects = [ant.rect for ant in self.ants_group]
-        self.collidable_obstacles = self.foreground.get_collision_rects() + self.bouncy_obstacles + ant_rects
+        spider_rects = [spider.rect for spider in self.spiders_group]
+        self.collidable_obstacles = self.foreground.get_collision_rects() + self.bouncy_obstacles + spider_rects
         self.pixel_perfect_lights_group.update(obstacles=self.collidable_obstacles, camera_rect=self.camera.get_view_rect())
 
         # Check if the player is colliding with the pixel perfect collisions
@@ -177,7 +177,7 @@ class TreePhase(Phase):
                 light.draw(self.screen, offset)
 
         # Draw entities
-        for group in [self.mushrooms_group, self.ants_group, self.fireflies_group]:
+        for group in [self.mushrooms_group, self.spiders_group, self.fireflies_group]:
             for entity in group:
                 entity.draw(self.screen, offset)
 

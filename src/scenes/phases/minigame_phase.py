@@ -1,7 +1,5 @@
 from types import SimpleNamespace
 import pygame
-from pygame.locals import *
-
 from utils.fade_transition import FadeIn, FadeOut
 from scenes.phase import Phase
 from entities.npcs.firefly import Firefly
@@ -38,30 +36,37 @@ class MinigamePhase(Phase):
         self.lock = Lock(0, 100, self.screen.get_width())
 
     def setup_player(self):
+        """
+        Setup the player entity
+        """
         self.key = Key()
     
     def revive_player(self):
+        # Not implemented as this phase has unique gameplay mechanics.
         pass
     
     def setup_spawns(self):
+        # Not needed in this phase; spawns are irrelevant here.
         pass
 
     def move_player_to_spawn(self):
+        # Not required; player positioning is handled differently.
         pass
 
     def increment_spawn_index(self):
+        # Not used; spawn indexing is unnecessary in this phase.
         pass
 
-    def init_trigger(self, entity_name, callback, triggered_once = True):
+    def init_trigger(self, entity_name, callback, triggered_once=True):
+        # Triggers are not part of this phase's mechanics.
         pass
-    
+
     def setup_triggers(self):
-        pass
-
-    def setup_fades(self):
+        # No triggers needed for this phase's gameplay.
         pass
 
     def end_of_phase(self):
+        # Not implemented as this phase has unique change scene mechanics
         pass
 
     def setup_enemies(self):
@@ -115,6 +120,29 @@ class MinigamePhase(Phase):
     def update(self):
         dt = self.director.clock.get_time() / 1000
 
+        if self.manage_life_animation():
+            return
+
+        self.key.update(self.lock, self.lifes.ammount)
+        self.lock.update(dt, self.key)
+        self.fireflies_group.update()
+        self.lifes.update()
+
+        self.manage_life_logic()
+        
+        if pygame.sprite.collide_mask(self.key, self.lock):
+            for firefly in self.fireflies_group:
+               firefly.stop()
+            if self.lock.end:
+                self.fades['fade_out_win'].start()
+
+        for fade in self.fades.values():
+            fade.update(dt)  
+
+    def manage_life_animation(self):
+        """
+        Check if the life animation is active and update it.
+        """
         if self.lifes.animating:
             self.lifes.update()
             if self.lifes.ammount == 0 and not self.lifes.animating:
@@ -124,12 +152,14 @@ class MinigamePhase(Phase):
             elif not self.lifes.animating:
                 for firefly in self.fireflies_group:
                     firefly.reset("life_decreased")
-            return
+            return True
+        else:
+            return False
 
-        self.key.update(self.lock, self.lifes.ammount)
-        self.lock.update(dt, self.key)
-        self.fireflies_group.update()
-        self.lifes.update()
+    def manage_life_logic(self):
+        """
+        Check if the player is colliding with the fireflies and decrease life if so.
+        """
         if pygame.sprite.spritecollide(self.key, self.lights_group, False, pygame.sprite.collide_mask):
             if self.lifes.ammount > 0:
                 self.lifes.decrease()
@@ -141,22 +171,18 @@ class MinigamePhase(Phase):
                     firefly.stop()
                 self.lifes.decrease()
         
-        if pygame.sprite.collide_mask(self.key, self.lock):
-            for firefly in self.fireflies_group:
-               firefly.stop()
-                
-            if self.lock.end:
-                self.fades['fade_out_win'].start()
-        for fade in self.fades.values():
-            fade.update(dt)            
-        
     def draw(self):        
         self.background.draw(self.screen, (0, 0))
+
         for firefly in self.fireflies_group:
             firefly.draw(self.screen)
+
         self.lifes.draw(self.screen)
+
         self.lock.draw(self.screen)
+
         self.key.draw(self.screen)
+
         for fade in self.fades.values():
             fade.draw()
             

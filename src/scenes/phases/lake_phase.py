@@ -11,8 +11,8 @@ from enviorement.camera import Camera
 class LakePhase(Phase):
     def __init__(self, director):
         super().__init__(director)
-        self.screen = director.screen
-        self.pressed_keys = {}
+        self.screen: pygame.Surface = director.screen
+        self.pressed_keys: dict = {}
 
         self.load_resources(
             tilemap_path="tiled/levels/lake.tmx",
@@ -100,12 +100,14 @@ class LakePhase(Phase):
 
     def update(self):
         dt = self.director.clock.get_time() / 1000
+
+        # Update entities
         self.player.update(self.pressed_keys, dt)
         self.anglerfishes_group.update(dt, player_position=self.player.rect.center)
-
         for jellyfish in self.jellyfishes_group:
             jellyfish.update(dt)
 
+        # Player dying logic
         for anglerfish in self.anglerfishes_group:
             if self.player.check_pixel_perfect_collision(anglerfish.light) and not self.player.is_dying and not self.player.dead:
                 self.player.dying()
@@ -226,7 +228,7 @@ class LakePhase(Phase):
             self.anglerfish_2 = Anglerfish(self.anglerfish_2_spawn.x, self.anglerfish_2_spawn.y, 1, 3, 3000, light_obstacles=self.foreground.get_collision_rects())
             self.anglerfishes_group.add(self.anglerfish_2)
 
-    def end_of_phase(self, scene=str):
+    def end_of_phase(self, scene: str):
         """
         Action that ends the phase.
         """
