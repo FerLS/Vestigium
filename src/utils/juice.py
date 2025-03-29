@@ -1,4 +1,4 @@
-def _smoothstep(t):
+def _smoothstep(t: float) -> float:
     """
     Smoothstep function for easing.
 
@@ -8,7 +8,7 @@ def _smoothstep(t):
     return t * t * (3 - 2 * t)
 
 
-def smooth_lerp(start, end, t):
+def smooth_lerp(start: float , end: float, t: float) -> float:
     """
     Smoothly interpolates between start and end by t using smoothstep.
 

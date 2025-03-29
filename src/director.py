@@ -1,6 +1,6 @@
 import pygame
 from scenes.scene import Scene
-from utils.constants import *
+from utils.constants import WIDTH, HEIGHT
 from scenes.menus.start_menu import StartMenu
 from scenes.menus.pause_menu import PauseMenu
 from scenes.menus.end_menu import EndMenu
@@ -37,7 +37,7 @@ class Director:
         """
         return self.scenes_stack[-1].__class__.__name__
 
-    def setup_scenes(self):
+    def setup_scenes(self) -> None:
         """
         Registers all available scenes with the scene manager.
         """
@@ -50,7 +50,7 @@ class Director:
         self.scene_manager.register_scene("TreePhase", TreePhase)
         self.scene_manager.register_scene("LakePhase", LakePhase)
 
-    def finish_current_scene(self):
+    def finish_current_scene(self) -> None:
         """
         Flags the current scene to be exited and pops it from the stack.
         Also sets a restart flag for the upcoming scene.
@@ -60,21 +60,21 @@ class Director:
             self.scenes_stack.pop()
             self.restart_flag = True
 
-    def finish_program(self):
+    def finish_program(self) -> None:
         """
         Exits all scenes and clears the stack, effectively ending the game.
         """
         self.leave_current_scene = True
         self.scenes_stack = []
 
-    def change_scene(self, scene: Scene):
+    def change_scene(self, scene: Scene) -> None:
         """
         Replaces the current scene with a new one.
         """
         self.finish_current_scene()
         self.scenes_stack.append(scene)
 
-    def stack_scene(self, scene: Scene):
+    def stack_scene(self, scene: Scene) -> None:
         """
         Pushes a new scene onto the stack while marking the current one to pause.
         Useful for temporary overlays like pause menus.
@@ -82,7 +82,7 @@ class Director:
         self.leave_current_scene = True
         self.scenes_stack.append(scene)
 
-    def loop(self, scene: Scene):
+    def loop(self, scene: Scene) -> None:
         """
         Main loop for a given scene. Handles timing, event processing, 
         updates, and rendering until the scene is flagged to exit.
@@ -102,7 +102,7 @@ class Director:
             scene.draw()
             pygame.display.update()
 
-    def run(self):
+    def run(self) -> None:
         """
         Runs the main game loop, executing the top scene on the stack.
         """

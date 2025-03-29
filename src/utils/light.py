@@ -11,12 +11,21 @@ class Light(pygame.sprite.Sprite):
     Intended to be subclassed with specific light behaviors.
     """
 
-    def __init__(self, position: tuple[float, float], distance: float, use_obstacles: bool = True):
+    def __init__(self, 
+                 position: tuple[float, float], 
+                 distance: float, 
+                 use_obstacles: bool = True):
         self.position: pygame.Vector2 = pygame.Vector2(position)
         self.distance: float = distance
         self.mask: Optional[pygame.mask.Mask] = None
         self.use_obstacles: bool = use_obstacles
         self.intensity: float = 1.0
+
+        """
+        :param position: The position of the light in the game world.
+        :param distance: The distance the light can reach.
+        :param use_obstacles: Whether to consider obstacles when generating the light mask.
+        """
 
         super().__init__()
 
@@ -30,33 +39,50 @@ class Light(pygame.sprite.Sprite):
         new_position: Optional[tuple[float, float]] = None,
         obstacles: Optional[Sequence[pygame.Rect]] = None,
         camera_rect: Optional[pygame.Rect] = None
-    ):
+    ) -> None:
         """
         Updates the light mask and position. Only regenerates the mask if visible.
+
+        :param new_position: Optional new position for the light.
+        :param obstacles: Optional list of obstacles to consider for light casting.
+        :param camera_rect: Optional camera rectangle to check visibility.
+        :return: None
         """
+
+        # Update position if provided
         if new_position and self.position != pygame.Vector2(new_position):
             self.position = pygame.Vector2(new_position)
             self.rect.center = self.position
 
+        # Create mask always first time
         if self.mask is None:
             self._generate_mask(obstacles or [])
 
+        # Check if the light is within the camera's view for mask generation
         light_area = pygame.Rect(0, 0, 300, 300)
         light_area.center = self.position
-
         if not camera_rect or light_area.colliderect(camera_rect):
             self._generate_mask(obstacles or [])
 
     @abstractmethod
-    def _generate_mask(self, obstacles: Sequence[pygame.Rect]):
+    def _generate_mask(self, 
+                       obstacles: Sequence[pygame.Rect]) -> None:
         """
         Abstract method to generate the light mask. Must be implemented by subclasses.
+
+        :param obstacles: List of obstacles to consider for light casting.
         """
         pass
 
-    def draw(self, screen: pygame.Surface, offset: tuple[int, int] = (0, 0)):
+    def draw(self, 
+             screen: pygame.Surface, 
+             offset: tuple[int, int] = (0, 0)) -> None:
         """
         Draws the light's mask to the screen using an alpha blend.
+
+        :param screen: The surface to draw the light on.
+        :param offset: Optional offset to apply to the light position.
+        :return: None
         """
         offset_x, offset_y = offset
         if self.mask:
@@ -68,7 +94,6 @@ class Light(pygame.sprite.Sprite):
                 mask_surface,
                 (self.position.x - self.distance - offset_x, self.position.y - self.distance - offset_y)
             )
-
 
 
 class CircularLight(Light):
@@ -85,21 +110,34 @@ class CircularLight(Light):
         ray_step: int = 2,
         use_obstacles: bool = True
     ):
+        """
+        :param position: The position of the light in the game world.
+        :param radius: The radius of the light.
+        :param segments: Number of segments for raycasting.
+        :param ray_step: Step size for raycasting.
+        :param use_obstacles: Whether to consider obstacles when generating the light mask.
+        """
         super().__init__(position, radius, use_obstacles)
         self.segments = segments
         self.ray_step = ray_step
 
-    def _generate_mask(self, obstacles: Sequence[pygame.Rect]):
+    def _generate_mask(self, obstacles: Sequence[pygame.Rect]) -> None:
         """
         Generates a circular light mask with or without raycasting around obstacles.
+
+        :param obstacles: List of obstacles to consider for light casting.
+        :return: None
         """
         size = int(self.distance * 2)
         surface = pygame.Surface((size, size), pygame.SRCALPHA)
         surface.fill((0, 0, 0, 0))
         center = pygame.Vector2(self.distance, self.distance)
 
+        # Draw a circle for the light area if no obstacle collision is needed
         if not self.use_obstacles:
             pygame.draw.circle(surface, (255, 255, 255, 150), center, self.distance)
+
+        # Raycast around obstacles if needed
         else:
             points = [center]
             nearby_obstacles = [
@@ -127,6 +165,10 @@ class CircularLight(Light):
     ) -> pygame.Vector2:
         """
         Casts a ray in a direction until it hits an obstacle or reaches max distance.
+
+        :param origin: The starting point of the ray.
+        :param direction: The direction of the ray as a vector.
+        :param obstacles: List of obstacles to check for collisions.
         """
         end = origin + direction * self.distance
         for i in range(0, int(self.distance), self.ray_step):
@@ -140,18 +182,14 @@ class CircularLight(Light):
     def change_radius(self, new_radius: float):
         """
         Dynamically changes the radius of the light.
+
+        :param new_radius: The new radius for the light.
+        :return: None
         """
         self.distance = new_radius
         self.rect.size = (new_radius * 2, new_radius * 2)
         self.rect.center = self.position
         self.dirty = True
-
-    def get_radius(self) -> float:
-        """
-        Returns the current radius of the light.
-        """
-        return self.distance
-
 
 class ConeLight(Light):
     """
@@ -168,6 +206,16 @@ class ConeLight(Light):
         ray_step: int = 2,
         use_obstacles: bool = True
     ):
+        
+        """
+        :param position: The position of the light in the game world.
+        :param direction: The direction of the light as a vector.
+        :param angle: The angle of the cone in degrees.
+        :param distance: The distance the light can reach.
+        :param segments: Number of segments for raycasting.
+        :param ray_step: Step size for raycasting.
+        :param use_obstacles: Whether to consider obstacles when generating the light mask.
+        """
         super().__init__(position, distance, use_obstacles)
         self.direction = pygame.Vector2(direction).normalize()
         self.angle = math.radians(angle)
@@ -177,6 +225,8 @@ class ConeLight(Light):
     def _generate_mask(self, obstacles: Sequence[pygame.Rect]):
         """
         Generates a cone-shaped light mask using raycasting and angle spread.
+
+        :param obstacles: List of obstacles to consider for light casting.
         """
         size = int(self.distance * 2)
         surface = pygame.Surface((size, size), pygame.SRCALPHA)
@@ -187,6 +237,7 @@ class ConeLight(Light):
         end_angle = start_angle + self.angle
         points = [center]
 
+        # Draw a cone without raycasting if no obstacle collision is needed
         if not self.use_obstacles:
             for i in range(self.segments + 1):
                 angle = start_angle + (end_angle - start_angle) * (i / self.segments)
@@ -194,6 +245,8 @@ class ConeLight(Light):
                 end_point = self.position + direction * self.distance
                 relative_point = (end_point - self.position) + center
                 points.append(relative_point)
+        
+        # Raycast around obstacles if needed
         else:
             nearby_obstacles = [r for r in obstacles if self.position.distance_to(r.center) < self.distance + 50]
             for i in range(self.segments + 1):
@@ -215,6 +268,11 @@ class ConeLight(Light):
     ) -> pygame.Vector2:
         """
         Casts a ray in a direction and stops when hitting an obstacle.
+
+        :param origin: The starting point of the ray.
+        :param direction: The direction of the ray as a vector.
+        :param obstacles: List of obstacles to check for collisions.
+        :return: The point where the ray hits an obstacle or the end of the ray.
         """
         end = origin + direction * self.distance
         for i in range(0, int(self.distance), self.ray_step):
