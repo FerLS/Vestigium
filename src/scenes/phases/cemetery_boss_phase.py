@@ -2,7 +2,7 @@ from entities.players.player import Player
 from entities.objects.lantern import Lantern
 from entities.objects.key_item import KeyItem
 from entities.npcs.gravedigger import Gravedigger
-from gui.gui_elements.guiText import BossTutorialText, DoorText, KeyText
+from gui.gui_elements.gui_text import BossTutorialText, DoorText, KeyText
 from scenes.phase import Phase
 from utils.constants import SCALE_FACTOR, WIDTH, HEIGHT
 

@@ -1,13 +1,17 @@
 import pygame 
 
 from scenes.scene import Scene
+from gui.gui_screen import GUIScreen
+from managers.sound_manager import SoundManager
 
 class Menu(Scene):
     def __init__(self, director):
         Scene.__init__(self, director)
+        self.screen_list: list[GUIScreen] = []
+        self.sound_manager: SoundManager = SoundManager()
 
-    def update(self, *args):
-        raise NotImplementedError("Subclasses must implement this method")
+    def update(self):
+        self.screen_list[-1].update()
     
     def events(self, events: list):
         for event in events:

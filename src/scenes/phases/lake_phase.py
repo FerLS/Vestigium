@@ -1,5 +1,5 @@
 import pygame
-from gui.gui_elements.guiText import SwimInstructionText
+from gui.gui_elements.gui_text import SwimInstructionText
 from utils.light import ConeLight
 from scenes.phase import Phase
 from utils.constants import SCALE_FACTOR, WIDTH, HEIGHT

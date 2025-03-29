@@ -1,7 +1,6 @@
 import pygame
-from gui.guiElement import GUIElement
+from gui.gui_element import GUIElement
 from managers.resource_manager import ResourceManager
-from managers.sound_manager import SoundManager
 
 class TextGUI(GUIElement):
     def __init__(self, screen, font, color, text, position):
@@ -31,7 +30,6 @@ class TextGUI(GUIElement):
             screen.blit(img, (self.rect.x, self.rect.y + y_offset))
             y_offset += img.get_height()
     
-    
 # Start screen text
 class NewGameText(TextGUI):
     def __init__(self, screen, position):
@@ -43,7 +41,6 @@ class NewGameText(TextGUI):
     def action(self):
         self.screen.menu.play_game()
 
-
 class ExitText(TextGUI):
     def __init__(self, screen, position):
         font = ResourceManager().load_font(
@@ -53,7 +50,6 @@ class ExitText(TextGUI):
 
     def action(self):
         self.screen.menu.exit_game()
-
 
 class OptionsText(TextGUI):
     def __init__(self, screen, position):
@@ -65,7 +61,6 @@ class OptionsText(TextGUI):
     def action(self):
         self.screen.menu.show_options_screen()
 
-
 class GoBackText(TextGUI):
     def __init__(self, screen, position):
         font = ResourceManager().load_font(
@@ -75,7 +70,6 @@ class GoBackText(TextGUI):
 
     def action(self):
         self.screen.menu.return_previous_scene()
-
 
 class MusicVolumeText(TextGUI):
     def __init__(self, screen, position):
@@ -114,7 +108,6 @@ class ContinueText(TextGUI):
     def action(self):
         self.screen.menu.continue_game()
 
-
 class GoToMainMenuText(TextGUI):
     def __init__(self, screen, position):
         font = ResourceManager().load_font(
@@ -124,7 +117,6 @@ class GoToMainMenuText(TextGUI):
 
     def action(self):
         self.screen.menu.go_to_main_menu()
-
 
 # Die menu text
 class YouDiedText(TextGUI):
@@ -139,7 +131,6 @@ class YouDiedText(TextGUI):
 
     def update_hover(self, mouse_pos):
         pass
-
 
 class RestartLevel(TextGUI):
     def __init__(self, screen, position):

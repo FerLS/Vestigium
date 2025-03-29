@@ -1,6 +1,6 @@
 import pygame
 from abc import ABC
-from gui.guiElement import GUIElement
+from gui.gui_element import GUIElement
 from managers.sound_manager import SoundManager  
 
 class Slider(GUIElement):
@@ -45,7 +45,6 @@ class Slider(GUIElement):
         pygame.draw.rect(screen, (255, 209, 0), fill_rect, border_radius=self.rect.height // 2)
 
         pygame.draw.rect(screen, (48, 55, 66), self.rect, width=2, border_radius=self.rect.height // 2)
-
 
 class MusicVolumeSlider(Slider):
     def __init__(self, screen, x, y, width, height, min_value=0, max_value=1, initial_value=0.5):

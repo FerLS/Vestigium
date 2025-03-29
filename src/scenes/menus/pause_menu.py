@@ -8,14 +8,9 @@ from managers.sound_manager import SoundManager
 class PauseMenu(Menu):
     def __init__(self, director):
         Menu.__init__(self, director)
-        self.sound_manager = SoundManager()
         self.sound_manager.pause_music()
         self.sound_manager.stop_all_sounds()
-        self.screen_list = []
         self.screen_list.append(PauseScreen(self, "assets\\images\\backgrounds\\pause_menu_background")) # Self parameter refers to menu
-
-    def update(self, **args):
-        self.screen_list[-1].update(**args)
 
     def continue_game(self):
         self.sound_manager.resume_music()
@@ -26,7 +21,6 @@ class PauseMenu(Menu):
 
     def go_to_main_menu(self):
         self.director.scene_manager.change_scene("StartMenu")
-        # continue flag activated
     
     def restart_level(self):
         self.director.finish_current_scene()

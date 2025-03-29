@@ -1,9 +1,10 @@
 import pygame
-from gui.gui_elements.guiText import InitialInstructionText, RetryInstructionText
+from gui.gui_elements.gui_text import InitialInstructionText, RetryInstructionText
 from scenes.phase import Phase
 from entities.players.player import Player
 from entities.npcs.firefly import Firefly
 from utils.light import ConeLight 
+
 
 
 class CemeteryPhase(Phase):
@@ -169,6 +170,9 @@ class CemeteryPhase(Phase):
 
         for fade in self.fades.values():
             fade.draw()
+
+    def continue_procedure(self):
+        self.sound_manager.play_sound("cemetery_background_sound.ogg", "assets\\sounds", category='ambient', loop=True)
 
     def end_of_phase(self, scene=str):
         """

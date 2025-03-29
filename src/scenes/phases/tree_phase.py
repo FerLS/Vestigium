@@ -3,7 +3,7 @@ from entities.players.player import Player
 from entities.npcs.mushroom import Mushroom
 from entities.npcs.ant import Ant
 from entities.npcs.firefly import Firefly
-from gui.gui_elements.guiText import GlideInstructionText
+from gui.gui_elements.gui_text import GlideInstructionText
 from utils.light import ConeLight
 from scenes.phase import Phase
 

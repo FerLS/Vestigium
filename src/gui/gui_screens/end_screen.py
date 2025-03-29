@@ -1,17 +1,20 @@
 import pygame
-from gui.guiScreen import GUIScreen
-from gui.gui_elements.guiText import EndOfGameText, FinalText, GoToMainMenuText
+from gui.gui_screen import GUIScreen
+from gui.gui_elements.gui_text import EndOfGameText, FinalText, GoToMainMenuText
 from utils.constants import WIDTH, HEIGHT
 
 class EndScreen(GUIScreen):
     def __init__(self, menu):
         self.menu = menu
         self.image = None
-        self.gui_elements = []
-        
-        self.gui_elements.append(FinalText(self, (100, 100)))
-        self.gui_elements.append(EndOfGameText(self, (WIDTH/2 - 50, HEIGHT/1.5)))
-        self.gui_elements.append(GoToMainMenuText(self, (WIDTH/2 - 65, HEIGHT/1.2)))
+        self.gui_elements = self._init_gui_elements()
+
+    def _init_gui_elements(self):
+        gui_elements = []
+        gui_elements.append(FinalText(self, (100, 100)))
+        gui_elements.append(EndOfGameText(self, (WIDTH/2 - 50, HEIGHT/1.5)))
+        gui_elements.append(GoToMainMenuText(self, (WIDTH/2 - 65, HEIGHT/1.2)))
+        return gui_elements
 
     def update(self):
         mouse_pos = pygame.mouse.get_pos()
