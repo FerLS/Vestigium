@@ -19,8 +19,8 @@ class Trigger:
         self.triggered = False
 
         self.text = None
-        self.display_time = display_time  
-        self.current_time = 0 
+        self.display_time = display_time
+        self.current_time = 0
 
     def check(self, player_rect: pygame.Rect):
         """
@@ -31,7 +31,7 @@ class Trigger:
         if self.rect.colliderect(player_rect) and (not self.triggered or not self.triggered_once):
             self.text = self.action()
             self.triggered = True
-            self.current_time = self.display_time  
+            self.current_time = self.display_time
 
     def update(self, dt: float):
         """
@@ -42,7 +42,7 @@ class Trigger:
         if self.text is not None and self.current_time > 0:
             self.current_time -= dt
             if self.current_time <= 0:
-                self.text = None  
+                self.text = None
 
     def draw(self, screen: pygame.Surface):
         """

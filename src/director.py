@@ -5,6 +5,7 @@ from scenes.pauseMenu import PauseMenu
 from scenes.startMenu import StartMenu
 from scenes.end_menu import EndMenu
 from scenes.cemetery_phase import CemeteryPhase
+from scenes.cemeteryBossPhase import CemeteryBossPhase
 from scenes.tree_phase import TreePhase
 from scenes.lake_phase import LakePhase
 from scene_manager import SceneManager
@@ -43,8 +44,10 @@ class Director:
         """
         self.scene_manager.register_scene("StartMenu", StartMenu)
         self.scene_manager.register_scene("PauseMenu", PauseMenu)
+        self.scene_manager.register_scene("LakePhase", LakePhase)
         self.scene_manager.register_scene("EndMenu", EndMenu)
         self.scene_manager.register_scene("CemeteryPhase", CemeteryPhase)
+        self.scene_manager.register_scene("CemeteryBossPhase", CemeteryBossPhase)
         self.scene_manager.register_scene("TreePhase", TreePhase)
         self.scene_manager.register_scene("LakePhase", LakePhase)
         self.scene_manager.register_scene("MinigamePhase", MinigamePhase)

@@ -15,19 +15,18 @@ from resource_manager import ResourceManager
 from sound_manager import SoundManager
 
 
-class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, tilemap, obstacles, camera=None, light=None):
-        super().__init__()
 
-        self.light = light
+class Player(pygame.sprite.Sprite):
+    def __init__(self, x, y, tilemap, obstacles=[], camera=None, light=None):
+        super().__init__()
 
         # Load resources
         self.resource_manager = ResourceManager()
         self.sound_manager = SoundManager()
+        self.camera = camera
         sheet = self.resource_manager.load_image(
             "player_spritesheet.png", "assets\\images"
         )
-        self.camera = camera
 
         # Animations
         self.animations = {
@@ -39,6 +38,7 @@ class Player(pygame.sprite.Sprite):
             "glide": extract_frames(sheet, 0, 224, 32, 32, 1, SCALE_FACTOR),
             "dead": extract_frames(sheet, 0, 192, 32, 32, 6, SCALE_FACTOR),
             "swim": extract_frames(sheet, 0, 160, 32, 32, 8, SCALE_FACTOR, lying=-10.0),
+
         }
 
         self.current_animation = self.animations["idle"]
@@ -57,6 +57,7 @@ class Player(pygame.sprite.Sprite):
         self.running = False
         self.run_mult = 1.6
         self.jump_power = -10 * SCALE_FACTOR
+        self.jump_power_coyote = -6 * SCALE_FACTOR
         self.jumped = False
         self.lateral_jump_power = 5 * SCALE_FACTOR
         self.gravity = 0.5 * SCALE_FACTOR
@@ -72,6 +73,7 @@ class Player(pygame.sprite.Sprite):
         self.on_wall_left = False
         self.on_wall_right = False
         self.from_ground = False
+        self.coyote_time = 0.3
         self._coyote_timer = 0
 
         self.tilemap = tilemap
@@ -91,6 +93,7 @@ class Player(pygame.sprite.Sprite):
         ]
         self.step_index = 0
 
+    # Movement API
     def move_left(self):
         if not self.bouncing:
             self.velocity_x = (
@@ -99,8 +102,6 @@ class Player(pygame.sprite.Sprite):
             self.flipped = True
             if self.on_ground and not self.is_swimming:
                 self.set_animation("walk")
-
-        self.wall_cooldown = 0.2
 
     def move_right(self):
         if not self.bouncing:
@@ -111,8 +112,6 @@ class Player(pygame.sprite.Sprite):
             if self.on_ground and not self.is_swimming:
                 self.set_animation("walk")
 
-        self.wall_cooldown = 0.2
-
     def stop(self):
         if not self.bouncing:
             self.velocity_x = 0
@@ -122,8 +121,8 @@ class Player(pygame.sprite.Sprite):
     def jump(self):
         if self.is_swimming:
             return
-        if self.on_ground:
-            self.velocity_y = self.jump_power
+        if self._coyote_timer > 0 and not self.jumped: # antes if self.on_ground:
+            self.velocity_y = self.jump_power_coyote
             self.from_ground = True
             self.set_animation("jump")
 
@@ -165,6 +164,7 @@ class Player(pygame.sprite.Sprite):
                 self.sound_manager.play_sound(
                     "falling.ogg", "assets\\sounds", category="player", pan=0.5
                 )
+            self.jumped = True
 
     def glide(self):
         if (
@@ -188,17 +188,16 @@ class Player(pygame.sprite.Sprite):
             max_swim_fall_speed = MAX_FALL_SPEED // 4
             if self.velocity_y > max_swim_fall_speed:
                 self.velocity_y = max_swim_fall_speed
-        else:
-            if not self.on_ground:
-                self.velocity_y += self.gravity
-                if self.velocity_y > 0 and not self.is_gliding:
-                    self.bouncing = False
-                    self.set_animation("fall")
-                if self.velocity_y > MAX_FALL_SPEED:
-                    self.velocity_y = MAX_FALL_SPEED
+        elif not self.on_ground:
+            self.velocity_y += self.gravity
+            if self.velocity_y > 0 and not self.is_gliding:
+                self.bouncing = False
+                self.set_animation("fall")
+            if self.velocity_y > MAX_FALL_SPEED:
+                self.velocity_y = MAX_FALL_SPEED
 
     def apply_lateral_gravity(self):
-        if not self.on_ground and self.bouncing and not self.is_swimming:
+        if not self.on_ground and self.bouncing and not self.is_swimming:            
             self.velocity_x += self.lateral_gravity * (-1) * self.bounce_direction
 
     def update_animation(self, dt):
@@ -253,10 +252,16 @@ class Player(pygame.sprite.Sprite):
     def check_collisions(self):
 
         self.on_ground = False
-        colliders = self.tilemap.get_collision_rects()
-        self.bouncy_obstacles = self.obstacles
-        colliders += self.obstacles
+        self.on_wall_left = False
+        self.on_wall_right = False
 
+        colliders = self.tilemap.get_collision_rects() + self.obstacles
+        platform_colliders = self.tilemap.get_platform_rects()
+        self.bouncy_obstacles = self.obstacles
+
+        old_rect = self.rect.copy()
+
+        # Vertical
         self.rect.y += self.velocity_y
         for collider in colliders:
             if self.rect.colliderect(collider):
@@ -273,6 +278,7 @@ class Player(pygame.sprite.Sprite):
                         self.velocity_y = 0
                         self.bouncing = False
                         self.on_ground = True
+                        self._coyote_timer = self.coyote_time
                         if not self.is_swimming:
                             self.set_animation("idle")
                 elif self.velocity_y < 0:
@@ -288,6 +294,20 @@ class Player(pygame.sprite.Sprite):
                             "fall.wav", "assets\\sounds", category="player", pan=0.5
                         )
 
+        for collider in platform_colliders:
+            if self.rect.colliderect(collider):
+                if self.velocity_y >= 0 and old_rect.bottom <= collider.top + 1:
+                    self.rect.bottom = collider.top + 1
+                    self.velocity_y = 0
+                    self.on_ground = True
+                    self._coyote_timer = self.coyote_time
+
+                    if self.velocity_x == 0:
+                        self.set_animation("idle")
+                    else:
+                        self.set_animation("walk")
+
+        # Horizontal
         self.rect.x += self.velocity_x
         for collider in colliders:
             if self.rect.colliderect(collider) and self.rect.bottom != collider.top + 1:
@@ -339,6 +359,20 @@ class Player(pygame.sprite.Sprite):
         else:
             self.velocity_y += self.swim_gravity
 
+    def climb_stairs(self):
+        stairs_colliders = self.tilemap.get_stairs_rects()
+        for collider in stairs_colliders:
+            if self.rect.colliderect(collider):
+                self.rect.y -= 2
+
+                self.velocity_x = 0
+                self.velocity_y = 0
+                self.on_ground = False
+                self.on_wall_left = False
+                self.on_wall_right = False
+                self.can_glide = False
+                self.position_corrected = True
+
     def handle_input(self, keys):
         if self.is_swimming:
             self.handle_swim_input(keys)
@@ -349,6 +383,14 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.is_gliding = False
                 self.glide_sound_flag = True
+
+        if keys[pygame.K_UP]:
+            self.climb_stairs()
+
+        if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT] and not self.is_swimming:
+            self.running = True
+        else:
+            self.running = False
 
         if keys[pygame.K_LEFT]:
             self.move_left()
@@ -367,12 +409,6 @@ class Player(pygame.sprite.Sprite):
         else:
             self.set_animation("dead")
             self.update_animation(dt)
-
-        if self.wall_cooldown > 0:
-            self.wall_cooldown -= 1 / 60
-        else:
-            self.on_wall_left = False
-            self.on_wall_right = False
 
         if self._coyote_timer > 0 and not self.on_ground:
             self._coyote_timer -= dt

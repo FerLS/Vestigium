@@ -4,6 +4,7 @@ from abc import abstractmethod
 from typing import Optional, Sequence
 
 
+
 class Light(pygame.sprite.Sprite):
     """
     Base class for dynamic light sources. Handles position, range, and rendering.
@@ -69,6 +70,7 @@ class Light(pygame.sprite.Sprite):
             )
 
 
+
 class CircularLight(Light):
     """
     Light source that casts a circular field of light.
@@ -100,7 +102,11 @@ class CircularLight(Light):
             pygame.draw.circle(surface, (255, 255, 255, 150), center, self.distance)
         else:
             points = [center]
-            nearby_obstacles = [r for r in obstacles if self.position.distance_to(r.center) < self.distance + 50]
+            nearby_obstacles = [
+                r
+                for r in obstacles
+                if self.position.distance_to(r.center) < self.distance + 50
+            ]
 
             for i in range(self.segments):
                 angle = math.radians(i * (360 / self.segments))
@@ -197,6 +203,7 @@ class ConeLight(Light):
                 relative_point = (end_point - self.position) + center
                 points.append(relative_point)
 
+        pygame.draw.polygon(surface, (255, 255, 0, 128), points)
         pygame.draw.polygon(surface, (255, 255, 0, 128), points)
         self.mask = pygame.mask.from_surface(surface)
 

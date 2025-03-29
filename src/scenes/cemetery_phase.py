@@ -127,7 +127,7 @@ class CemeteryPhase(Phase):
         fade_in.start()
         self.fades = {
             'fade_in': fade_in,
-            'fade_out': FadeOut(self.screen, on_complete=lambda: self.end_of_phase("TreePhase")),
+            'fade_out': FadeOut(self.screen, on_complete=lambda: self.end_of_phase("CemeteryBossPhase")),
             'revive_fade_in': FadeIn(self.screen, duration=2, on_complete=lambda: self.revive_player()),
             'death_fade_out': FadeOut(self.screen, duration=2, on_complete=lambda: self.move_player_to_spawn())
         }
