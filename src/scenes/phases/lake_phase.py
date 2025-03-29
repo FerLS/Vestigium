@@ -1,5 +1,5 @@
 import pygame
-from gui.gui_elements.gui_text import SwimInstructionText
+from gui.gui_elements.gui_text import CheckpointText, SwimInstructionText
 from utils.light import ConeLight
 from scenes.phase import Phase
 from utils.constants import SCALE_FACTOR, WIDTH, HEIGHT
@@ -69,6 +69,35 @@ class LakePhase(Phase):
         self.init_trigger("appear_second_anglerfish_trigger", lambda: self.appear_second_anglerfish(), triggered_once=False)
         self.init_trigger("end_phase_trigger", lambda: self.fades['fade_out'].start())
 
+    def init_trigger(self, entity_name: str, callback: callable, triggered_once: bool=True):
+        """
+        Initialize a trigger with a callback function.
+        """
+        entity = self.foreground.load_entity(entity_name)
+        trigger_rect = pygame.Rect(entity.x, entity.y, entity.width, entity.height)
+        self.triggers.append(Trigger(trigger_rect, callback, triggered_once=triggered_once))
+
+    def setup_audio(self):
+        """
+        Setup the audio for the scene.
+        """
+        self.sound_manager.play_music("lake_music.mp3", "assets\\music", -1)
+        self.sound_manager.play_sound("bubbles.wav", "assets\\sounds", category='ambient', loop=True)
+
+    def setup_spawns(self):
+        """
+        Setup the spawn points for the scene.
+        """
+        self.spawns_rects = [pygame.Rect(v.x, v.y, v.width, v.height)
+                             for v in self.foreground.load_layer_entities("checkpoints").values()]
+        for spawn_rect in self.spawns_rects:
+            self.triggers.append(Trigger(spawn_rect, lambda: self.increment_spawn_index()))
+        for i, spawn_rect in enumerate(self.spawns_rects):
+            if i in [1, 2]:
+                self.triggers.append(Trigger(spawn_rect, lambda: self.show_respawn_text()))
+        self.spawn_index = -1
+        self.current_spawn = self.spawns_rects[self.spawn_index].center
+
     def setup_player(self):
         """
         Create the player entity.
@@ -96,6 +125,30 @@ class LakePhase(Phase):
             self.anglerfishes_group.remove(self.anglerfish_2)
             self.anglerfish_2 = None
         self.fades['revive_fade_in'].start()
+
+    def setup_fades(self):
+        """
+        Setup all fade effects for the scene.
+        """
+        fade_in = FadeIn(self.screen)
+        fade_in.start()
+        self.fades = {
+            'fade_in': fade_in,
+            'fade_out': FadeOut(self.screen, on_complete=lambda: self.end_of_phase("EndMenu")),
+            'revive_fade_in': FadeIn(self.screen, duration=2, on_complete=lambda: self.revive_player()),
+            'death_fade_out': FadeOut(self.screen, duration=2, on_complete=lambda: self.move_player_to_spawn())
+        }
+
+    def increment_spawn_index(self):
+        """
+        Increment the spawn index.
+        """
+        self.spawn_index += 1
+        self.current_spawn = self.spawns_rects[self.spawn_index].center
+        
+    def show_respawn_text(self):
+        text = CheckpointText(self.screen, (WIDTH // 4, WIDTH // 1.4))
+        return text
 
     def update(self):
         dt = self.director.clock.get_time() / 1000

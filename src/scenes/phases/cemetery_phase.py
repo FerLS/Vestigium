@@ -1,5 +1,5 @@
 import pygame
-from gui.gui_elements.gui_text import InitialInstructionText, RetryInstructionText
+from gui.gui_elements.gui_text import CheckpointText, InitialInstructionText, RetryInstructionText
 from scenes.phase import Phase
 from entities.players.player import Player
 from entities.npcs.firefly import Firefly
@@ -30,7 +30,7 @@ class CemeteryPhase(Phase):
         """
         Setup the instruction text for the scene.
         """
-        self.instruction_text = InitialInstructionText(self.screen, (50, 100))
+        self.instruction_text = InitialInstructionText(self.screen, (100, 100))
     
     def setup_groups(self):
         """
@@ -85,6 +85,78 @@ class CemeteryPhase(Phase):
             self.fireflies_group.add(firefly)
             self.lights_group.add(firefly.light)
 
+    def setup_spawns(self):
+        """
+        Setup the spawn points for the scene.
+        """
+        self.spawns_rects = [pygame.Rect(v.x, v.y, v.width, v.height) for v in self.foreground.load_layer_entities("checkpoints").values()]
+        for spawn_rect in self.spawns_rects:
+            self.triggers.append(Trigger(spawn_rect, lambda: self.increment_spawn_index()))
+        for i, spawn_rect in enumerate(self.spawns_rects):
+            if i in [1, 2]:
+                self.triggers.append(Trigger(spawn_rect, lambda: self.show_respawn_text()))
+        self.spawn_index = -1
+        self.current_spawn = self.spawns_rects[self.spawn_index].center
+        
+    def setup_player(self):
+        """
+        Create the player entity.
+        """
+        player_spawn = self.spawns_rects[0].center
+        self.player = Player(player_spawn[0], player_spawn[1], 
+                             self.foreground, 
+                             obstacles=[])
+        
+    def revive_player(self):
+        """
+        Show instructions and revive the player after dying.
+        """
+        self.instruction_text = RetryInstructionText(self.screen, (100, 100))
+        self.player.dead = False
+
+    def move_player_to_spawn(self):
+        """
+        Move the camera to the current spawn point.
+        """
+        self.player.rect.center = self.current_spawn
+        self.camera.update(self.player.rect)
+        self.fades['revive_fade_in'].start()
+        
+    def setup_triggers(self):
+        """
+        Setup the triggers for the scene.
+        """
+        self.init_trigger("death", lambda: self.fades['death_fade_out'].start(), triggered_once=False)
+        self.init_trigger("end_of_phase", lambda: self.fades['fade_out'].start())
+
+    def setup_fades(self):
+        """
+        Setup all fade effects for the scene.
+        """
+        fade_in = FadeIn(self.screen)
+        fade_in.start()
+        self.fades = {
+            'fade_in': fade_in,
+            'fade_out': FadeOut(self.screen, on_complete=lambda: self.end_of_phase("CemeteryBossPhase")),
+            'revive_fade_in': FadeIn(self.screen, duration=2, on_complete=lambda: self.revive_player()),
+            'death_fade_out': FadeOut(self.screen, duration=2, on_complete=lambda: self.move_player_to_spawn())
+        }
+        
+    def increment_spawn_index(self):
+        """
+        Increment the spawn index.
+        """
+        self.instruction_text.visible = True
+        self.spawn_index += 1
+        self.current_spawn = self.spawns_rects[self.spawn_index].center 
+    
+    def setup_audio(self):
+        """
+        Setup the audio for the scene.
+        """
+        self.sound_manager.play_music("cemetery_music.mp3", "assets\\music", -1)
+        self.sound_manager.play_sound("cemetery_background_sound.ogg", "assets\\sounds", category='ambient', loop=True)
+        
     def create_lampposts(self):
         """
         Create lampposts with associated ConeLight objects.
@@ -108,8 +180,13 @@ class CemeteryPhase(Phase):
         """
         Setup the triggers for the scene.
         """
-        self.init_trigger("death", lambda: self.fades['death_fade_out'].start(), triggered_once=False)
-        self.init_trigger("end_of_phase", lambda: self.fades['fade_out'].start())
+        end_coords = self.foreground.load_entity(entity_name)
+        self.end_phase_rect = pygame.Rect(end_coords.x, end_coords.y, end_coords.width, end_coords.height)
+        self.triggers.append(Trigger(self.end_phase_rect, callback, triggered_once))  
+        
+    def show_respawn_text(self):
+        text = CheckpointText(self.screen, (100, 50))
+        return text
 
     def update(self):
         dt = self.director.clock.get_time() / 1000
