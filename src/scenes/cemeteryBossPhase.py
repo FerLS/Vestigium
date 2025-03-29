@@ -6,7 +6,7 @@ from entities.player import Player
 from entities.lantern import Lantern
 from entities.keyItem import KeyItem
 from entities.gravedigger import Gravedigger
-from gui.gui_elements.guiText import BossTutorialText, DoorText, KeyText
+from gui.gui_elements.guiText import BossStairsText, BossTutorialText, DoorText, KeyText
 from light2 import CircularLight, ConeLight
 from scenes.phase import Phase
 from scenes.fadeTransition import FadeIn, FadeOut
@@ -117,6 +117,7 @@ class CemeteryBossPhase(Phase):
         """
         self.triggers = []
         self.init_trigger("tutorial_trigger", lambda: self.boss_tutorial())
+        self.init_trigger("stairs_trigger", lambda: self.stairs_trigger())
         self.init_trigger(
             "end_of_phase", lambda: self.end_of_phase(), triggered_once=False
         )
@@ -203,6 +204,10 @@ class CemeteryBossPhase(Phase):
 
     def boss_tutorial(self):
         text = BossTutorialText(self.screen, (100, 100))
+        return text
+    
+    def stairs_trigger(self):
+        text = BossStairsText(self.screen, (100, 100))
         return text
 
     def show_key_obtained_text(self):

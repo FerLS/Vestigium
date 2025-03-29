@@ -199,6 +199,20 @@ class BossTutorialText(TextGUI):
     def action(self):
         pass
 
+class BossStairsText(TextGUI):
+    def __init__(self, screen, position):
+        font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
+        TextGUI.__init__(
+            self,
+            screen,
+            font,
+            (255, 255, 255),
+            """use UP to climb the stairs""",
+            position,
+        )
+
+    def action(self):
+        pass
 class DoorText(TextGUI):
     def __init__(self, screen, position):
         font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)

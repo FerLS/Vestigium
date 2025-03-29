@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="55" height="37" tilewidth="32" tileheight="32" infinite="0" nextlayerid="21" nextobjectid="41">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="55" height="37" tilewidth="32" tileheight="32" infinite="0" nextlayerid="21" nextobjectid="44">
  <tileset firstgid="1" source="../assets/TX Tileset Ground.tsx"/>
  <tileset firstgid="257" source="../assets/TX Village Props.tsx"/>
  <tileset firstgid="1281" source="../assets/tiles.tsx"/>
@@ -298,6 +298,7 @@
   <object id="32" name="tutorial_trigger" x="446.5" y="641" width="37" height="30.5"/>
   <object id="38" name="end_of_phase" x="1353.84" y="487.67" width="219.686" height="181.139"/>
   <object id="40" name="key_trigger" x="1057" y="-27" width="31" height="119"/>
+  <object id="43" name="stairs_trigger" x="474" y="489" width="102" height="76"/>
  </objectgroup>
  <objectgroup id="16" name="Path">
   <object id="24" name="1" type="Point" x="138.121" y="775.82">
