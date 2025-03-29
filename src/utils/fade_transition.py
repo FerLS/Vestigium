@@ -17,8 +17,6 @@ class FadeTransition:
             self.active = True
             self.timer = 0
         
-            
-
     def update(self, dt):
         raise NotImplementedError("Implement this in FadeIn or FadeOut")
 

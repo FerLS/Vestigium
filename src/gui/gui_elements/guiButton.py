@@ -1,7 +1,7 @@
 import pygame 
 
 from gui.guiElement import GUIElement
-from resource_manager import ResourceManager
+from managers.resource_manager import ResourceManager
 
 class GUIButton(GUIElement):
     def __init__(self, screen, image_name, position):

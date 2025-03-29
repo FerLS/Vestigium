@@ -1,6 +1,6 @@
 import os
 import pygame
-from resource_manager import ResourceManager
+from managers.resource_manager import ResourceManager
 
 class SoundManager:
     """

@@ -1,7 +1,7 @@
 import pygame
 from gui.guiElement import GUIElement
-from resource_manager import ResourceManager
-from sound_manager import SoundManager
+from managers.resource_manager import ResourceManager
+from managers.sound_manager import SoundManager
 
 class TextGUI(GUIElement):
     def __init__(self, screen, font, color, text, position):

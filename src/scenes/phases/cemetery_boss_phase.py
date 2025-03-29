@@ -1,18 +1,9 @@
-import pygame
-from enviorement.background import Background
-from enviorement.camera import Camera
-from enviorement.tilemap import Tilemap
-from entities.player import Player
-from entities.lantern import Lantern
-from entities.keyItem import KeyItem
-from entities.gravedigger import Gravedigger
+from entities.players.player import Player
+from entities.objects.lantern import Lantern
+from entities.objects.key_item import KeyItem
+from entities.npcs.gravedigger import Gravedigger
 from gui.gui_elements.guiText import BossTutorialText, DoorText, KeyText
-from light2 import CircularLight, ConeLight
 from scenes.phase import Phase
-from scenes.fadeTransition import FadeIn, FadeOut
-from trigger import Trigger
-from resource_manager import ResourceManager
-from sound_manager import SoundManager
 from utils.constants import SCALE_FACTOR, WIDTH, HEIGHT
 
 
@@ -22,46 +13,21 @@ class CemeteryBossPhase(Phase):
         self.screen = director.screen
         self.pressed_keys = {}
 
-        self.load_resources()
+        self.load_resources(tilemap_path="tiled/levels/cemetery_boss.tmx",
+                            background_path="assets/images/backgrounds/cemetery_phase_background")
         self.setup_camera()
+        self.setup_groups()
         self.setup_spawns()
         self.setup_player()
-        self.setup_lantern()
+        self.setup_enemies()
         self.setup_key_item()
-        self.setup_gravedigger()
         self.setup_triggers()
-        self.setup_audio()
-        self.setup_fades()
-
-    def load_resources(self):
-        """
-        Load all resources needed for the scene.
-        """
-        self.resources = ResourceManager()
-        self.sound_manager = SoundManager()
-        self.foreground = Tilemap("tiled/levels/cementery_boss.tmx")
-        self.background = Background(
-            self.resources, "assets\\images\\backgrounds\\parallax_forest"
-        )
-
-    def setup_camera(self):
-        """
-        Setup the camera for the scene.
-        """
-        self.camera = Camera(WIDTH, HEIGHT)
-
-    def setup_spawns(self):
-        """
-        Setup the spawn points for the scene.
-        """
-        self.spawns_rects = [
-            pygame.Rect(v.x, v.y, v.width, v.height)
-            for v in self.foreground.load_layer_entities("checkpoints").values()
-        ]
-        self.spawn_index = -1
-        self.current_spawn = (
-            self.spawns_rects[0].center if self.spawns_rects else (0, 0)
-        )
+        self.setup_fades(scene_name="MinigamePhase")
+        self.setup_audio(music_name="mystic_forest.mp3")
+    
+    def setup_groups(self):
+        self.triggers = []
+        self.fades = {}
 
     def setup_player(self):
         """
@@ -74,13 +40,9 @@ class CemeteryBossPhase(Phase):
         self.player.jump_power_coyote = -4 * SCALE_FACTOR
         self.foreground.insert_sprite(self.player, 2)
 
-    def revive_player(self):
-        self.player.dead = False
-
-    def move_player_to_spawn(self):
-        self.player.rect.center = self.current_spawn
-        self.camera.update(self.player.rect)
-        self.fades["revive_fade_in"].start()
+    def setup_enemies(self):
+        self.setup_gravedigger()
+        self.setup_lantern()
 
     def setup_lantern(self):
         """
@@ -115,56 +77,12 @@ class CemeteryBossPhase(Phase):
         """
         Setup all triggers in the scene.
         """
-        self.triggers = []
         self.init_trigger("tutorial_trigger", lambda: self.boss_tutorial())
         self.init_trigger(
-            "end_of_phase", lambda: self.end_of_phase(), triggered_once=False
+            "end_of_phase", lambda: self.manage_door(), triggered_once=False
         )
         self.init_trigger("key_trigger", lambda: self.show_key_obtained_text())
 
-    def init_trigger(
-        self, entity_name: str, callback: callable, triggered_once: bool = True
-    ):
-        """
-        Initialize a trigger with a callback function.
-        """
-        entity = self.foreground.load_entity(entity_name)
-        trigger_rect = pygame.Rect(entity.x, entity.y, entity.width, entity.height)
-        self.triggers.append(
-            Trigger(trigger_rect, callback, triggered_once=triggered_once)
-        )
-
-    def setup_audio(self):
-        """
-        Setup all audio for the scene.
-        """
-        self.sound_manager.play_music("mystic_forest.mp3", "assets\\music", -1)
-
-    def setup_fades(self):
-        """
-        Setup all fade effects for the scene.
-        """
-        self.fades = {}
-
-        fade_in = FadeIn(self.screen)
-        fade_in.start()
-        self.fades["fade_in"] = fade_in
-
-        fade_out = FadeOut(
-            self.screen,
-            on_complete=lambda: self.director.scene_manager.change_scene("MinigamePhase"),
-        )
-        self.fades["fade_out"] = fade_out
-
-        revive_fade_in = FadeIn(
-            self.screen, duration=2, on_complete=lambda: self.revive_player()
-        )
-        self.fades["revive_fade_in"] = revive_fade_in
-
-        death_fade_out = FadeOut(
-            self.screen, duration=2, on_complete=lambda: self.move_player_to_spawn()
-        )
-        self.fades["death_fade_out"] = death_fade_out
 
     def update(self):
         dt = self.director.clock.get_time() / 1000
@@ -214,7 +132,10 @@ class CemeteryBossPhase(Phase):
             "forest_ambient.wav", "assets\\sounds", category="ambient", loop=True
         )
 
-    def end_of_phase(self):
+    def end_of_phase(self, scene_name):
+        self.director.scene_manager.stack_scene(scene_name)
+
+    def manage_door(self):
         if self.key.picked:
             self.fades["fade_out"].start()
             self.player.jump_power_coyote = -6 * SCALE_FACTOR

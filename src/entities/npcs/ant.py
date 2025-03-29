@@ -1,7 +1,7 @@
 import pygame
-from light2 import CircularLight
-from resource_manager import ResourceManager
-from sound_manager import SoundManager
+from utils.light import CircularLight
+from managers.resource_manager import ResourceManager
+from managers.sound_manager import SoundManager
 from utils.images import extract_frames
 from utils.constants import SCALE_FACTOR
 

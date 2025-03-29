@@ -1,6 +1,6 @@
 import pygame
 from director import Director
-from scenes.startMenu import StartMenu
+from scenes.menus.start_menu import StartMenu
 
 if __name__ == "__main__":
     """

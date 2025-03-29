@@ -1,16 +1,16 @@
 import pygame
-from scene import Scene
+from scenes.scene import Scene
 from utils.constants import *
-from scenes.pauseMenu import PauseMenu
-from scenes.startMenu import StartMenu
-from scenes.end_menu import EndMenu
-from scenes.cemetery_phase import CemeteryPhase
-from scenes.cemeteryBossPhase import CemeteryBossPhase
-from scenes.tree_phase import TreePhase
-from scenes.lake_phase import LakePhase
-from scene_manager import SceneManager
-from sound_manager import SoundManager
-from scenes.minigamePhase import MinigamePhase
+from scenes.menus.start_menu import StartMenu
+from scenes.menus.pause_menu import PauseMenu
+from scenes.menus.end_menu import EndMenu
+from scenes.phases.cemetery_phase import CemeteryPhase
+from scenes.phases.cemetery_boss_phase import CemeteryBossPhase
+from scenes.phases.minigame_phase import MinigamePhase
+from scenes.phases.tree_phase import TreePhase
+from scenes.phases.lake_phase import LakePhase
+from managers.scene_manager import SceneManager
+
 
 class Director:
     """
@@ -28,7 +28,6 @@ class Director:
             cls.screen: pygame.Surface = pygame.display.set_mode((WIDTH, HEIGHT))
             cls.scene_manager: SceneManager = SceneManager(cls._instance)
             cls.setup_scenes(cls)
-            cls.sound_manager: SoundManager = SoundManager()
             cls.restart_flag: bool = False
         return cls._instance
 
@@ -44,13 +43,12 @@ class Director:
         """
         self.scene_manager.register_scene("StartMenu", StartMenu)
         self.scene_manager.register_scene("PauseMenu", PauseMenu)
-        self.scene_manager.register_scene("LakePhase", LakePhase)
         self.scene_manager.register_scene("EndMenu", EndMenu)
         self.scene_manager.register_scene("CemeteryPhase", CemeteryPhase)
         self.scene_manager.register_scene("CemeteryBossPhase", CemeteryBossPhase)
+        self.scene_manager.register_scene("MinigamePhase", MinigamePhase)
         self.scene_manager.register_scene("TreePhase", TreePhase)
         self.scene_manager.register_scene("LakePhase", LakePhase)
-        self.scene_manager.register_scene("MinigamePhase", MinigamePhase)
 
     def finish_current_scene(self):
         """

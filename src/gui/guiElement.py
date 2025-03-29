@@ -1,6 +1,6 @@
 import pygame 
 from abc import ABC
-from sound_manager import SoundManager
+from managers.sound_manager import SoundManager
 
 class GUIElement(ABC):
     def __init__(self, screen, rect):

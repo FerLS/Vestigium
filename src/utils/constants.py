@@ -16,7 +16,6 @@ class MovementDirections(Enum):
     LEFT = 3
     RIGHT = 4
 
-
 class MovementType(Enum):
     IDLE = 1
     WALK = 2

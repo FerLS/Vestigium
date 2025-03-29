@@ -1,5 +1,5 @@
 import pygame
-from resource_manager import ResourceManager
+from managers.resource_manager import ResourceManager
 import math
 
 from utils.constants import SCALE_FACTOR

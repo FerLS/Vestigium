@@ -1,47 +1,30 @@
 import pygame
-from enviorement.tilemap import Tilemap
 from gui.gui_elements.guiText import InitialInstructionText, RetryInstructionText
 from scenes.phase import Phase
-from utils.constants import WIDTH, HEIGHT 
-from enviorement.background import Background
-from resource_manager import ResourceManager
-from sound_manager import SoundManager
-from entities.player import Player
-from enviorement.camera import Camera
-from entities.firefly import Firefly
-from trigger import Trigger
-from scenes.fadeTransition import FadeIn, FadeOut
-from light2 import ConeLight 
+from entities.players.player import Player
+from entities.npcs.firefly import Firefly
+from utils.light import ConeLight 
 
 
 class CemeteryPhase(Phase):
     def __init__(self, director):
         super().__init__(director)
         self.screen = director.screen
-        self.camera = Camera(WIDTH, HEIGHT)
         self.pressed_keys = {}
                         
-        self.load_resources()
+        self.load_resources(tilemap_path="tiled/levels/cemetery.tmx",
+                            background_path="assets\\images\\backgrounds\\cemetery_phase_background")
+        self.setup_camera()
         self.setup_instructions()
         self.setup_groups()
-        self.setup_enemies()
         self.setup_spawns()
         self.setup_player()
+        self.setup_enemies()
         self.setup_triggers()
-        self.setup_audio()
-        self.setup_fades()
+        self.setup_fades(scene_name="CemeteryBossPhase")
+        self.setup_audio(music_name="cemetery_music.mp3",
+                         sound_name="cemetery_background_sound.ogg")
         
-    def load_resources(self):
-        """
-        Load all resources needed for the scene.
-        """
-        self.foreground = Tilemap("tiled/levels/test_level.tmx")
-        self.resources = ResourceManager()
-        self.sound_manager = SoundManager()
-        self.background = Background(
-            self.resources, "assets\\images\\backgrounds\\parallax_forest"
-        )
-
     def setup_instructions(self):
         """
         Setup the instruction text for the scene.
@@ -56,6 +39,26 @@ class CemeteryPhase(Phase):
         self.lights_group = pygame.sprite.Group()
         self.fireflies_group = pygame.sprite.Group()
         self.triggers = []
+
+    def setup_player(self):
+        """
+        Create the player entity.
+        """
+        player_spawn = self.spawns_rects[0].center
+        self.player = Player(player_spawn[0], player_spawn[1], 
+                             self.foreground, 
+                             obstacles=[])
+      
+    def revive_player(self):
+        """
+        Show instructions and revive the player after dying.
+        """
+        self.instruction_text = RetryInstructionText(self.screen, (50, 100))
+        super().revive_player()
+
+    def increment_spawn_index(self):
+        self.instruction_text.visible = True
+        super().increment_spawn_index()
         
     def setup_enemies(self):
         """
@@ -78,75 +81,6 @@ class CemeteryPhase(Phase):
             self.fireflies_group.add(firefly)
             self.lights_group.add(firefly.light)
 
-    def setup_spawns(self):
-        """
-        Setup the spawn points for the scene.
-        """
-        self.spawns_rects = [pygame.Rect(v.x, v.y, v.width, v.height) for v in self.foreground.load_layer_entities("checkpoints").values()]
-        for spawn_rect in self.spawns_rects:
-            self.triggers.append(Trigger(spawn_rect, lambda: self.increment_spawn_index()))
-        self.spawn_index = -1
-        self.current_spawn = self.spawns_rects[self.spawn_index].center
-        
-    def setup_player(self):
-        """
-        Create the player entity.
-        """
-        player_spawn = self.spawns_rects[0].center
-        self.player = Player(player_spawn[0], player_spawn[1], 
-                             self.foreground, 
-                             obstacles=[])
-        
-    def revive_player(self):
-        """
-        Show instructions and revive the player after dying.
-        """
-        self.instruction_text = RetryInstructionText(self.screen, (50, 100))
-        self.player.dead = False
-
-    def move_player_to_spawn(self):
-        """
-        Move the camera to the current spawn point.
-        """
-        self.player.rect.center = self.current_spawn
-        self.camera.update(self.player.rect)
-        self.fades['revive_fade_in'].start()
-        
-    def setup_triggers(self):
-        """
-        Setup the triggers for the scene.
-        """
-        self.init_trigger("death", lambda: self.fades['death_fade_out'].start(), triggered_once=False)
-        self.init_trigger("end_of_phase", lambda: self.fades['fade_out'].start())
-
-    def setup_fades(self):
-        """
-        Setup all fade effects for the scene.
-        """
-        fade_in = FadeIn(self.screen)
-        fade_in.start()
-        self.fades = {
-            'fade_in': fade_in,
-            'fade_out': FadeOut(self.screen, on_complete=lambda: self.end_of_phase("CemeteryBossPhase")),
-            'revive_fade_in': FadeIn(self.screen, duration=2, on_complete=lambda: self.revive_player()),
-            'death_fade_out': FadeOut(self.screen, duration=2, on_complete=lambda: self.move_player_to_spawn())
-        }
-        
-    def increment_spawn_index(self):
-        """
-        Increment the spawn index.
-        """
-        self.instruction_text.visible = True
-        self.spawn_index += 1
-        self.current_spawn = self.spawns_rects[self.spawn_index].center 
-    
-    def setup_audio(self):
-        """
-        Setup the audio for the scene.
-        """
-        self.sound_manager.play_music("cemetery_music.mp3", "assets\\music", -1)
-        self.sound_manager.play_sound("cemetery_background_sound.ogg", "assets\\sounds", category='ambient', loop=True)
-        
     def create_lampposts(self):
         """
         Create lampposts with associated ConeLight objects.
@@ -165,14 +99,13 @@ class CemeteryPhase(Phase):
             light.blink_offset = index * 2
             self.lampposts_group.add(light)
             self.lights_group.add(light)
-            
-    def init_trigger(self, entity_name: str, callback: callable, triggered_once: bool = True):
+
+    def setup_triggers(self):
         """
-        Initialize a trigger with a callback function.
+        Setup the triggers for the scene.
         """
-        end_coords = self.foreground.load_entity(entity_name)
-        self.end_phase_rect = pygame.Rect(end_coords.x, end_coords.y, end_coords.width, end_coords.height)
-        self.triggers.append(Trigger(self.end_phase_rect, callback, triggered_once))  
+        self.init_trigger("death", lambda: self.fades['death_fade_out'].start(), triggered_once=False)
+        self.init_trigger("end_of_phase", lambda: self.fades['fade_out'].start())
 
     def update(self):
         dt = self.director.clock.get_time() / 1000
@@ -236,12 +169,6 @@ class CemeteryPhase(Phase):
 
         for fade in self.fades.values():
             fade.draw()
-
-    def continue_procedure(self):
-        """
-        Action that continues the phase.
-        """
-        self.sound_manager.play_sound("cemetery_background_sound.ogg", "assets\\sounds", category='ambient', loop=True)
 
     def end_of_phase(self, scene=str):
         """

@@ -1,9 +1,8 @@
 import pygame
-from light2 import CircularLight, ConeLight
+from utils.light import ConeLight
 from utils.constants import SCALE_FACTOR
 from utils.images import extract_frames
-from resource_manager import ResourceManager
-import math
+from managers.resource_manager import ResourceManager
 
 class Anglerfish(pygame.sprite.Sprite):
     def __init__(self, x, y, slow_speed=1, fast_speed=1000000, switch_speed_time=5000, light_obstacles = None,):

@@ -2,9 +2,9 @@ import pygame
 import os
 import random
 
-from resource_manager import ResourceManager
+from managers.resource_manager import ResourceManager
 from utils.constants import MovementDirections, MovementType, SCALE_FACTOR
-from light2 import CircularLight  # Importa CircularLight
+from utils.light import CircularLight  # Importa CircularLight
 
 
 class Gravedigger(pygame.sprite.Sprite):

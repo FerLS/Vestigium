@@ -1,6 +1,6 @@
 import pygame
-from resource_manager import ResourceManager
-from sound_manager import SoundManager
+from managers.resource_manager import ResourceManager
+from managers.sound_manager import SoundManager
 
 class Lifes:
     def __init__(self):

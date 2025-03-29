@@ -2,7 +2,7 @@ import pygame
 import os
 
 from abc import ABC
-from resource_manager import ResourceManager
+from managers.resource_manager import ResourceManager
 from utils.constants import WIDTH, HEIGHT
 
 

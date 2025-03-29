@@ -2,40 +2,26 @@ from types import SimpleNamespace
 import pygame
 from pygame.locals import *
 
-from scenes.fadeTransition import FadeIn, FadeOut
+from utils.fade_transition import FadeIn, FadeOut
 from scenes.phase import Phase
-from entities.firefly import Firefly
-from entities.key import Key
-from entities.lock import Lock
-from entities.lifes import Lifes
-from resource_manager import ResourceManager
-from sound_manager import SoundManager
+from entities.npcs.firefly import Firefly
+from entities.players.key import Key
+from entities.objects.lock import Lock
+from entities.objects.lifes import Lifes
 
 class MinigamePhase(Phase):
     def __init__(self, director):
         super().__init__(director)
         self.screen = director.screen
         
-        self.load_resources()
+        self.load_resources(background_path="assets/images/backgrounds/minigame_background")
+        self.setup_camera()
         self.setup_groups()
         self.setup_entities()
-        self.create_fireflies()
+        self.setup_player()
+        self.setup_enemies()
         self.setup_audio()
         self.setup_fades()
-        
-    def load_resources(self):
-        """
-        Load all resources needed for the scene
-        """
-        self.resources = ResourceManager()
-        self.sound_manager = SoundManager()
-        self.background = pygame.transform.scale(
-            self.resources.load_image(
-                "minigame_background.png", 
-                "assets/images/backgrounds"
-            ),
-            (self.screen.get_width(), self.screen.get_height())
-        )
     
     def setup_groups(self):
         """
@@ -48,9 +34,41 @@ class MinigamePhase(Phase):
         """
         Setup all entities
         """
-        self.key = Key()
         self.lifes = Lifes()
         self.lock = Lock(0, 100, self.screen.get_width())
+
+    def setup_player(self):
+        self.key = Key()
+    
+    def revive_player(self):
+        pass
+    
+    def setup_spawns(self):
+        pass
+
+    def move_player_to_spawn(self):
+        pass
+
+    def increment_spawn_index(self):
+        pass
+
+    def init_trigger(self, entity_name, callback, triggered_once = True):
+        pass
+    
+    def setup_triggers(self):
+        pass
+
+    def setup_fades(self):
+        pass
+
+    def end_of_phase(self):
+        pass
+
+    def setup_enemies(self):
+        """
+        Setup all enemies
+        """
+        self.create_fireflies()
 
     def create_fireflies(self):
         """
@@ -64,10 +82,7 @@ class MinigamePhase(Phase):
             "5": SimpleNamespace(x=100, y=300),
             "6": SimpleNamespace(x=450, y=350),
             "7": SimpleNamespace(x=900, y=400),
-            "8": SimpleNamespace(x=550, y=450),
-            #"9": SimpleNamespace(x=50, y=500),
-            #"10": SimpleNamespace(x=950, y=550),
-            
+            "8": SimpleNamespace(x=550, y=450),  
         }
 
         for firefly in fireflies.values():
@@ -95,7 +110,6 @@ class MinigamePhase(Phase):
             'fade_in': fade_in,
             'fade_out_win': FadeOut(self.screen, on_complete=lambda: self.director.scene_manager.stack_scene("TreePhase")),
             'fade_out_loose': FadeOut(self.screen, on_complete=lambda: self.director.scene_manager.stack_scene("CemeteryBossPhase")),
-
         }
     
     def update(self):
@@ -132,11 +146,10 @@ class MinigamePhase(Phase):
             if self.lock.end:
                 self.fades['fade_out_win'].start()
         for fade in self.fades.values():
-            fade.update(dt)
-                
+            fade.update(dt)            
         
-    def draw(self):
-        self.screen.blit(self.background, (0, 0))
+    def draw(self):        
+        self.background.draw(self.screen, (0, 0))
         for firefly in self.fireflies_group:
             firefly.draw(self.screen)
         self.lifes.draw(self.screen)

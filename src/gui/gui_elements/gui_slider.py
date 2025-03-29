@@ -1,7 +1,7 @@
 import pygame
 from abc import ABC
 from gui.guiElement import GUIElement
-from sound_manager import SoundManager  
+from managers.sound_manager import SoundManager  
 
 class Slider(GUIElement):
     def __init__(self, screen, x, y, width, height, min_value=0, max_value=1, initial_value=0.5):

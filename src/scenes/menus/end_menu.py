@@ -2,7 +2,7 @@ import pygame
 
 from gui.gui_screens.end_screen import EndScreen
 from scenes.menu import Menu
-from sound_manager import SoundManager 
+from managers.sound_manager import SoundManager 
 
 class EndMenu(Menu):
     def __init__(self, director):

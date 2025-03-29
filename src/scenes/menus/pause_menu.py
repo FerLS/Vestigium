@@ -3,7 +3,7 @@ import pygame
 from scenes.menu import Menu
 from gui.gui_screens.pause_screen import PauseScreen
 from gui.gui_screens.options_screen import OptionsScreen
-from sound_manager import SoundManager
+from managers.sound_manager import SoundManager
 
 class PauseMenu(Menu):
     def __init__(self, director):

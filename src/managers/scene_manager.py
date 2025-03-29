@@ -1,3 +1,4 @@
+from scenes.scene import Scene
 class SceneManager:
     """
     Manages scene registration and transitions. Interfaces with the Director
@@ -10,9 +11,9 @@ class SceneManager:
         Stores a mapping of scene names to their corresponding classes.
         """
         self.director = director
-        self.scenes: dict[str, type] = {}
+        self.scenes: dict[str, Scene] = {}
 
-    def register_scene(self, name: str, scene_class: type):
+    def register_scene(self, name: str, scene_class: Scene):
         """
         Registers a scene class under a given name.
         This allows dynamic instantiation later by name.

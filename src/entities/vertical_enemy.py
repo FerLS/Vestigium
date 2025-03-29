@@ -1,5 +1,5 @@
 import pygame
-from light2 import CircularLight
+from utils.light import CircularLight
 from utils.constants import SCALE_FACTOR
 
 class VerticalEnemy(pygame.sprite.Sprite):

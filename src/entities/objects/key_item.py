@@ -1,5 +1,5 @@
 import pygame
-from resource_manager import ResourceManager
+from managers.resource_manager import ResourceManager
 
 
 class KeyItem(pygame.sprite.Sprite):

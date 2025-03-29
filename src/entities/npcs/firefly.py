@@ -1,7 +1,7 @@
 import math
 import pygame
 import random
-from light2 import CircularLight
+from utils.light import CircularLight
 
 class Firefly(pygame.sprite.Sprite):
     def __init__(self, x, y, movement_bounds=None, movement_type="random"):

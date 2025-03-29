@@ -1,6 +1,6 @@
 import pygame
 import os
-import resource_manager
+import managers.resource_manager
 from utils.constants import WIDTH, HEIGHT
 
 

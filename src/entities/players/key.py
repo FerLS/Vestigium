@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 
 from utils.constants import *
-from resource_manager import ResourceManager
+from managers.resource_manager import ResourceManager
 
 vec = pygame.math.Vector2
 

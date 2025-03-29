@@ -1,7 +1,7 @@
 import pygame
 from utils.constants import *
-from resource_manager import ResourceManager
-from sound_manager import SoundManager
+from managers.resource_manager import ResourceManager
+from managers.sound_manager import SoundManager
 
 class Lock(pygame.sprite.Sprite):
     def __init__(self, x, y, screen_width):

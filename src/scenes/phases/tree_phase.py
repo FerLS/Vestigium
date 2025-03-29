@@ -1,20 +1,11 @@
 import pygame
-from enviorement.background import Background
-from enviorement.camera import Camera
-from enviorement.tilemap import Tilemap
-from entities.player import Player
-from entities.mushroom import Mushroom
-from entities.ant import Ant
-from entities.firefly import Firefly
+from entities.players.player import Player
+from entities.npcs.mushroom import Mushroom
+from entities.npcs.ant import Ant
+from entities.npcs.firefly import Firefly
 from gui.gui_elements.guiText import GlideInstructionText
-from light2 import ConeLight
-from scenes.fadeTransition import FadeIn, FadeOut
-from trigger import Trigger
-from resource_manager import ResourceManager
+from utils.light import ConeLight
 from scenes.phase import Phase
-from sound_manager import SoundManager
-from utils.constants import HEIGHT, WIDTH
-
 
 class TreePhase(Phase):
     def __init__(self, director):
@@ -22,35 +13,23 @@ class TreePhase(Phase):
         self.screen = director.screen
         self.pressed_keys = {}
 
-        self.load_resources()
-        self.setup_groups()
+        self.load_resources(
+            tilemap_path="tiled/levels/tree.tmx",
+            background_path="assets\\images\\backgrounds\\tree_phase_parallax",
+            enable_vertical_scroll=True
+            )
         self.setup_camera()
+        self.setup_groups()
         self.setup_spawns()
         self.setup_enemies()
         self.setup_player()
         self.setup_triggers()
-        self.setup_audio()
-        self.setup_fades()
-
-    def load_resources(self):
-        """
-        Load all resources needed for the scene.
-        """
-        self.resources = ResourceManager()
-        self.sound_manager = SoundManager()
-        self.foreground = Tilemap("tiled/levels/tree.tmx")
-        self.background = Background(
-            self.resources,
-            "assets\\images\\backgrounds\\tree_phase_parallax",
-            enable_vertical_scroll=True
-        )
-
-    def setup_camera(self):
-        """
-        Setup the camera for the scene.
-        """
-        self.camera = Camera(WIDTH, HEIGHT)
-
+        self.setup_fades(scene_name="LakePhase")
+        self.setup_audio(
+            music_name="tree_music.mp3",
+            sound_name="forest_ambient.wav"
+            )
+        
     def setup_groups(self):
         """
         Setup the sprite groups and trigger list for the scene.
@@ -64,23 +43,6 @@ class TreePhase(Phase):
         self.triggers = []
         self.fades = {}
 
-    def setup_audio(self):
-        """
-        Setup the audio for the scene.
-        """
-        self.sound_manager.play_music("tree_music.mp3", "assets\\music", -1)
-        self.sound_manager.play_sound("forest_ambient.wav", "assets\\sounds", category='ambient', loop=True)
-
-    def setup_spawns(self):
-        """
-        Setup the spawn points for the scene.
-        """
-        self.spawns_rects = [pygame.Rect(v.x, v.y, v.width, v.height) for v in self.foreground.load_layer_entities("checkpoints").values()]
-        for spawn_rect in self.spawns_rects:
-            self.triggers.append(Trigger(spawn_rect, lambda: self.increment_spawn_index()))
-        self.spawn_index = -1
-        self.current_spawn = self.spawns_rects[self.spawn_index].center
-
     def setup_player(self):
         """
         Create the player entity.
@@ -89,20 +51,6 @@ class TreePhase(Phase):
         self.player = Player(player_spawn[0], player_spawn[1], 
                              self.foreground, 
                              obstacles=self.bouncy_obstacles)
-        
-    def revive_player(self):
-        """
-        Revive the player after dying.
-        """
-        self.player.dead = False
-
-    def move_player_to_spawn(self):
-        """
-        Move the camera to the current spawn point.
-        """
-        self.player.rect.center = self.current_spawn
-        self.camera.update(self.player.rect)
-        self.fades['revive_fade_in'].start()
 
     def setup_enemies(self):
         """
@@ -170,38 +118,6 @@ class TreePhase(Phase):
         self.init_trigger("glide_trigger", lambda: self.glide())
         self.init_trigger("camera_y_margin_trigger", lambda: self.change_camera_y_margin(self.camera.screen_height // 2.2))
         self.init_trigger("end_of_phase", lambda: self.fades['fade_out'].start())
-
-    def init_trigger(self, entity_name: str, callback: callable):
-        """
-        Initialize a trigger with a callback function.
-        """
-        entity = self.foreground.load_entity(entity_name)
-        trigger_rect = pygame.Rect(entity.x, entity.y, entity.width, entity.height)
-        self.triggers.append(Trigger(trigger_rect, callback))
-
-    def setup_fades(self):
-        """
-        Setup all fade effects for the scene.
-        """
-        fade_in = FadeIn(self.screen)
-        fade_in.start()
-        self.fades['fade_in'] = fade_in
-
-        fade_out = FadeOut(self.screen, on_complete=lambda: self.end_of_phase("LakePhase"))
-        self.fades['fade_out'] = fade_out
-
-        revive_fade_in = FadeIn(self.screen, duration=2, on_complete=lambda: self.revive_player())
-        self.fades['revive_fade_in'] = revive_fade_in
-
-        death_fade_out = FadeOut(self.screen, duration=2, on_complete=lambda: self.move_player_to_spawn())
-        self.fades['death_fade_out'] = death_fade_out
-
-    def increment_spawn_index(self):
-        """
-        Increment the spawn index.
-        """
-        self.spawn_index += 1
-        self.current_spawn = self.spawns_rects[self.spawn_index].center
 
     def update(self):
         dt = self.director.clock.get_time() / 1000

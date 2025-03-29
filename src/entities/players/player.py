@@ -1,18 +1,15 @@
 # player.py
 import os
 import pygame
-from enum import Enum
 from utils.images import extract_frames
 from utils.constants import (
     MAX_FALL_SPEED,
     MOVE_SPEED,
-    SCALE_FACTOR,
-    MovementType,
-    CAMERA_LIMITS_Y,
+    SCALE_FACTOR
 )
 
-from resource_manager import ResourceManager
-from sound_manager import SoundManager
+from managers.resource_manager import ResourceManager
+from managers.sound_manager import SoundManager
 
 
 
