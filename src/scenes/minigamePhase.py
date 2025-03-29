@@ -2,6 +2,7 @@ from types import SimpleNamespace
 import pygame
 from pygame.locals import *
 
+from scenes.fadeTransition import FadeIn, FadeOut
 from scenes.phase import Phase
 from entities.firefly import Firefly
 from entities.key import Key
@@ -20,6 +21,7 @@ class MinigamePhase(Phase):
         self.setup_entities()
         self.create_fireflies()
         self.setup_audio()
+        self.setup_fades()
         
     def load_resources(self):
         """
@@ -81,6 +83,20 @@ class MinigamePhase(Phase):
         Setup the audio for the scene.
         """
         pass
+
+    def setup_fades(self):
+        """
+        Setup all fade effects for the scene.
+        """
+        self.fades = {}
+        fade_in = FadeIn(self.screen)
+        fade_in.start()
+        self.fades = {
+            'fade_in': fade_in,
+            'fade_out_win': FadeOut(self.screen, on_complete=lambda: self.director.scene_manager.stack_scene("TreePhase")),
+            'fade_out_loose': FadeOut(self.screen, on_complete=lambda: self.director.scene_manager.stack_scene("CemeteryBossPhase")),
+
+        }
     
     def update(self):
         dt = self.director.clock.get_time() / 1000
@@ -88,7 +104,7 @@ class MinigamePhase(Phase):
         if self.lifes.animating:
             self.lifes.update()
             if self.lifes.ammount == 0 and not self.lifes.animating:
-                self.director.scene_manager.stack_scene("DyingMenu")
+                self.fades['fade_out_loose'].start()
             elif not self.lifes.animating:
                 for firefly in self.fireflies_group:
                     firefly.reset("life_decreased")
@@ -114,7 +130,9 @@ class MinigamePhase(Phase):
                firefly.stop()
                 
             if self.lock.end:
-                self.director.scene_manager.stack_scene("PauseMenu")
+                self.fades['fade_out_win'].start()
+        for fade in self.fades.values():
+            fade.update(dt)
                 
         
     def draw(self):
@@ -124,3 +142,10 @@ class MinigamePhase(Phase):
         self.lifes.draw(self.screen)
         self.lock.draw(self.screen)
         self.key.draw(self.screen)
+        for fade in self.fades.values():
+            fade.draw()
+            
+    def continue_procedure(self):
+        self.sound_manager.play_sound(
+            "forest_ambient.wav", "assets\\sounds", category="ambient", loop=True
+        )
