@@ -207,7 +207,7 @@ class DoorText(TextGUI):
             screen,
             font,
             (255, 255, 255),
-            "you need to find the key to open this door!",
+            "you need to find the key to open the gate!",
             position,
         )
 
