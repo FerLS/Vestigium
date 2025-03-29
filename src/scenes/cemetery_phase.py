@@ -1,6 +1,6 @@
 import pygame
 from enviorement.tilemap import Tilemap
-from gui.gui_elements.guiText import InitialInstructionText, RetryInstructionText
+from gui.gui_elements.guiText import CheckpointText, InitialInstructionText, RetryInstructionText
 from scenes.phase import Phase
 from utils.constants import WIDTH, HEIGHT 
 from enviorement.background import Background
@@ -46,7 +46,7 @@ class CemeteryPhase(Phase):
         """
         Setup the instruction text for the scene.
         """
-        self.instruction_text = InitialInstructionText(self.screen, (50, 100))
+        self.instruction_text = InitialInstructionText(self.screen, (100, 100))
     
     def setup_groups(self):
         """
@@ -85,6 +85,9 @@ class CemeteryPhase(Phase):
         self.spawns_rects = [pygame.Rect(v.x, v.y, v.width, v.height) for v in self.foreground.load_layer_entities("checkpoints").values()]
         for spawn_rect in self.spawns_rects:
             self.triggers.append(Trigger(spawn_rect, lambda: self.increment_spawn_index()))
+        for i, spawn_rect in enumerate(self.spawns_rects):
+            if i in [1, 2]:
+                self.triggers.append(Trigger(spawn_rect, lambda: self.show_respawn_text()))
         self.spawn_index = -1
         self.current_spawn = self.spawns_rects[self.spawn_index].center
         
@@ -101,7 +104,7 @@ class CemeteryPhase(Phase):
         """
         Show instructions and revive the player after dying.
         """
-        self.instruction_text = RetryInstructionText(self.screen, (50, 100))
+        self.instruction_text = RetryInstructionText(self.screen, (100, 100))
         self.player.dead = False
 
     def move_player_to_spawn(self):
@@ -173,6 +176,10 @@ class CemeteryPhase(Phase):
         end_coords = self.foreground.load_entity(entity_name)
         self.end_phase_rect = pygame.Rect(end_coords.x, end_coords.y, end_coords.width, end_coords.height)
         self.triggers.append(Trigger(self.end_phase_rect, callback, triggered_once))  
+        
+    def show_respawn_text(self):
+        text = CheckpointText(self.screen, (100, 50))
+        return text
 
     def update(self):
         dt = self.director.clock.get_time() / 1000

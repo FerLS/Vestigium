@@ -6,7 +6,7 @@ from entities.player import Player
 from entities.mushroom import Mushroom
 from entities.ant import Ant
 from entities.firefly import Firefly
-from gui.gui_elements.guiText import GlideInstructionText
+from gui.gui_elements.guiText import CheckpointText, GlideInstructionText
 from light2 import ConeLight
 from scenes.fadeTransition import FadeIn, FadeOut
 from trigger import Trigger
@@ -78,6 +78,9 @@ class TreePhase(Phase):
         self.spawns_rects = [pygame.Rect(v.x, v.y, v.width, v.height) for v in self.foreground.load_layer_entities("checkpoints").values()]
         for spawn_rect in self.spawns_rects:
             self.triggers.append(Trigger(spawn_rect, lambda: self.increment_spawn_index()))
+        for i, spawn_rect in enumerate(self.spawns_rects):
+            if i in [1, 2, 3]:
+                self.triggers.append(Trigger(spawn_rect, lambda: self.show_respawn_text()))
         self.spawn_index = -1
         self.current_spawn = self.spawns_rects[self.spawn_index].center
 
@@ -202,6 +205,10 @@ class TreePhase(Phase):
         """
         self.spawn_index += 1
         self.current_spawn = self.spawns_rects[self.spawn_index].center
+        
+    def show_respawn_text(self):
+        text = CheckpointText(self.screen, (100, 50))
+        return text
 
     def update(self):
         dt = self.director.clock.get_time() / 1000
