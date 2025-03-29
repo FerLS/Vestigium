@@ -22,9 +22,9 @@ class StartMenu(Menu):
 
     def play_game(self):
         """
-        Start the game by changing the scene to the CemeteryPhase scene."""
+        Start the game by changing the scene to the Introduction scene."""
         self.director.scene_manager.stack_scene(
-        "CemeteryPhase",
+        "IntroMenu",
         )
 
     def show_options_screen(self):

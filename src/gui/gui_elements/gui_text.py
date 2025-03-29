@@ -276,6 +276,66 @@ class KeyText(TextGUI):
         # This method is overridden because no specific action is required when clicked.
         pass
 
+class IntroOfGameText(TextGUI):
+    def __init__(self, screen, position):
+        font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
+        TextGUI.__init__(self, screen, font, (255, 255, 255), "Vestigium", position)
+
+    def action(self):
+        # This method is overridden because no specific action is required when clicked.
+        pass
+
+    def update_hover(self, mouse_pos):
+        # This method is overridden because hover behavior is not needed for this element.
+        pass
+    
+class IntroText(TextGUI):
+    def __init__(self, screen, position):
+        font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
+        final_text = """In an ancient land where
+        sorrow lingers, the shadows of the dead
+        refuse to fade. Once flesh and bone,
+        they now wander, bound beyond the grave,
+        never truly at rest.
+
+        Through vast, dreamlike landscapes
+        they drift, some bathed in golden light
+        that threatens to erase them,
+        others cloaked in twilight,
+        where they may yet endure.
+        They search, desperate for a new form,
+        a vessel to call their own.
+
+        From the cold earth of a fresh grave,
+        a shadow stirs. It rises from the
+        lifeless body it once called home,
+        awakening to a strange and empty existence.
+
+        It has no flesh, no breath
+        only the aching hunger to live again. 
+        But the world is cruel, and bodies are few.
+        What path remains for one who
+        lingers beyond death?"""
+        TextGUI.__init__(self, screen, font, (255, 255, 255), final_text, position)
+
+    def action(self):
+        # This method is overridden because no specific action is required when clicked.
+        pass
+
+    def update_hover(self, mouse_pos):
+        # This method is overridden because hover behavior is not needed for this element.
+        pass
+    
+class GoToStartText(TextGUI):
+    def __init__(self, screen, position):
+        font = ResourceManager().load_font(
+            "Commodore-64-v621c.TTF", "assets\\fonts", 20
+        )
+        TextGUI.__init__(self, screen, font, (255, 209, 0), "Start", position)
+
+    def action(self):
+        self.screen.menu.go_to_start()
+        
 class FinalText(TextGUI):
     def __init__(self, screen, position):
         font = ResourceManager().load_font(FONT_NAME, FONT_PATH, FONT_SIZE)

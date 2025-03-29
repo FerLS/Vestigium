@@ -1,6 +1,7 @@
 import pygame
 from scenes.scene import Scene
 from utils.constants import WIDTH, HEIGHT
+from scenes.menus.intro_menu import IntroMenu
 from scenes.menus.start_menu import StartMenu
 from scenes.menus.pause_menu import PauseMenu
 from scenes.menus.end_menu import EndMenu
@@ -41,6 +42,7 @@ class Director:
         """
         Registers all available scenes with the scene manager.
         """
+        self.scene_manager.register_scene("IntroMenu", IntroMenu)
         self.scene_manager.register_scene("StartMenu", StartMenu)
         self.scene_manager.register_scene("PauseMenu", PauseMenu)
         self.scene_manager.register_scene("EndMenu", EndMenu)
