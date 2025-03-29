@@ -79,7 +79,6 @@ class LakePhase(Phase):
             self.foreground,
             obstacles=[],
             camera=self.camera,
-            light=self.anglerfish.light
         )
         self.player.is_swimming = True
 

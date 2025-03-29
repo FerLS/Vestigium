@@ -97,8 +97,8 @@ class FloatingEntity(pygame.sprite.Sprite, ABC):
                 if self.flip_on_reverse:
                     self.flipped = not self.flipped
 
-        if self.draw_light_flag:
-            self.light.update(new_position=self.rect.center)
+
+        self.light.update(new_position=self.rect.center)
 
         self.update_animation(dt)
 
