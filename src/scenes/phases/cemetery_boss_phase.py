@@ -2,7 +2,7 @@ from entities.players.player import Player
 from entities.objects.lantern import Lantern
 from entities.objects.key_item import KeyItem
 from entities.npcs.gravedigger import Gravedigger
-from gui.gui_elements.gui_text import BossTutorialText, DoorText, KeyText
+from gui.gui_elements.gui_text import BossStairsText, BossTutorialText, DoorText, KeyText
 from scenes.phase import Phase
 from utils.constants import SCALE_FACTOR, WIDTH, HEIGHT
 
@@ -78,6 +78,7 @@ class CemeteryBossPhase(Phase):
         Setup all triggers in the scene.
         """
         self.init_trigger("tutorial_trigger", lambda: self.boss_tutorial())
+        self.init_trigger("stairs_trigger", lambda: self.stairs_trigger())
         self.init_trigger(
             "end_of_phase", lambda: self.manage_door(), triggered_once=False
         )
@@ -122,15 +123,19 @@ class CemeteryBossPhase(Phase):
     def boss_tutorial(self):
         text = BossTutorialText(self.screen, (100, 100))
         return text
+    
+    def stairs_trigger(self):
+        text = BossStairsText(self.screen, (100, 100))
+        return text
 
     def show_key_obtained_text(self):
+        self.sound_manager.play_sound("key-clang.wav", "assets\\sounds")
         text = KeyText(self.screen, (100, 100))
         return text
 
     def continue_procedure(self):
         self.sound_manager.play_sound(
-            "forest_ambient.wav", "assets\\sounds", category="ambient", loop=True
-        )
+            "forest_ambient.wav", "assets\\sounds", category="ambient", loop=True)
 
     def end_of_phase(self, scene_name):
         self.director.scene_manager.stack_scene(scene_name)

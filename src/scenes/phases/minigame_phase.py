@@ -97,7 +97,7 @@ class MinigamePhase(Phase):
         """
         Setup the audio for the scene.
         """
-        pass
+        self.sound_manager.play_music("minigame_music.mp3", "assets\\music", -1)
 
     def setup_fades(self):
         """
@@ -118,13 +118,15 @@ class MinigamePhase(Phase):
         if self.lifes.animating:
             self.lifes.update()
             if self.lifes.ammount == 0 and not self.lifes.animating:
+                for firefly in self.fireflies_group:
+                    firefly.stop()
                 self.fades['fade_out_loose'].start()
             elif not self.lifes.animating:
                 for firefly in self.fireflies_group:
                     firefly.reset("life_decreased")
             return
 
-        self.key.update(self.lock)
+        self.key.update(self.lock, self.lifes.ammount)
         self.lock.update(dt, self.key)
         self.fireflies_group.update()
         self.lifes.update()
@@ -135,9 +137,9 @@ class MinigamePhase(Phase):
                 for firefly in self.fireflies_group:
                     firefly.reset("life_decreased", delay=True)
             else:
-                self.lifes.decrease()
                 for firefly in self.fireflies_group:
                     firefly.stop()
+                self.lifes.decrease()
         
         if pygame.sprite.collide_mask(self.key, self.lock):
             for firefly in self.fireflies_group:

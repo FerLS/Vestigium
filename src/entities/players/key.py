@@ -20,10 +20,9 @@ class Key(pygame.sprite.Sprite):
         self.player_position = vec(0, 0)
         self.dead = False
 
-    def update(self, lock=None):
-        if lock and pygame.sprite.collide_mask(self, lock):
-            self.vel = vec(0, 0)
-            self.acc = vec(0, 0)
+    def update(self, lock=None, ammount=None):
+        if lock and pygame.sprite.collide_mask(self, lock) or ammount == 0:
+            self.stop()
             return
 
         self.acc = vec(0, 0)
@@ -62,5 +61,8 @@ class Key(pygame.sprite.Sprite):
 
     def reset(self):
         self.pos = vec((WIDTH//2, 700))
+        self.stop()
+    
+    def stop(self):
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
