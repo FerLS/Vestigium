@@ -2,118 +2,154 @@ import pygame
 from gui.gui_element import GUIElement
 from managers.resource_manager import ResourceManager
 
+# Constants for colors
+BASE_COLOR = (255, 209, 0)
+HOVER_COLOR = (255, 255, 255)
+FINAL_TEXT_COLOR = (255, 255, 255)
+
+# Constants for font size
+FONT_SIZE = 20
+
+# Constants for file paths
+FONT_PATH = "assets\\fonts"
+FONT_NAME = "Commodore-64-v621c.TTF"
+
+# Constants for sound paths
+HOVER_SOUND = "hover.wav"
+CLICK_SOUND = "click.wav"
+SOUND_PATH = "assets\\sounds"
+
 class TextGUI(GUIElement):
-    def __init__(self, screen, font, color, text, position):
-        self.font = font
-        self.base_color = color
-        self.hover_color = (255, 255, 255)
-        self.text = text
-        self.color = color
+    """
+    Represents a text-based GUI element. Handles rendering text, hover effects, and actions.
+    """
 
-        self.lines = text.split("\n")
-        self.images = [font.render(line.strip(), True, color) for line in self.lines]
+    def __init__(self, screen: pygame.Surface, font: pygame.font.Font, color: tuple[int, int, int], text: str, position: tuple[int, int]):
+        """
+        Initializes the text-based GUI element.
 
-        width = max(img.get_width() for img in self.images)
-        height = sum(img.get_height() for img in self.images)
+        :param screen: The pygame.Surface where the element will be drawn.
+        :param font: The font used to render the text.
+        :param color: The base color of the text.
+        :param text: The text content to display.
+        :param position: The (x, y) position of the text on the screen.
+        """
+        self.font: pygame.font.Font = font
+        self.base_color: tuple[int, int, int] = color
+        self.hover_color: tuple[int, int, int] = HOVER_COLOR
+        self.text: str = text
+        self.color: tuple[int, int, int] = color
 
-        GUIElement.__init__(self, screen, pygame.Rect(position[0], position[1], width, height))
+        self.lines: list[str] = text.split("\n")
+        self.images: list[pygame.Surface] = [font.render(line.strip(), True, color) for line in self.lines]
+
+        width: int = max(img.get_width() for img in self.images)
+        height: int = sum(img.get_height() for img in self.images)
+
+        super().__init__(screen, pygame.Rect(position[0], position[1], width, height))
         self.set_position(position)
 
-    def update_hover(self, mouse_pos):
+    def update_hover(self, mouse_pos: tuple[int, int]) -> None:
+        """
+        Updates the hover state of the text element based on the mouse position.
+
+        :param mouse_pos: The (x, y) position of the mouse.
+        """
         super().update_hover(mouse_pos)
         color = self.hover_color if self.hovered else self.base_color
         self.images = [self.font.render(line.strip(), True, color) for line in self.lines]
 
-    def draw(self, screen):
+    def draw(self, screen: pygame.Surface) -> None:
+        """
+        Draws the text element on the screen.
+
+        :param screen: The pygame.Surface to draw on.
+        """
         y_offset = 1
         for img in self.images:
             screen.blit(img, (self.rect.x, self.rect.y + y_offset))
             y_offset += img.get_height()
-    
-# Start screen text
+
+    def action(self) -> None:
+        """
+        Defines the action to perform when the text element is clicked.
+        Must be implemented by subclasses.
+        """
+        raise NotImplementedError("Subclasses must implement the action method.")
+
 class NewGameText(TextGUI):
     def __init__(self, screen, position):
-        font = ResourceManager().load_font(
-            "Commodore-64-v621c.TTF", "assets\\fonts", 20
-        )
-        TextGUI.__init__(self, screen, font, (255, 209, 0), "New Game", position)
+        font = ResourceManager().load_font(FONT_NAME, FONT_PATH, FONT_SIZE)
+        TextGUI.__init__(self, screen, font, BASE_COLOR, "New Game", position)
 
     def action(self):
         self.screen.menu.play_game()
 
 class ExitText(TextGUI):
     def __init__(self, screen, position):
-        font = ResourceManager().load_font(
-            "Commodore-64-v621c.TTF", "assets\\fonts", 20
-        )
-        TextGUI.__init__(self, screen, font, (255, 209, 0), "Exit", position)
+        font = ResourceManager().load_font(FONT_NAME, FONT_PATH, FONT_SIZE)
+        TextGUI.__init__(self, screen, font, BASE_COLOR, "Exit", position)
 
     def action(self):
         self.screen.menu.exit_game()
 
 class OptionsText(TextGUI):
     def __init__(self, screen, position):
-        font = ResourceManager().load_font(
-            "Commodore-64-v621c.TTF", "assets\\fonts", 20
-        )
-        TextGUI.__init__(self, screen, font, (255, 209, 0), "Options", position)
+        font = ResourceManager().load_font(FONT_NAME, FONT_PATH, FONT_SIZE)
+        TextGUI.__init__(self, screen, font, BASE_COLOR, "Options", position)
 
     def action(self):
         self.screen.menu.show_options_screen()
 
 class GoBackText(TextGUI):
     def __init__(self, screen, position):
-        font = ResourceManager().load_font(
-            "Commodore-64-v621c.TTF", "assets\\fonts", 20
-        )
-        TextGUI.__init__(self, screen, font, (255, 209, 0), "Go Back", position)
+        font = ResourceManager().load_font(FONT_NAME, FONT_PATH, FONT_SIZE)
+        TextGUI.__init__(self, screen, font, BASE_COLOR, "Go Back", position)
 
     def action(self):
         self.screen.menu.return_previous_scene()
 
 class MusicVolumeText(TextGUI):
     def __init__(self, screen, position):
-        font = ResourceManager().load_font(
-            "Commodore-64-v621c.TTF", "assets\\fonts", 20
-        )
-        TextGUI.__init__(self, screen, font, (255, 209, 0), "Music", position)
+        font = ResourceManager().load_font(FONT_NAME, FONT_PATH, FONT_SIZE)
+        TextGUI.__init__(self, screen, font, BASE_COLOR, "Music", position)
 
     def action(self):
+        # This method is overridden because no specific action is required when clicked.
         pass
 
     def update_hover(self, mouse_pos):
+        # This method is overridden because hover behavior is not needed for this element.
         pass
+
 
 class SoundEffectsVolumeText(TextGUI):
     def __init__(self, screen, position):
-        font = ResourceManager().load_font(
-            "Commodore-64-v621c.TTF", "assets\\fonts", 20
-        )
-        TextGUI.__init__(self, screen, font, (255, 209, 0), "Sound Effects", position)
+        font = ResourceManager().load_font(FONT_NAME, FONT_PATH, FONT_SIZE)
+        TextGUI.__init__(self, screen, font, BASE_COLOR, "Sound Effects", position)
 
     def action(self):
+        # This method is overridden because no specific action is required when clicked.
         pass
 
     def update_hover(self, mouse_pos):
+        # This method is overridden because hover behavior is not needed for this element.
         pass
+
 
 # Pause menu text
 class ContinueText(TextGUI):
     def __init__(self, screen, position):
-        font = ResourceManager().load_font(
-            "Commodore-64-v621c.TTF", "assets\\fonts", 20
-        )
-        TextGUI.__init__(self, screen, font, (255, 209, 0), "Continue", position)
+        font = ResourceManager().load_font(FONT_NAME, FONT_PATH, FONT_SIZE)
+        TextGUI.__init__(self, screen, font, BASE_COLOR, "Continue", position)
 
     def action(self):
         self.screen.menu.continue_game()
 
 class GoToMainMenuText(TextGUI):
     def __init__(self, screen, position):
-        font = ResourceManager().load_font(
-            "Commodore-64-v621c.TTF", "assets\\fonts", 20
-        )
-        TextGUI.__init__(self, screen, font, (255, 209, 0), "Main Menu", position)
+        font = ResourceManager().load_font(FONT_NAME, FONT_PATH, FONT_SIZE)
+        TextGUI.__init__(self, screen, font, BASE_COLOR, "Main Menu", position)
 
     def action(self):
         self.screen.menu.go_to_main_menu()
@@ -121,35 +157,34 @@ class GoToMainMenuText(TextGUI):
 # Die menu text
 class YouDiedText(TextGUI):
     def __init__(self, screen, position):
-        font = ResourceManager().load_font(
-            "Commodore-64-v621c.TTF", "assets\\fonts", 20
-        )
-        TextGUI.__init__(self, screen, font, (255, 209, 0), "YOU DIED", position)
+        font = ResourceManager().load_font(FONT_NAME, FONT_PATH, FONT_SIZE)
+        TextGUI.__init__(self, screen, font, BASE_COLOR, "YOU DIED", position)
 
     def action(self):
+        # This method is overridden because no specific action is required when clicked.
         pass
 
     def update_hover(self, mouse_pos):
+        # This method is overridden because hover behavior is not needed for this element.
         pass
+
 
 class RestartLevel(TextGUI):
     def __init__(self, screen, position):
-        font = ResourceManager().load_font(
-            "Commodore-64-v621c.TTF", "assets\\fonts", 20
-        )
-        TextGUI.__init__(self, screen, font, (255, 209, 0), "Restart", position)
+        font = ResourceManager().load_font(FONT_NAME, FONT_PATH, FONT_SIZE)
+        TextGUI.__init__(self, screen, font, BASE_COLOR, "Restart", position)
 
     def action(self):
         self.screen.menu.restart_level()
 
 class GlideInstructionText(TextGUI):
     def __init__(self, screen, position):
-        font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
+        font = ResourceManager().load_font(FONT_NAME, FONT_PATH, FONT_SIZE)
         TextGUI.__init__(
             self,
             screen,
             font,
-            (255, 255, 255),
+            FINAL_TEXT_COLOR,
             "while falling, press SPACE to glide",
             position,
         )
@@ -160,12 +195,12 @@ class GlideInstructionText(TextGUI):
 
 class SwimInstructionText(TextGUI):
     def __init__(self, screen, position):
-        font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
+        font = ResourceManager().load_font(FONT_NAME, FONT_PATH, FONT_SIZE)
         TextGUI.__init__(
             self,
             screen,
             font,
-            (255, 255, 255),
+            FINAL_TEXT_COLOR,
             "use LEFT, RIGHT, UP and DOWN to swim",
             position,
         )
@@ -176,12 +211,12 @@ class SwimInstructionText(TextGUI):
 
 class BossTutorialText(TextGUI):
     def __init__(self, screen, position):
-        font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
+        font = ResourceManager().load_font(FONT_NAME, FONT_PATH, FONT_SIZE)
         TextGUI.__init__(
             self,
             screen,
             font,
-            (255, 255, 255),
+            FINAL_TEXT_COLOR,
             """find the gravedigger's key! 
             but be careful, hide behind the walls!""",
             position,
@@ -192,26 +227,27 @@ class BossTutorialText(TextGUI):
 
 class BossStairsText(TextGUI):
     def __init__(self, screen, position):
-        font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
+        font = ResourceManager().load_font(FONT_NAME, FONT_PATH, FONT_SIZE)
         TextGUI.__init__(
             self,
             screen,
             font,
-            (255, 255, 255),
+            FINAL_TEXT_COLOR,
             """use UP to climb the stairs""",
             position,
         )
 
     def action(self):
         pass
+
 class DoorText(TextGUI):
     def __init__(self, screen, position):
-        font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
+        font = ResourceManager().load_font(FONT_NAME, FONT_PATH, FONT_SIZE)
         TextGUI.__init__(
             self,
             screen,
             font,
-            (255, 255, 255),
+            FINAL_TEXT_COLOR,
             "you need to find the key to open the gate!",
             position,
         )
@@ -221,12 +257,12 @@ class DoorText(TextGUI):
 
 class KeyText(TextGUI):
     def __init__(self, screen, position):
-        font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
+        font = ResourceManager().load_font(FONT_NAME, FONT_PATH, FONT_SIZE)
         TextGUI.__init__(
             self,
             screen,
             font,
-            (255, 255, 255),
+            FINAL_TEXT_COLOR,
             "now that you have the key, you can open the door!",
             position,
         )
@@ -234,10 +270,9 @@ class KeyText(TextGUI):
     def action(self):
         pass
 
-# Final screen text
 class FinalText(TextGUI):
     def __init__(self, screen, position):
-        font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
+        font = ResourceManager().load_font(FONT_NAME, FONT_PATH, FONT_SIZE)
         final_text = """It rose from the still waters, 
         like an echo no longer afraid to be forgotten.
         The light found it first... and it didn't run.
@@ -255,40 +290,46 @@ class FinalText(TextGUI):
         a natural shadow.
 
         Free, at last."""
-        TextGUI.__init__(self, screen, font, (255, 255, 255), final_text, position)
+        TextGUI.__init__(self, screen, font, FINAL_TEXT_COLOR, final_text, position)
 
     def action(self):
+        # This method is overridden because no specific action is required when clicked.
         pass
 
     def update_hover(self, mouse_pos):
+        # This method is overridden because hover behavior is not needed for this element.
         pass
+
 
 class EndOfGameText(TextGUI):
     def __init__(self, screen, position):
-        font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
-        TextGUI.__init__(self, screen, font, (255, 255, 255), "The End", position)
+        font = ResourceManager().load_font(FONT_NAME, FONT_PATH, FONT_SIZE)
+        TextGUI.__init__(self, screen, font, FINAL_TEXT_COLOR, "The End", position)
 
     def action(self):
+        # This method is overridden because no specific action is required when clicked.
         pass
 
     def update_hover(self, mouse_pos):
+        # This method is overridden because hover behavior is not needed for this element.
         pass
 
 
-# Temporal tutorial text
 class InitialInstructionText(TextGUI):
     def __init__(self, screen, position, time=10):
-        font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
+        font = ResourceManager().load_font(FONT_NAME, FONT_PATH, FONT_SIZE)
         text = """use LEFT and RIGHT to move and SPACE to jump...
         but be careful with the lights!"""
-        TextGUI.__init__(self, screen, font, (255, 255, 255), text, position)
+        TextGUI.__init__(self, screen, font, FINAL_TEXT_COLOR, text, position)
         self.time = time
         self.visible = False
 
     def action(self):
+        # This method is overridden because no specific action is required when clicked.
         pass
 
     def update_hover(self, mouse_pos):
+        # This method is overridden because hover behavior is not needed for this element.
         pass
 
     def draw(self, screen):
@@ -301,20 +342,21 @@ class InitialInstructionText(TextGUI):
             self.visible = False
             self.time = 0
             
-# Retry tutorial text
 class RetryInstructionText(TextGUI):
     def __init__(self, screen, position, time=5):
-        font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
+        font = ResourceManager().load_font(FONT_NAME, FONT_PATH, FONT_SIZE)
         text = """lets try again, 
         this time be more careful"""
-        TextGUI.__init__(self, screen, font, (255, 255, 255), text, position)
+        TextGUI.__init__(self, screen, font, FINAL_TEXT_COLOR, text, position)
         self.time = time
         self.visible = True
 
     def action(self):
+        # This method is overridden because no specific action is required when clicked.
         pass
 
     def update_hover(self, mouse_pos):
+        # This method is overridden because hover behavior is not needed for this element.
         pass
 
     def draw(self, screen):
