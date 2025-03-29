@@ -2,19 +2,27 @@ import os
 import pygame
 from resource_manager import ResourceManager
 
-class SoundManager(object):
+class SoundManager:
+    """
+    Singleton class for managing all music and sound effects in the game.
+    Handles initialization, playback, volume control, and categorized channel usage.
+    """
     _instance = None
 
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
+
+            # Mixer configuration for optimal latency and quality
             pygame.mixer.pre_init(44100, -16, 2, 4096)
             pygame.mixer.init()
             pygame.mixer.set_num_channels(8)
-            pygame.mixer.set_reserved(4)
+            pygame.mixer.set_reserved(4)  # Reserve first 4 channels (e.g., for priority sounds)
+
+            # Create and store dedicated channels
             cls._instance.channels = [pygame.mixer.Channel(i) for i in range(8)]
 
-            # Grupos de canales por categoría
+            # Logical grouping of channels for sound categories
             cls._instance.channel_groups = {
                 'player': [0, 1, 2],
                 'ambient': [3],
@@ -27,44 +35,71 @@ class SoundManager(object):
 
         return cls._instance
 
-    # ==========================
-    # MUSIC METHODS
-    # ==========================
-    def play_music(self, music_name, music_path, loop=-1):
+    def play_music(self, music_name: str, music_path: str, loop: int = -1):
+        """
+        Loads and plays a music track from disk. Supports looping.
+        """
         fullname = os.path.join(music_path, music_name)
         pygame.mixer.music.load(fullname)
         pygame.mixer.music.set_volume(self.music_volume)
         pygame.mixer.music.play(loop)
 
     def stop_music(self):
+        """
+        Stops any currently playing music immediately.
+        """
         pygame.mixer.music.stop()
 
     def pause_music(self):
+        """
+        Pauses the current music playback.
+        """
         pygame.mixer.music.pause()
 
     def resume_music(self):
+        """
+        Resumes the paused music.
+        """
         pygame.mixer.music.unpause()
 
-    def set_music_volume(self, volume):
+    def set_music_volume(self, volume: float):
+        """
+        Sets the global music volume (range: 0.0 to 1.0).
+        """
         self.music_volume = volume
         pygame.mixer.music.set_volume(self.music_volume)
 
-    def get_music_volume(self):
+    def get_music_volume(self) -> float:
+        """
+        Returns the current music volume level.
+        """
         return pygame.mixer.music.get_volume()
 
-    # ==========================
-    # SOUND METHODS
-    # ==========================
-    def play_sound(self, sound_name, sound_path, category='default', pan=0.5, loop=False):
+    def play_sound(
+        self,
+        sound_name: str,
+        sound_path: str,
+        category: str = 'default',
+        pan: float = 0.5,
+        loop: bool = False
+    ):
+        """
+        Plays a sound effect with optional stereo panning and loop control.
+
+        Parameters:
+        - category: determines which group of audio channels to use (e.g., 'player', 'ambient')
+        - pan: stereo balance from 0.0 (left) to 1.0 (right)
+        - loop: if True, the sound loops indefinitely
+        """
         sound = self.resource_manager.load_sound(sound_name, sound_path)
         if not sound:
             return
 
-        # Calcular volumen izquierdo y derecho usando pan
+        # Compute stereo volume based on pan
         left = max(0.0, min(1.0, 1.0 - pan)) * self.sound_volume
         right = max(0.0, min(1.0, pan)) * self.sound_volume
 
-        # Buscar canal en el grupo
+        # Try to get a free channel in the category group
         group_channels = self.channel_groups.get(category, [])
         channel = None
         for ch_index in group_channels:
@@ -73,7 +108,7 @@ class SoundManager(object):
                 channel = ch
                 break
 
-        # Si no hay canal libre, usar uno no reservado
+        # Fallback: use any free unreserved channel
         if not channel:
             channel = pygame.mixer.find_channel()
 
@@ -83,11 +118,20 @@ class SoundManager(object):
             channel.play(sound, loops=loops)
 
     def stop_all_sounds(self):
+        """
+        Stops all currently playing sounds on all channels.
+        """
         for channel in self.channels:
             channel.stop()
 
-    def set_sound_volume(self, volume):
+    def set_sound_volume(self, volume: float):
+        """
+        Sets the global volume for sound effects (range: 0.0 to 1.0).
+        """
         self.sound_volume = max(0.0, min(1.0, volume))
 
-    def get_sound_volume(self):
+    def get_sound_volume(self) -> float:
+        """
+        Returns the current sound effect volume level.
+        """
         return self.sound_volume

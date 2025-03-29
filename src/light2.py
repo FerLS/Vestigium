@@ -1,29 +1,45 @@
 import pygame
 import math
 from abc import abstractmethod
+from typing import Optional, Sequence
+
 
 class Light(pygame.sprite.Sprite):
-    def __init__(self, position, distance, use_obstacles=True):
+    """
+    Base class for dynamic light sources. Handles position, range, and rendering.
+    Intended to be subclassed with specific light behaviors.
+    """
+
+    def __init__(self, position: tuple[float, float], distance: float, use_obstacles: bool = True):
+        self.position: pygame.Vector2 = pygame.Vector2(position)
+        self.distance: float = distance
+        self.mask: Optional[pygame.mask.Mask] = None
+        self.use_obstacles: bool = use_obstacles
+        self.intensity: float = 1.0
+
         super().__init__()
-        self.position = pygame.Vector2(position)
-        self.distance = distance
-        self.mask = None
-        self.use_obstacles = use_obstacles 
 
         size = int(distance * 2)
-        self.image = pygame.Surface((size, size), pygame.SRCALPHA)
-        self.rect = self.image.get_rect(center=self.position)
+        self.image: pygame.Surface = pygame.Surface((size, size), pygame.SRCALPHA)
+        self.rect: pygame.Rect = self.image.get_rect(center=self.position)
         self.rect.center = self.position
-        self.intensity = 1
 
-    def update(self, new_position=None, obstacles=None, camera_rect=None):
+    def update(
+        self,
+        new_position: Optional[tuple[float, float]] = None,
+        obstacles: Optional[Sequence[pygame.Rect]] = None,
+        camera_rect: Optional[pygame.Rect] = None
+    ):
+        """
+        Updates the light mask and position. Only regenerates the mask if visible.
+        """
         if new_position and self.position != pygame.Vector2(new_position):
             self.position = pygame.Vector2(new_position)
             self.rect.center = self.position
 
-        # Crear rectángulo alrededor del punto de la luz
-        if self.mask == None:
+        if self.mask is None:
             self._generate_mask(obstacles or [])
+
         light_area = pygame.Rect(0, 0, 300, 300)
         light_area.center = self.position
 
@@ -31,23 +47,50 @@ class Light(pygame.sprite.Sprite):
             self._generate_mask(obstacles or [])
 
     @abstractmethod
-    def _generate_mask(self, obstacles):
+    def _generate_mask(self, obstacles: Sequence[pygame.Rect]):
+        """
+        Abstract method to generate the light mask. Must be implemented by subclasses.
+        """
         pass
 
-    def draw(self, screen, offset=(0, 0)):
+    def draw(self, screen: pygame.Surface, offset: tuple[int, int] = (0, 0)):
+        """
+        Draws the light's mask to the screen using an alpha blend.
+        """
         offset_x, offset_y = offset
         if self.mask:
-            mask_surface = self.mask.to_surface(setcolor=((255, 209, 0, int(150 * self.intensity))), unsetcolor=(0, 0, 0, 0))
-            screen.blit(mask_surface, (self.position.x - self.distance - offset_x, self.position.y - self.distance - offset_y))
+            mask_surface = self.mask.to_surface(
+                setcolor=(255, 209, 0, int(150 * self.intensity)),
+                unsetcolor=(0, 0, 0, 0)
+            )
+            screen.blit(
+                mask_surface,
+                (self.position.x - self.distance - offset_x, self.position.y - self.distance - offset_y)
+            )
 
 
 class CircularLight(Light):
-    def __init__(self, position, radius, segments=170, ray_step=2, use_obstacles=True):
-        super().__init__(position, radius, use_obstacles=use_obstacles)
+    """
+    Light source that casts a circular field of light.
+    Optionally raycasts around obstacles to simulate realistic lighting.
+    """
+
+    def __init__(
+        self,
+        position: tuple[float, float],
+        radius: float,
+        segments: int = 170,
+        ray_step: int = 2,
+        use_obstacles: bool = True
+    ):
+        super().__init__(position, radius, use_obstacles)
         self.segments = segments
         self.ray_step = ray_step
 
-    def _generate_mask(self, obstacles):
+    def _generate_mask(self, obstacles: Sequence[pygame.Rect]):
+        """
+        Generates a circular light mask with or without raycasting around obstacles.
+        """
         size = int(self.distance * 2)
         surface = pygame.Surface((size, size), pygame.SRCALPHA)
         surface.fill((0, 0, 0, 0))
@@ -70,7 +113,15 @@ class CircularLight(Light):
 
         self.mask = pygame.mask.from_surface(surface)
 
-    def _cast_ray(self, origin, direction, obstacles):
+    def _cast_ray(
+        self,
+        origin: pygame.Vector2,
+        direction: pygame.Vector2,
+        obstacles: Sequence[pygame.Rect]
+    ) -> pygame.Vector2:
+        """
+        Casts a ray in a direction until it hits an obstacle or reaches max distance.
+        """
         end = origin + direction * self.distance
         for i in range(0, int(self.distance), self.ray_step):
             point = origin + direction * i
@@ -80,25 +131,47 @@ class CircularLight(Light):
                     return point
         return end
 
-    def change_radius(self, new_radius):
+    def change_radius(self, new_radius: float):
+        """
+        Dynamically changes the radius of the light.
+        """
         self.distance = new_radius
         self.rect.size = (new_radius * 2, new_radius * 2)
         self.rect.center = self.position
         self.dirty = True
 
-    def get_radius(self):
+    def get_radius(self) -> float:
+        """
+        Returns the current radius of the light.
+        """
         return self.distance
 
 
 class ConeLight(Light):
-    def __init__(self, position, direction, angle, distance, segments=60, ray_step=2, use_obstacles=True):
-        super().__init__(position, distance, use_obstacles=use_obstacles)
+    """
+    Light source that casts a cone-shaped beam (useful for flashlights, vision cones).
+    """
+
+    def __init__(
+        self,
+        position: tuple[float, float],
+        direction: tuple[float, float],
+        angle: float,
+        distance: float,
+        segments: int = 60,
+        ray_step: int = 2,
+        use_obstacles: bool = True
+    ):
+        super().__init__(position, distance, use_obstacles)
         self.direction = pygame.Vector2(direction).normalize()
         self.angle = math.radians(angle)
         self.segments = segments
         self.ray_step = ray_step
 
-    def _generate_mask(self, obstacles):
+    def _generate_mask(self, obstacles: Sequence[pygame.Rect]):
+        """
+        Generates a cone-shaped light mask using raycasting and angle spread.
+        """
         size = int(self.distance * 2)
         surface = pygame.Surface((size, size), pygame.SRCALPHA)
         surface.fill((0, 0, 0, 0))
@@ -127,7 +200,15 @@ class ConeLight(Light):
         pygame.draw.polygon(surface, (255, 255, 0, 128), points)
         self.mask = pygame.mask.from_surface(surface)
 
-    def _cast_ray(self, origin, direction, obstacles):
+    def _cast_ray(
+        self,
+        origin: pygame.Vector2,
+        direction: pygame.Vector2,
+        obstacles: Sequence[pygame.Rect]
+    ) -> pygame.Vector2:
+        """
+        Casts a ray in a direction and stops when hitting an obstacle.
+        """
         end = origin + direction * self.distance
         for i in range(0, int(self.distance), self.ray_step):
             point = origin + direction * i
