@@ -1,9 +1,9 @@
 import pygame 
 
-from enviorement.camera import Camera
+from environment.camera import Camera
 from scenes.scene import Scene
-from enviorement.background import Background
-from enviorement.tilemap import Tilemap 
+from environment.background import Background
+from environment.tilemap import Tilemap 
 from managers.resource_manager import ResourceManager
 from utils.fade_transition import FadeIn, FadeOut
 from managers.sound_manager import SoundManager
@@ -121,12 +121,12 @@ class Phase(Scene):
         fade_in.start()
         self.fades = {
             'fade_in': fade_in,
-            'fade_out': FadeOut(self.screen, on_complete=lambda: self.end_of_phase()),
+            'fade_out': FadeOut(self.screen, on_complete=lambda: self.end_of_phase(scene_name)),
             'revive_fade_in': FadeIn(self.screen, duration=2, on_complete=lambda: self.revive_player()),
             'death_fade_out': FadeOut(self.screen, duration=2, on_complete=lambda: self.move_player_to_spawn())
         }
 
-    def end_of_phase(self):
+    def end_of_phase(self, scene_name: str):
         """
         Actions to be executed once the final fade out is finished
         """

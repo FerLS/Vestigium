@@ -190,6 +190,7 @@ class GlideInstructionText(TextGUI):
         )
 
     def action(self):
+        # This method is overridden because no specific action is required when clicked.
         pass
 
 
@@ -206,6 +207,7 @@ class SwimInstructionText(TextGUI):
         )
 
     def action(self):
+        # This method is overridden because no specific action is required when clicked.
         pass
 
 
@@ -223,6 +225,7 @@ class BossTutorialText(TextGUI):
         )
 
     def action(self):
+        # This method is overridden because no specific action is required when clicked.
         pass
 
 class BossStairsText(TextGUI):
@@ -238,6 +241,7 @@ class BossStairsText(TextGUI):
         )
 
     def action(self):
+        # This method is overridden because no specific action is required when clicked.
         pass
 
 class DoorText(TextGUI):
@@ -253,6 +257,7 @@ class DoorText(TextGUI):
         )
 
     def action(self):
+        # This method is overridden because no specific action is required when clicked.
         pass
 
 class KeyText(TextGUI):
@@ -268,6 +273,7 @@ class KeyText(TextGUI):
         )
 
     def action(self):
+        # This method is overridden because no specific action is required when clicked.
         pass
 
 class FinalText(TextGUI):

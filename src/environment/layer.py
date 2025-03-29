@@ -10,7 +10,7 @@ class Layer:
     and managing different types of tiles (e.g., solid, platform, stairs, safe zones).
     """
 
-    def __init__(self, tmx_layer: Union[pytmx.TiledTileLayer, pytmx.TiledObjectGroup], tilemap: "Tilemap"):
+    def __init__(self, tmx_layer: Union[pytmx.TiledTileLayer, pytmx.TiledObjectGroup], tilemap):
         """
         Initializes the layer.
 

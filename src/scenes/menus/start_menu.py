@@ -24,7 +24,7 @@ class StartMenu(Menu):
         """
         Start the game by changing the scene to the CemeteryPhase scene."""
         self.director.scene_manager.stack_scene(
-        "CemeteryPhase"
+        "CemeteryPhase",
         )
 
     def show_options_screen(self):

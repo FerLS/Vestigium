@@ -6,7 +6,7 @@ from utils.constants import SCALE_FACTOR, WIDTH, HEIGHT
 from entities.players.player import Player
 from entities.npcs.anglerfish import Anglerfish
 from entities.npcs.jellyfish import Jellyfish
-from enviorement.camera import Camera
+from environment.camera import Camera
 
 class LakePhase(Phase):
     def __init__(self, director):
