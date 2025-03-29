@@ -1,6 +1,7 @@
 import pygame 
 
 from environment.camera import Camera
+from gui.gui_elements.gui_text import CheckpointText
 from scenes.scene import Scene
 from environment.background import Background
 from environment.tilemap import Tilemap 
@@ -60,15 +61,22 @@ class Phase(Scene):
         """
         raise NotImplementedError(NOT_IMPLEMENTED_MSG)
     
-    def setup_spawns(self):
+    def setup_spawns(self, respawn_text_spawns: list=None):
         """
         Setup the spawn points for the scene.
         """
         self.spawns_rects = [pygame.Rect(v.x, v.y, v.width, v.height) for v in self.foreground.load_layer_entities("checkpoints").values()]
         for spawn_rect in self.spawns_rects:
             self.triggers.append(Trigger(spawn_rect, lambda: self.increment_spawn_index()))
+        for i, spawn_rect in enumerate(self.spawns_rects):
+            if i in respawn_text_spawns:
+                self.triggers.append(Trigger(spawn_rect, lambda: self.show_respawn_text()))
         self.spawn_index = -1
         self.current_spawn = self.spawns_rects[self.spawn_index].center
+
+    def show_respawn_text(self):
+        text = CheckpointText(self.screen, (100, 50))
+        return text
 
     def increment_spawn_index(self):
         """

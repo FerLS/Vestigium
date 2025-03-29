@@ -20,7 +20,7 @@ class CemeteryBossPhase(Phase):
                             background_path="assets/images/backgrounds/cemetery_phase_background")
         self.setup_camera()
         self.setup_groups()
-        self.setup_spawns()
+        self.setup_spawns(respawn_text_spawns=[1])
         self.setup_player()
         self.setup_enemies()
         self.setup_key_item()

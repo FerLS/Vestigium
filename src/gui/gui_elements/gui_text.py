@@ -374,3 +374,19 @@ class RetryInstructionText(TextGUI):
         if self.time <= 0:
             self.visible = False
             self.time = 0
+
+class CheckpointText(TextGUI):
+    def __init__(self, screen, position):
+        font = ResourceManager().load_font("Commodore-64-v621c.TTF", "assets/fonts", 20)
+        TextGUI.__init__(
+            self,
+            screen,
+            font,
+            (255, 255, 255),
+             """checkpoint reached! respawn set.""",
+            position,
+        )
+
+    def action(self):
+        # This method is overridden because no specific action is required when clicked.
+        pass
