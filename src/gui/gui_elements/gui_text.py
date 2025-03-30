@@ -384,7 +384,8 @@ class EndOfGameText(TextGUI):
 class InitialInstructionText(TextGUI):
     def __init__(self, screen, position, time=10):
         font = ResourceManager().load_font(FONT_NAME, FONT_PATH, FONT_SIZE)
-        text = """use LEFT and RIGHT to move, SHIFT to run and SPACE to jump...
+        text = """use LEFT and RIGHT to move,
+        SHIFT to run and SPACE to jump...
         but be careful with the lights!"""
         TextGUI.__init__(self, screen, font, FINAL_TEXT_COLOR, text, position)
         self.time = time
