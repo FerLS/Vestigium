@@ -28,7 +28,7 @@ class IntroScreen(GUIScreen):
         """
         gui_elements = []
         gui_elements.append(IntroText(self, (100, 100))) # Intro message
-        gui_elements.append(IntroOfGameText(self, (WIDTH/2 - 50, HEIGHT/1.5))) # Intro-of-game text
+        gui_elements.append(IntroOfGameText(self, (WIDTH/2 - 90, HEIGHT/1.5))) # Intro-of-game text
         gui_elements.append(GoToStartText(self, (WIDTH/2 - 65, HEIGHT/1.2))) # Go to start
         return gui_elements
 

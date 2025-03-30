@@ -38,6 +38,8 @@ class PauseMenu(Menu):
         """
         self.director.finish_current_scene()
         scene_name = self.director.get_current_scene_name()
+        if scene_name == "MinigamePhase":
+            scene_name = "CemeteryBossPhase"
         self.director.scene_manager.change_scene(scene_name)
     
     def return_previous_scene(self):
