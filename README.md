@@ -18,8 +18,5 @@ Vestigium es un proyecto académico que presenta dos versiones complementarias d
 
 Encarnas a una sombra errante surgida de un cuerpo sepultado. Tu objetivo no es poseer otro cuerpo, sino encontrar tu lugar entre las sombras, evitando fuentes de luz que podrían disolverte.
 
-## 🏷️ Tags
-
-`pygame` `2d-game` `3d-game` `platformer` `pixel-art` `narrative` `light-and-shadow`
 
 ---
