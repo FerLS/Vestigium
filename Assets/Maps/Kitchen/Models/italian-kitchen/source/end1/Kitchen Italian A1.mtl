@@ -1,0 +1,329 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# File Created: 21.09.2017 23:53:34
+
+newmtl Metal1
+	Ns 47.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.588000 0.588000 0.588000
+	Ks 0.837000 0.837000 0.837000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka E:\3D Hentry\Modern style beige L-type cabinet 3d model\Modern style beige L-type cabinet 3d model\end1\Metal1DiffuseMap.jpg
+	map_Kd E:\3D Hentry\Modern style beige L-type cabinet 3d model\Modern style beige L-type cabinet 3d model\end1\Metal1DiffuseMap.jpg
+
+newmtl Vetri01
+	Ns 53.999996
+	Ni 1.500000
+	d 0.050000
+	Tr 0.950000
+	Tf 0.050000 0.050000 0.050000 
+	illum 2
+	Ka 0.658824 0.803922 0.690196
+	Kd 0.658824 0.803922 0.690196
+	Ks 1.179000 1.179000 1.179000
+	Ke 0.000000 0.000000 0.000000
+
+newmtl Glass_Azzurro_01
+	Ns 70.000000
+	Ni 1.000000
+	d 0.500000
+	Tr 0.500000
+	Tf 0.500000 0.500000 0.500000 
+	illum 2
+	Ka 0.003922 0.003922 0.003922
+	Kd 0.019608 0.019608 0.019608
+	Ks 0.717647 0.941177 0.862745
+	Ke 0.000000 0.000000 0.000000
+	map_refl D:\Mapmy\ArchMat\SKY.jpg
+
+newmtl K0_End01
+	Ns 52.999996
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.588000 0.588000 0.588000
+	Ks 0.148039 0.148039 0.148039
+	Ke 0.000000 0.000000 0.000000
+	map_Ka E:\3D Hentry\Modern style beige L-type cabinet 3d model\Modern style beige L-type cabinet 3d model\end1\K1CompleteMap.jpg
+	map_Kd E:\3D Hentry\Modern style beige L-type cabinet 3d model\Modern style beige L-type cabinet 3d model\end1\K1CompleteMap.jpg
+	map_bump Map__9677_Normal_Bump.tga
+
+newmtl Standardmaterial
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.352941 0.352941 0.352941
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+
+newmtl Metal_Chrome
+	Ns 19.999998
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.000000 0.000000 0.000000
+	Kd 0.439216 0.439216 0.439216
+	Ks 1.350000 1.350000 1.350000
+	Ke 0.000000 0.000000 0.000000
+	map_refl D:\Mapmy\00 Mie Bellissime 2011\Lakerem.jpg
+
+newmtl Scuro01
+	Ns 32.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.000000 0.000000 0.000000
+	Kd 0.000000 0.000000 0.000000
+	Ks 1.143000 1.143000 1.143000
+	Ke 0.000000 0.000000 0.000000
+
+newmtl Piastrelle001
+	Ns 29.999998
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 1.000000 0.847059 0.000000
+	Kd 1.000000 0.847059 0.000000
+	Ks 0.801000 0.801000 0.801000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka E:\3D Hentry\Modern style beige L-type cabinet 3d model\Modern style beige L-type cabinet 3d model\end1\Piastrelle001CompleteMap.jpg
+	map_Kd E:\3D Hentry\Modern style beige L-type cabinet 3d model\Modern style beige L-type cabinet 3d model\end1\Piastrelle001CompleteMap.jpg
+
+newmtl Walls01
+	Ns 50.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588235 0.588235 0.588235
+	Kd 0.588235 0.588235 0.588235
+	Ks 0.243000 0.243000 0.243000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka D:\Mapmy\Walls\Local Color\Loc-Wall-Bump Beige A.jpg
+	map_Kd D:\Mapmy\Walls\Local Color\Loc-Wall-Bump Beige A.jpg
+	map_bump -bm 0.300000 Map__9682_Normal_Bump.tga
+
+newmtl Pavimento01
+	Ns 48.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588235 0.588235 0.588235
+	Kd 0.588235 0.588235 0.588235
+	Ks 0.369000 0.369000 0.369000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka D:\Mapmy\Unity\Cotto-Color.jpg
+	map_Kd D:\Mapmy\Unity\Cotto-Color.jpg
+	map_bump Map__9689_Normal_Bump.tga
+
+newmtl Soffitto01
+	Ns 9.999999
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.882353 0.882353 0.882353
+	Kd 0.882353 0.882353 0.882353
+	Ks 0.261000 0.261000 0.261000
+	Ke 0.000000 0.000000 0.000000
+
+newmtl Piatto01
+	Ns 34.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.588000 0.588000 0.588000
+	Ks 0.450000 0.450000 0.450000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka E:\3D Hentry\Modern style beige L-type cabinet 3d model\Modern style beige L-type cabinet 3d model\end1\Piatto_B1.jpg
+	map_Kd E:\3D Hentry\Modern style beige L-type cabinet 3d model\Modern style beige L-type cabinet 3d model\end1\Piatto_B1.jpg
+
+newmtl Internonero
+	Ns 51.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588235 0.588235 0.588235
+	Kd 0.588235 0.588235 0.588235
+	Ks 1.143000 1.143000 1.143000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka G:\Done\X Lenovo\olla_04\Padella-end1\Small-Padella_Low1_albedo.jpg
+	map_Kd G:\Done\X Lenovo\olla_04\Padella-end1\Small-Padella_Low1_albedo.jpg
+	map_bump Map__9701_Normal_Bump.tga
+
+newmtl GLASS
+	Ns 48.999996
+	Ni 1.500000
+	d 0.150000
+	Tr 0.850000
+	Tf 0.150000 0.150000 0.150000 
+	illum 2
+	Ka 0.564706 0.564706 0.564706
+	Kd 0.564706 0.564706 0.564706
+	Ks 0.820000 0.820000 0.820000
+	Ke 0.000000 0.000000 0.000000
+
+newmtl Etiquette_nutella
+	Ns 9.999999
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588235 0.588235 0.588235
+	Kd 0.588235 0.588235 0.588235
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+
+newmtl Tappo
+	Ns 0.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 1.000000 1.000000 1.000000
+	Kd 1.000000 1.000000 1.000000
+	Ks 0.270000 0.270000 0.270000
+	Ke 0.000000 0.000000 0.000000
+	map_bump G:\Done\My 3D 2016\3D Models Az\Oggi\nutella_max\bord.jpg
+	bump G:\Done\My 3D 2016\3D Models Az\Oggi\nutella_max\bord.jpg
+
+newmtl Pate_nutella
+	Ns 62.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.223529 0.152941 0.031373
+	Kd 0.223529 0.152941 0.031373
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+
+newmtl Gamla_Tonda_Red_A1
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.588000 0.588000 0.588000
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka E:\3D Hentry\Modern style beige L-type cabinet 3d model\Modern style beige L-type cabinet 3d model\end1\Gamla-Tonda-Red-A1CompleteMap.jpg
+	map_Kd E:\3D Hentry\Modern style beige L-type cabinet 3d model\Modern style beige L-type cabinet 3d model\end1\Gamla-Tonda-Red-A1CompleteMap.jpg
+
+newmtl Gamla_Rosa_Liscia_D1
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.588000 0.588000 0.588000
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka E:\3D Hentry\Modern style beige L-type cabinet 3d model\Modern style beige L-type cabinet 3d model\end1\Gamla-Rosa-Liscia-D1CompleteMap.jpg
+	map_Kd E:\3D Hentry\Modern style beige L-type cabinet 3d model\Modern style beige L-type cabinet 3d model\end1\Gamla-Rosa-Liscia-D1CompleteMap.jpg
+
+newmtl GamlaGialla_A01
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.588000 0.588000 0.588000
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka E:\3D Hentry\Modern style beige L-type cabinet 3d model\Modern style beige L-type cabinet 3d model\end1\GamlaGialla-A01CompleteMap.jpg
+	map_Kd E:\3D Hentry\Modern style beige L-type cabinet 3d model\Modern style beige L-type cabinet 3d model\end1\GamlaGialla-A01CompleteMap.jpg
+
+newmtl WoodSedia1
+	Ns 9.999999
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588235 0.588235 0.588235
+	Kd 0.588235 0.588235 0.588235
+	Ks 0.225000 0.225000 0.225000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka D:\3D 2017\Furniture\Sedie\Sedia Classic Pagliata A1\Sedia_A1-[Color].jpg
+	map_Kd D:\3D 2017\Furniture\Sedie\Sedia Classic Pagliata A1\Sedia_A1-[Color].jpg
+	map_Ks D:\3D 2017\Furniture\Sedie\Sedia Classic Pagliata A1\Sedia_A1-[Gray-A].jpg
+	map_bump Map__90_Normal_Bump.tga
+
+newmtl CoverPaglia1
+	Ns 9.999999
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588235 0.588235 0.588235
+	Kd 0.588235 0.588235 0.588235
+	Ks 0.225000 0.225000 0.225000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka D:\3D 2017\Furniture\Sedie\Sedia Classic Pagliata A1\Paglia_ColorMap.jpg
+	map_Kd D:\3D 2017\Furniture\Sedie\Sedia Classic Pagliata A1\Paglia_ColorMap.jpg
+	map_Ks D:\3D 2017\Furniture\Sedie\Sedia Classic Pagliata A1\Paglia_GrayMap.jpg
+	map_bump Map__86_Normal_Bump.tga
+
+newmtl wooden_desk
+	Ns 9.999999
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588235 0.588235 0.588235
+	Kd 0.588235 0.588235 0.588235
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka E:\3D Hentry\Modern style beige L-type cabinet 3d model\Modern style beige L-type cabinet 3d model\end1\wooden-deskCompleteMap.jpg
+	map_Kd E:\3D Hentry\Modern style beige L-type cabinet 3d model\Modern style beige L-type cabinet 3d model\end1\wooden-deskCompleteMap.jpg
+	map_d E:\3D Hentry\Modern style beige L-type cabinet 3d model\Modern style beige L-type cabinet 3d model\end1\wooden-deskAlphaMap.jpg
+
+newmtl Nero
+	Ns 52.999996
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.066667 0.066667 0.066667
+	Kd 0.066667 0.066667 0.066667
+	Ks 0.576000 0.576000 0.576000
+	Ke 0.000000 0.000000 0.000000
