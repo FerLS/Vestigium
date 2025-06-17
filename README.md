@@ -4,8 +4,8 @@ Vestigium es un proyecto académico que presenta dos versiones complementarias d
 
 ## 🎮 Versiones
 
-- [`/2D`](./2D): Juego completo en 2D desarrollado con Pygame.
-- [`/3D`](./3D): Base del desarrollo en 3D.
+- [`/2D`](https://github.com/FerLS/Vestigium/tree/2D): Juego completo en 2D desarrollado con Pygame.
+- [`/3D`](https://github.com/FerLS/Vestigium/tree/2D): Base del desarrollo en 3D.
 
 ## 👥 Autores
 
